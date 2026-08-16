@@ -33,7 +33,7 @@ server:
     include-binding-errors: never
 
 app:
-  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  frontend-url: ${FRONTEND_URL=https://meticulous-courage-production-58ee.up.railway.app}
 
   jwt:
     secret: ${JWT_SECRET:change_me_to_a_long_random_secret_change_me_to_a_long_random_secret}
