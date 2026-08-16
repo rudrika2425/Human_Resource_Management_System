@@ -17,7 +17,7 @@ import NotificationsPage from './pages/NotificationsPage';
 import ProfilePage from './pages/ProfilePage';
 import RegisterPage from './pages/RegisterPage';
 import DesignationFormPage from './pages/Designationformpage';
-import DepartmentFormPage from './pages/DepartmentFormPage';
+import DepartmentFormPage from './pages/Departmentformpage';
 import AttendancePage from './pages/AttendancePage';
 import LeavePage from './pages/LeavePage';
 
