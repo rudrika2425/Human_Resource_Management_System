@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
 import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
-import StatusBadge from '../components/StatusBadge';
 import { useAuth } from '../hooks/useAuth';
 
 function getRole(user) {
@@ -28,7 +27,7 @@ function getRole(user) {
 function getEmployeeId(user) {
   if (!user) return null;
 
-  return (
+  const employeeId =
     user.employeeId ??
     user.employee?.id ??
     user.employee?.employeeId ??
@@ -36,8 +35,9 @@ function getEmployeeId(user) {
     user.employeeProfile?.id ??
     user.employeeProfile?.employeeId ??
     user.idEmployee ??
-    null
-  );
+    null;
+
+  return employeeId != null ? Number(employeeId) : null;
 }
 
 function getUserId(user) {
@@ -112,7 +112,9 @@ const STATUS_CLASSES = {
 };
 
 function LeaveStatus({ status }) {
-  if (!status) return <span className="text-gray-400">—</span>;
+  if (!status) {
+    return <span className="text-gray-400">—</span>;
+  }
 
   return (
     <span
@@ -129,27 +131,27 @@ function LeaveStatus({ status }) {
 function StatCard({ label, value, description }) {
   return (
     <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm shadow-purple-100/50">
-      <p className="text-sm text-gray-500">
-        {label}
-      </p>
+      <p className="text-sm text-gray-500">{label}</p>
 
       <div className="mt-3 text-3xl font-semibold tracking-tight text-gray-900">
         {value}
       </div>
 
       {description ? (
-        <p className="mt-1 text-sm text-gray-400">
-          {description}
-        </p>
+        <p className="mt-1 text-sm text-gray-400">{description}</p>
       ) : null}
     </div>
   );
 }
 
 function BalanceCard({ balance, leaveType }) {
-  const total = Number(balance?.availableDays ?? 0);
+  const total = Number(balance?.availableDays ?? 12);
   const used = Number(balance?.usedDays ?? 0);
-  const remaining = Math.max(0, total - used);
+
+  const remaining =
+    balance?.remainingDays != null
+      ? Number(balance.remainingDays)
+      : Math.max(0, total - used);
 
   const percentage =
     total > 0
@@ -186,13 +188,8 @@ function BalanceCard({ balance, leaveType }) {
         </div>
 
         <div className="text-right text-xs text-gray-500">
-          <p>
-            Used: {used}
-          </p>
-
-          <p>
-            Total: {total}
-          </p>
+          <p>Used: {used}</p>
+          <p>Total: {total}</p>
         </div>
       </div>
 
@@ -228,9 +225,7 @@ function ApprovalModal({
             </p>
 
             <h2 className="mt-2 text-xl font-semibold text-gray-900">
-              {isApprove
-                ? 'Approve Leave'
-                : 'Reject Leave'}
+              {isApprove ? 'Approve Leave' : 'Reject Leave'}
             </h2>
           </div>
 
@@ -261,9 +256,7 @@ function ApprovalModal({
 
             <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-xs text-gray-400">
-                  Leave Type
-                </p>
+                <p className="text-xs text-gray-400">Leave Type</p>
 
                 <p className="mt-1 text-gray-700">
                   {LEAVE_TYPE_LABELS[request.leaveType] ||
@@ -272,9 +265,7 @@ function ApprovalModal({
               </div>
 
               <div>
-                <p className="text-xs text-gray-400">
-                  Duration
-                </p>
+                <p className="text-xs text-gray-400">Duration</p>
 
                 <p className="mt-1 text-gray-700">
                   {calculateDays(
@@ -286,9 +277,7 @@ function ApprovalModal({
               </div>
 
               <div>
-                <p className="text-xs text-gray-400">
-                  Start Date
-                </p>
+                <p className="text-xs text-gray-400">Start Date</p>
 
                 <p className="mt-1 text-gray-700">
                   {formatDate(request.startDate)}
@@ -296,9 +285,7 @@ function ApprovalModal({
               </div>
 
               <div>
-                <p className="text-xs text-gray-400">
-                  End Date
-                </p>
+                <p className="text-xs text-gray-400">End Date</p>
 
                 <p className="mt-1 text-gray-700">
                   {formatDate(request.endDate)}
@@ -308,9 +295,7 @@ function ApprovalModal({
 
             {request.reason && (
               <div className="mt-4 border-t border-black/10 pt-4">
-                <p className="text-xs text-gray-400">
-                  Reason
-                </p>
+                <p className="text-xs text-gray-400">Reason</p>
 
                 <p className="mt-1 text-sm leading-6 text-gray-600">
                   {request.reason}
@@ -326,9 +311,7 @@ function ApprovalModal({
 
             <textarea
               value={remarks}
-              onChange={(event) =>
-                setRemarks(event.target.value)
-              }
+              onChange={(event) => setRemarks(event.target.value)}
               rows={4}
               placeholder={
                 isApprove
@@ -389,9 +372,6 @@ export default function LeavePage() {
   const [actionRequest, setActionRequest] = useState(null);
   const [remarks, setRemarks] = useState('');
 
-  /*
-   * Get complete authenticated user from backend.
-   */
   const {
     data: meUser,
     isLoading: meLoading,
@@ -400,19 +380,13 @@ export default function LeavePage() {
     queryKey: ['me'],
     queryFn: async () => {
       const response = await api.get('/api/v1/auth/me');
-
       return response.data?.data;
     },
   });
 
-  /*
-   * Backend /me is the source of truth.
-   * AuthContext user is fallback.
-   */
   const user = meUser || authUser;
 
   const role = getRole(user);
-
   const employeeId = getEmployeeId(user);
   const userId = getUserId(user);
 
@@ -422,9 +396,6 @@ export default function LeavePage() {
 
   const canApprove = isHr || isManager;
 
-  /*
-   * Leave history.
-   */
   const {
     data: historyResponse,
     isLoading: historyLoading,
@@ -438,20 +409,15 @@ export default function LeavePage() {
 
       return response.data?.data ?? [];
     },
-    enabled: Boolean(employeeId),
+    enabled:
+      Boolean(employeeId) &&
+      (isEmployee || isManager),
   });
 
   const history = Array.isArray(historyResponse)
     ? historyResponse
     : [];
 
-  /*
-   * Leave balances.
-   *
-   * IMPORTANT:
-   * Managers also have their own leave balance.
-   * Therefore manager employeeId is now used here.
-   */
   const {
     data: balanceResponse,
     isLoading: balanceLoading,
@@ -485,11 +451,6 @@ export default function LeavePage() {
 
       return responses.filter(Boolean);
     },
-
-    /*
-     * Employee behavior remains unchanged.
-     * Manager now also loads their own balance.
-     */
     enabled:
       Boolean(employeeId) &&
       (isEmployee || isManager),
@@ -499,9 +460,6 @@ export default function LeavePage() {
     ? balanceResponse
     : [];
 
-  /*
-   * Team leave history for managers.
-   */
   const {
     data: teamLeaveResponse,
     isLoading: teamLeaveLoading,
@@ -522,9 +480,6 @@ export default function LeavePage() {
     ? teamLeaveResponse
     : [];
 
-  /*
-   * Pending requests.
-   */
   const {
     data: pendingResponse,
     isLoading: pendingLoading,
@@ -545,9 +500,6 @@ export default function LeavePage() {
     ? pendingResponse
     : [];
 
-  /*
-   * Apply leave mutation.
-   */
   const applyMutation = useMutation({
     mutationFn: async (payload) => {
       const response = await api.post(
@@ -571,6 +523,10 @@ export default function LeavePage() {
         queryKey: ['team-leaves'],
       });
 
+      queryClient.invalidateQueries({
+        queryKey: ['pending-leaves'],
+      });
+
       setForm({
         leaveType: 'CASUAL',
         startDate: '',
@@ -582,9 +538,6 @@ export default function LeavePage() {
     },
   });
 
-  /*
-   * Cancel leave mutation.
-   */
   const cancelMutation = useMutation({
     mutationFn: async (leaveId) => {
       const response = await api.post(
@@ -606,14 +559,15 @@ export default function LeavePage() {
       queryClient.invalidateQueries({
         queryKey: ['team-leaves'],
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ['pending-leaves'],
+      });
     },
   });
 
-  /*
-   * Approve / reject mutation.
-   */
   const actionMutation = useMutation({
-    mutationFn: async ({ id, action }) => {
+    mutationFn: async ({ id, action, remarks }) => {
       const response = await api.post(
         `/api/v1/leaves/${id}/${action}`,
         {
@@ -647,19 +601,12 @@ export default function LeavePage() {
     },
   });
 
-  /*
-   * Apply leave.
-   */
   const handleApply = (event) => {
     event.preventDefault();
 
-    if (!employeeId) {
-      return;
-    }
+    if (!employeeId) return;
 
-    if (!form.startDate || !form.endDate) {
-      return;
-    }
+    if (!form.startDate || !form.endDate) return;
 
     if (
       new Date(`${form.startDate}T00:00:00`) >
@@ -677,9 +624,6 @@ export default function LeavePage() {
     });
   };
 
-  /*
-   * Statistics.
-   */
   const statistics = useMemo(() => {
     const pending = history.filter(
       (item) => item.status === 'PENDING'
@@ -705,9 +649,6 @@ export default function LeavePage() {
     };
   }, [history]);
 
-  /*
-   * Team statistics for managers.
-   */
   const teamStatistics = useMemo(() => {
     const pending = teamLeaves.filter(
       (item) => item.status === 'PENDING'
@@ -733,9 +674,6 @@ export default function LeavePage() {
     };
   }, [teamLeaves]);
 
-  /*
-   * Remaining total balance.
-   */
   const totalRemaining = useMemo(() => {
     return balances.reduce((total, balance) => {
       const available = Number(
@@ -750,9 +688,6 @@ export default function LeavePage() {
     }, 0);
   }, [balances]);
 
-  /*
-   * Search pending requests.
-   */
   const filteredPendingLeaves = useMemo(() => {
     if (!search.trim()) {
       return pendingLeaves;
@@ -782,9 +717,6 @@ export default function LeavePage() {
     });
   }, [pendingLeaves, search]);
 
-  /*
-   * Search team leaves for manager.
-   */
   const filteredTeamLeaves = useMemo(() => {
     if (!search.trim()) {
       return teamLeaves;
@@ -814,11 +746,10 @@ export default function LeavePage() {
     });
   }, [teamLeaves, search]);
 
-  /*
-   * Loading / errors.
-   */
   if (meLoading) {
-    return <Spinner label="Loading user information..." />;
+    return (
+      <Spinner label="Loading user information..." />
+    );
   }
 
   if (meError) {
@@ -837,11 +768,10 @@ export default function LeavePage() {
     );
   }
 
-  /*
-   * Employee and Manager both need an employee ID
-   * for their personal leave balance/history.
-   */
-  if ((isEmployee || isManager) && !employeeId) {
+  if (
+    (isEmployee || isManager) &&
+    !employeeId
+  ) {
     return (
       <ErrorState
         description="Employee ID was not found for your account."
@@ -871,7 +801,7 @@ export default function LeavePage() {
     <>
       <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-4 md:p-6">
 
-        {}
+        {/* Header */}
         <div className="flex flex-col justify-between gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-500">
@@ -904,7 +834,7 @@ export default function LeavePage() {
           )}
         </div>
 
-        {}
+        {/* Tabs */}
         <div className="flex gap-2 overflow-x-auto rounded-2xl border border-purple-100 bg-white p-2 shadow-sm shadow-purple-100/50">
           <button
             type="button"
@@ -932,17 +862,33 @@ export default function LeavePage() {
             </button>
           )}
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('history')}
-            className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
-              activeTab === 'history'
-                ? 'bg-purple-600 text-white'
-                : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
-            }`}
-          >
-            History
-          </button>
+          {(isEmployee || isManager) && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('history')}
+              className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+                activeTab === 'history'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
+              }`}
+            >
+              History
+            </button>
+          )}
+
+          {isManager && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('team-history')}
+              className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+                activeTab === 'team-history'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
+              }`}
+            >
+              Team History
+            </button>
+          )}
 
           {canApprove && (
             <button
@@ -965,11 +911,10 @@ export default function LeavePage() {
           )}
         </div>
 
-        {}
+        {/* Overview */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
 
-            {}
             <div>
               <h3 className="mb-3 text-sm font-semibold text-gray-700">
                 My Leave Summary
@@ -1002,7 +947,6 @@ export default function LeavePage() {
               </div>
             </div>
 
-            {}
             {isManager && (
               <div>
                 <h3 className="mb-3 text-sm font-semibold text-gray-700">
@@ -1037,7 +981,6 @@ export default function LeavePage() {
               </div>
             )}
 
-            {}
             <section>
               <div className="mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">
@@ -1053,7 +996,9 @@ export default function LeavePage() {
                 {LEAVE_TYPES.map((leaveType) => {
                   const balance = balances.find(
                     (item) =>
-                      item.leaveType === leaveType
+                      String(
+                        item?.leaveType ?? ''
+                      ).toUpperCase() === leaveType
                   );
 
                   return (
@@ -1069,7 +1014,7 @@ export default function LeavePage() {
           </div>
         )}
 
-        {}
+        {/* Apply Leave */}
         {activeTab === 'apply' &&
           (isEmployee || isManager) && (
             <section className="rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
@@ -1217,439 +1162,446 @@ export default function LeavePage() {
             </section>
           )}
 
-        {}
-        {activeTab === 'history' && (
-          <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-            <div className="flex flex-col justify-between gap-2 border-b border-black/10 px-5 py-5 md:flex-row md:items-center">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
-                  Leave Records
-                </p>
-
-                <h2 className="mt-1 text-lg font-semibold text-gray-900">
-                  My Leave History
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  Review your previous and current leave requests.
-                </p>
-              </div>
-
-              <span className="text-sm font-medium text-gray-500">
-                {history.length} request
-                {history.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-
-            {!history.length ? (
-              <div className="p-10 text-center">
-                <p className="text-sm text-gray-500">
-                  No leave records found.
-                </p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-purple-100 text-sm">
-                  <thead className="bg-purple-50 text-left text-gray-900">
-                    <tr>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Leave
-                      </th>
-
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Dates
-                      </th>
-
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Days
-                      </th>
-
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Status
-                      </th>
-
-                      <th className="px-5 py-3 text-right font-semibold uppercase tracking-[0.15em] text-xs">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody className="divide-y divide-purple-100">
-                    {history.map((leave) => (
-                      <tr
-                        key={leave.id}
-                        className="transition hover:bg-purple-50/60"
-                      >
-                        <td className="px-5 py-4">
-                          <p className="font-medium text-gray-900">
-                            {LEAVE_TYPE_LABELS[
-                              leave.leaveType
-                            ] || leave.leaveType}
-                          </p>
-
-                          <p className="mt-1 max-w-xs truncate text-xs text-gray-400">
-                            {leave.reason ||
-                              'No reason provided'}
-                          </p>
-                        </td>
-
-                        <td className="px-5 py-4 text-gray-600">
-                          {formatDate(leave.startDate)}
-                          {' — '}
-                          {formatDate(leave.endDate)}
-                        </td>
-
-                        <td className="px-5 py-4 text-gray-600">
-                          {calculateDays(
-                            leave.startDate,
-                            leave.endDate
-                          )}
-                        </td>
-
-                        <td className="px-5 py-4">
-                          <LeaveStatus
-                            status={leave.status}
-                          />
-                        </td>
-
-                        <td className="px-5 py-4 text-right">
-                          {(leave.status === 'PENDING' ||
-                            leave.status === 'APPROVED') && (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                cancelMutation.mutate(
-                                  leave.id
-                                )
-                              }
-                              disabled={
-                                cancelMutation.isPending
-                              }
-                              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100 disabled:opacity-40"
-                            >
-                              {cancelMutation.isPending
-                                ? 'Cancelling...'
-                                : 'Cancel'}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </section>
-        )}
-
-        {}
-        {activeTab === 'team-history' && isManager && (
-          <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-            <div className="flex flex-col justify-between gap-2 border-b border-black/10 px-5 py-5 md:flex-row md:items-center">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
-                  Team Records
-                </p>
-
-                <h2 className="mt-1 text-lg font-semibold text-gray-900">
-                  Team Leave History
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  Review all leave requests from your team members.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="relative w-full md:max-w-xs">
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(event) =>
-                      setSearch(event.target.value)
-                    }
-                    placeholder="Search employee or leave..."
-                    className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
-                  />
-                </div>
-
-                <span className="text-sm font-medium text-gray-500">
-                  {filteredTeamLeaves.length} request
-                  {filteredTeamLeaves.length !== 1 ? 's' : ''}
-                </span>
-              </div>
-            </div>
-
-            {teamLeaveError ? (
-              <div className="p-6">
-                <ErrorState description="Unable to load team leave history." />
-              </div>
-            ) : !filteredTeamLeaves.length ? (
-              <div className="p-10 text-center">
-                <p className="text-sm text-gray-500">
-                  No team leave records found.
-                </p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-purple-100 text-sm">
-                  <thead className="bg-purple-50 text-left text-gray-900">
-                    <tr>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Employee
-                      </th>
-
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Leave Type
-                      </th>
-
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Dates
-                      </th>
-
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Days
-                      </th>
-
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Reason
-                      </th>
-
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Status
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody className="divide-y divide-purple-100">
-                    {filteredTeamLeaves.map((leave) => (
-                      <tr
-                        key={leave.id}
-                        className="transition hover:bg-purple-50/60"
-                      >
-                        <td className="px-5 py-4">
-                          <p className="font-medium text-gray-900">
-                            {getEmployeeName(leave)}
-                          </p>
-
-                          <p className="mt-1 text-xs text-gray-400">
-                            ID: {leave.employeeId ?? '—'}
-                          </p>
-                        </td>
-
-                        <td className="px-5 py-4 text-gray-700">
-                          {LEAVE_TYPE_LABELS[leave.leaveType] ||
-                            leave.leaveType}
-                        </td>
-
-                        <td className="px-5 py-4 text-gray-600">
-                          {formatDate(leave.startDate)}
-                          {' — '}
-                          {formatDate(leave.endDate)}
-                        </td>
-
-                        <td className="px-5 py-4 text-gray-600">
-                          {calculateDays(
-                            leave.startDate,
-                            leave.endDate
-                          )}
-                        </td>
-
-                        <td className="max-w-xs px-5 py-4">
-                          <p className="truncate text-gray-500">
-                            {leave.reason || '—'}
-                          </p>
-                        </td>
-
-                        <td className="px-5 py-4">
-                          <LeaveStatus
-                            status={leave.status}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </section>
-        )}
-
-        {}
-        {activeTab === 'approvals' && canApprove && (
-          <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-            <div className="border-b border-black/10 px-5 py-5">
-              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        {/* Personal History */}
+        {activeTab === 'history' &&
+          (isEmployee || isManager) && (
+            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
+              <div className="flex flex-col justify-between gap-2 border-b border-black/10 px-5 py-5 md:flex-row md:items-center">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
-                    Management
+                    Leave Records
                   </p>
 
                   <h2 className="mt-1 text-lg font-semibold text-gray-900">
-                    Leave Approvals
+                    My Leave History
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    Review pending leave requests from employees.
+                    Review your previous and current leave requests.
                   </p>
                 </div>
 
-                <div className="relative w-full md:max-w-xs">
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(event) =>
-                      setSearch(event.target.value)
-                    }
-                    placeholder="Search employee or leave..."
-                    className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                <span className="text-sm font-medium text-gray-500">
+                  {history.length} request
+                  {history.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+
+              {!history.length ? (
+                <div className="p-10 text-center">
+                  <p className="text-sm text-gray-500">
+                    No leave records found.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-purple-100 text-sm">
+                    <thead className="bg-purple-50 text-left text-gray-900">
+                      <tr>
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Leave
+                        </th>
+
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Dates
+                        </th>
+
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Days
+                        </th>
+
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Status
+                        </th>
+
+                        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-[0.15em]">
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody className="divide-y divide-purple-100">
+                      {history.map((leave) => (
+                        <tr
+                          key={leave.id}
+                          className="transition hover:bg-purple-50/60"
+                        >
+                          <td className="px-5 py-4">
+                            <p className="font-medium text-gray-900">
+                              {LEAVE_TYPE_LABELS[
+                                leave.leaveType
+                              ] || leave.leaveType}
+                            </p>
+
+                            <p className="mt-1 max-w-xs truncate text-xs text-gray-400">
+                              {leave.reason ||
+                                'No reason provided'}
+                            </p>
+                          </td>
+
+                          <td className="px-5 py-4 text-gray-600">
+                            {formatDate(leave.startDate)}
+                            {' — '}
+                            {formatDate(leave.endDate)}
+                          </td>
+
+                          <td className="px-5 py-4 text-gray-600">
+                            {calculateDays(
+                              leave.startDate,
+                              leave.endDate
+                            )}
+                          </td>
+
+                          <td className="px-5 py-4">
+                            <LeaveStatus
+                              status={leave.status}
+                            />
+                          </td>
+
+                          <td className="px-5 py-4 text-right">
+                            {(leave.status === 'PENDING' ||
+                              leave.status === 'APPROVED') && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  cancelMutation.mutate(
+                                    leave.id
+                                  )
+                                }
+                                disabled={
+                                  cancelMutation.isPending
+                                }
+                                className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100 disabled:opacity-40"
+                              >
+                                {cancelMutation.isPending
+                                  ? 'Cancelling...'
+                                  : 'Cancel'}
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          )}
+
+        {/* Team History */}
+        {activeTab === 'team-history' &&
+          isManager && (
+            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
+              <div className="flex flex-col justify-between gap-2 border-b border-black/10 px-5 py-5 md:flex-row md:items-center">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
+                    Team Records
+                  </p>
+
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                    Team Leave History
+                  </h2>
+
+                  <p className="mt-1 text-sm text-gray-500">
+                    Review all leave requests from your team members.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="relative w-full md:max-w-xs">
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(event) =>
+                        setSearch(event.target.value)
+                      }
+                      placeholder="Search employee or leave..."
+                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                    />
+                  </div>
+
+                  <span className="whitespace-nowrap text-sm font-medium text-gray-500">
+                    {filteredTeamLeaves.length} request
+                    {filteredTeamLeaves.length !== 1
+                      ? 's'
+                      : ''}
+                  </span>
+                </div>
+              </div>
+
+              {teamLeaveError ? (
+                <div className="p-6">
+                  <ErrorState
+                    description="Unable to load team leave history."
                   />
                 </div>
-              </div>
-            </div>
-
-            {pendingError ? (
-              <div className="p-6">
-                <ErrorState
-                  description="Unable to load pending leave requests."
-                />
-              </div>
-            ) : pendingLoading ? (
-              <div className="p-10">
-                <Spinner label="Loading pending requests..." />
-              </div>
-            ) : !filteredPendingLeaves.length ? (
-              <div className="p-10 text-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700">
-                  ✓
+              ) : !filteredTeamLeaves.length ? (
+                <div className="p-10 text-center">
+                  <p className="text-sm text-gray-500">
+                    No team leave records found.
+                  </p>
                 </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-purple-100 text-sm">
+                    <thead className="bg-purple-50 text-left text-gray-900">
+                      <tr>
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Employee
+                        </th>
 
-                <p className="mt-4 font-medium text-gray-900">
-                  No pending requests
-                </p>
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Leave Type
+                        </th>
 
-                <p className="mt-1 text-sm text-gray-400">
-                  All leave requests have been processed.
-                </p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-[1050px] divide-y divide-purple-100 text-sm">
-                  <thead className="bg-purple-50 text-left text-gray-900">
-                    <tr>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Employee
-                      </th>
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Dates
+                        </th>
 
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Leave Type
-                      </th>
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Days
+                        </th>
 
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Dates
-                      </th>
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Reason
+                        </th>
 
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Days
-                      </th>
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
 
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                        Reason
-                      </th>
+                    <tbody className="divide-y divide-purple-100">
+                      {filteredTeamLeaves.map((leave) => (
+                        <tr
+                          key={leave.id}
+                          className="transition hover:bg-purple-50/60"
+                        >
+                          <td className="px-5 py-4">
+                            <p className="font-medium text-gray-900">
+                              {getEmployeeName(leave)}
+                            </p>
 
-                      <th className="px-5 py-3 text-right font-semibold uppercase tracking-[0.15em] text-xs">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
+                            <p className="mt-1 text-xs text-gray-400">
+                              ID: {leave.employeeId ?? '—'}
+                            </p>
+                          </td>
 
-                  <tbody className="divide-y divide-purple-100">
-                    {filteredPendingLeaves.map((leave) => (
-                      <tr
-                        key={leave.id}
-                        className="transition hover:bg-purple-50/60"
-                      >
-                        <td className="px-5 py-4">
-                          <p className="font-medium text-gray-900">
-                            {getEmployeeName(leave)}
-                          </p>
-
-                          <p className="mt-1 text-xs text-gray-400">
-                            ID: {leave.employeeId ?? '—'}
-                          </p>
-                        </td>
-
-                        <td className="px-5 py-4">
-                          <p className="text-gray-700">
+                          <td className="px-5 py-4 text-gray-700">
                             {LEAVE_TYPE_LABELS[
                               leave.leaveType
                             ] || leave.leaveType}
-                          </p>
-                        </td>
+                          </td>
 
-                        <td className="px-5 py-4 text-gray-600">
-                          {formatDate(leave.startDate)}
-                          {' — '}
-                          {formatDate(leave.endDate)}
-                        </td>
+                          <td className="px-5 py-4 text-gray-600">
+                            {formatDate(leave.startDate)}
+                            {' — '}
+                            {formatDate(leave.endDate)}
+                          </td>
 
-                        <td className="px-5 py-4 text-gray-600">
-                          {calculateDays(
-                            leave.startDate,
-                            leave.endDate
-                          )}
-                        </td>
+                          <td className="px-5 py-4 text-gray-600">
+                            {calculateDays(
+                              leave.startDate,
+                              leave.endDate
+                            )}
+                          </td>
 
-                        <td className="max-w-xs px-5 py-4">
-                          <p className="truncate text-gray-500">
-                            {leave.reason || '—'}
-                          </p>
-                        </td>
+                          <td className="max-w-xs px-5 py-4">
+                            <p className="truncate text-gray-500">
+                              {leave.reason || '—'}
+                            </p>
+                          </td>
 
-                        <td className="px-5 py-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActionRequest({
-                                  ...leave,
-                                  action: 'approve',
-                                });
+                          <td className="px-5 py-4">
+                            <LeaveStatus
+                              status={leave.status}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          )}
 
-                                setRemarks('');
-                              }}
-                              className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
-                            >
-                              Approve
-                            </button>
+        {/* Approvals */}
+        {activeTab === 'approvals' &&
+          canApprove && (
+            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
+              <div className="border-b border-black/10 px-5 py-5">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
+                      Management
+                    </p>
 
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActionRequest({
-                                  ...leave,
-                                  action: 'reject',
-                                });
+                    <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                      Leave Approvals
+                    </h2>
 
-                                setRemarks('');
-                              }}
-                              className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100"
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Review pending leave requests from employees.
+                    </p>
+                  </div>
+
+                  <div className="relative w-full md:max-w-xs">
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(event) =>
+                        setSearch(event.target.value)
+                      }
+                      placeholder="Search employee or leave..."
+                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                    />
+                  </div>
+                </div>
               </div>
-            )}
-          </section>
-        )}
+
+              {pendingError ? (
+                <div className="p-6">
+                  <ErrorState
+                    description="Unable to load pending leave requests."
+                  />
+                </div>
+              ) : pendingLoading ? (
+                <div className="p-10">
+                  <Spinner label="Loading pending requests..." />
+                </div>
+              ) : !filteredPendingLeaves.length ? (
+                <div className="p-10 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700">
+                    ✓
+                  </div>
+
+                  <p className="mt-4 font-medium text-gray-900">
+                    No pending requests
+                  </p>
+
+                  <p className="mt-1 text-sm text-gray-400">
+                    All leave requests have been processed.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-[1050px] divide-y divide-purple-100 text-sm">
+                    <thead className="bg-purple-50 text-left text-gray-900">
+                      <tr>
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Employee
+                        </th>
+
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Leave Type
+                        </th>
+
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Dates
+                        </th>
+
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Days
+                        </th>
+
+                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                          Reason
+                        </th>
+
+                        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-[0.15em]">
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody className="divide-y divide-purple-100">
+                      {filteredPendingLeaves.map((leave) => (
+                        <tr
+                          key={leave.id}
+                          className="transition hover:bg-purple-50/60"
+                        >
+                          <td className="px-5 py-4">
+                            <p className="font-medium text-gray-900">
+                              {getEmployeeName(leave)}
+                            </p>
+
+                            <p className="mt-1 text-xs text-gray-400">
+                              ID: {leave.employeeId ?? '—'}
+                            </p>
+                          </td>
+
+                          <td className="px-5 py-4">
+                            <p className="text-gray-700">
+                              {LEAVE_TYPE_LABELS[
+                                leave.leaveType
+                              ] || leave.leaveType}
+                            </p>
+                          </td>
+
+                          <td className="px-5 py-4 text-gray-600">
+                            {formatDate(leave.startDate)}
+                            {' — '}
+                            {formatDate(leave.endDate)}
+                          </td>
+
+                          <td className="px-5 py-4 text-gray-600">
+                            {calculateDays(
+                              leave.startDate,
+                              leave.endDate
+                            )}
+                          </td>
+
+                          <td className="max-w-xs px-5 py-4">
+                            <p className="truncate text-gray-500">
+                              {leave.reason || '—'}
+                            </p>
+                          </td>
+
+                          <td className="px-5 py-4 text-right">
+                            <div className="flex justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActionRequest({
+                                    ...leave,
+                                    action: 'approve',
+                                  });
+
+                                  setRemarks('');
+                                }}
+                                className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
+                              >
+                                Approve
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActionRequest({
+                                    ...leave,
+                                    action: 'reject',
+                                  });
+
+                                  setRemarks('');
+                                }}
+                                className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          )}
       </div>
 
-      {}
       <ApprovalModal
         request={actionRequest}
         remarks={remarks}
@@ -1667,6 +1619,7 @@ export default function LeavePage() {
           actionMutation.mutate({
             id: actionRequest.id,
             action: actionRequest.action,
+            remarks: remarks.trim(),
           });
         }}
       />
