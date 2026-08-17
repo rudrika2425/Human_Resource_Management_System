@@ -143,99 +143,116 @@ public class SecurityConfig {
 
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+public CorsConfigurationSource corsConfigurationSource() {
 
-        CorsConfiguration configuration = new CorsConfiguration();
+    CorsConfiguration configuration = new CorsConfiguration();
+
+    /*
+     * FRONTEND_URL can contain one or multiple origins separated by commas.
+     *
+     * Example Railway:
+     * https://meticulous-courage-production-58ee.up.railway.app
+     *
+     * Multiple environments:
+     * https://meticulous-courage-production-58ee.up.railway.app,
+     * http://localhost:5173,
+     * http://localhost:3000
+     */
+    String frontendUrl = appProperties.getFrontendUrl();
+
+    List<String> allowedOrigins;
+
+    if (frontendUrl != null && !frontendUrl.trim().isEmpty()) {
+
+        allowedOrigins = List.of(
+                frontendUrl
+                        .replace(",", "\n")
+                        .lines()
+                        .map(String::trim)
+                        .filter(origin -> !origin.isEmpty())
+                        .map(origin -> {
+                            // Remove trailing slash because CORS origins
+                            // must not contain a trailing slash.
+                            while (origin.endsWith("/")) {
+                                origin = origin.substring(0, origin.length() - 1);
+                            }
+                            return origin;
+                        })
+                        .toList()
+        );
+
+    } else {
 
         /*
-         * IMPORTANT
+         * Safe fallback for local development + current Railway frontend.
          *
-         * Railway frontend URL comes from:
-         *
-         * app.frontend-url
-         *
-         * Example:
-         *
-         * https://your-frontend.up.railway.app
-         *
+         * IMPORTANT:
+         * In production, FRONTEND_URL should still be configured
+         * in Railway Variables.
          */
-        String frontendUrl = appProperties.getFrontendUrl();
-
-        if (frontendUrl != null && !frontendUrl.trim().isEmpty()) {
-
-            configuration.setAllowedOrigins(
-                    List.of(frontendUrl.trim())
-            );
-
-        } else {
-
-            /*
-             * Temporary fallback.
-             *
-             * This prevents CORS from becoming completely empty
-             * if FRONTEND_URL is not configured.
-             *
-             * Remove this fallback later and configure the Railway
-             * environment variable properly.
-             */
-            configuration.setAllowedOrigins(
-                    List.of(
-                            "http://localhost:5173",
-                            "http://localhost:3000"
-                    )
-            );
-        }
-
-
-        // Allowed HTTP methods
-        configuration.setAllowedMethods(
-                List.of(
-                        "GET",
-                        "POST",
-                        "PUT",
-                        "PATCH",
-                        "DELETE",
-                        "OPTIONS"
-                )
+        allowedOrigins = List.of(
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "https://meticulous-courage-production-58ee.up.railway.app"
         );
-
-
-        // Allowed request headers
-        configuration.setAllowedHeaders(
-                List.of(
-                        "Authorization",
-                        "Content-Type",
-                        "X-Requested-With",
-                        "Accept",
-                        "Origin"
-                )
-        );
-
-
-        // Headers browser is allowed to read
-        configuration.setExposedHeaders(
-                List.of(
-                        "Authorization"
-                )
-        );
-
-
-        // Required because JWT Authorization header is used
-        configuration.setAllowCredentials(true);
-
-
-        // Cache preflight result for 1 hour
-        configuration.setMaxAge(3600L);
-
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration(
-                "/**",
-                configuration
-        );
-
-        return source;
     }
+
+    configuration.setAllowedOrigins(allowedOrigins);
+
+    /*
+     * Allowed HTTP methods
+     */
+    configuration.setAllowedMethods(
+            List.of(
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE",
+                    "OPTIONS"
+            )
+    );
+
+    /*
+     * Allowed request headers
+     */
+    configuration.setAllowedHeaders(
+            List.of(
+                    "Authorization",
+                    "Content-Type",
+                    "X-Requested-With",
+                    "Accept",
+                    "Origin"
+            )
+    );
+
+    /*
+     * Headers browser is allowed to read
+     */
+    configuration.setExposedHeaders(
+            List.of(
+                    "Authorization"
+            )
+    );
+
+    /*
+     * Required when credentials/cookies are used.
+     */
+    configuration.setAllowCredentials(true);
+
+    /*
+     * Browser can cache successful preflight for 1 hour.
+     */
+    configuration.setMaxAge(3600L);
+
+    UrlBasedCorsConfigurationSource source =
+            new UrlBasedCorsConfigurationSource();
+
+    source.registerCorsConfiguration(
+            "/**",
+            configuration
+    );
+
+    return source;
+}
 }
