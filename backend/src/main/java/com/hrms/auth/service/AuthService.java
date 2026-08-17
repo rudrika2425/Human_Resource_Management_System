@@ -17,6 +17,8 @@ import com.hrms.common.exception.BadRequestException;
 import com.hrms.common.exception.NotFoundException;
 import com.hrms.common.exception.UnauthorizedException;
 import com.hrms.common.security.JwtService;
+import com.hrms.employee.entity.EmploymentType;
+import com.hrms.employee.entity.EmploymentStatus;
 import com.hrms.common.security.UserPrincipal;
 import com.hrms.employee.entity.Employee;
 import com.hrms.employee.repository.EmployeeRepository;
@@ -211,6 +213,10 @@ public UserResponse me(UserPrincipal principal) {
     employee.setDeleted(false);
     employee.setEmployeeId("EMP" + System.currentTimeMillis());
 
+    // Required Employee fields
+    employee.setAssignedRole(UserRole.EMPLOYEE);
+    employee.setEmploymentType(EmploymentType.FULL_TIME);
+    employee.setEmploymentStatus(EmploymentStatus.ACTIVE);
     System.out.println("REGISTER: saving employee");
 
     employeeRepository.save(employee);
