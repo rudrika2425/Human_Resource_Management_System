@@ -17,8 +17,6 @@ import com.hrms.common.exception.BadRequestException;
 import com.hrms.common.exception.NotFoundException;
 import com.hrms.common.exception.UnauthorizedException;
 import com.hrms.common.security.JwtService;
-import com.hrms.employee.entity.EmploymentType;
-import com.hrms.employee.entity.EmploymentStatus;
 import com.hrms.common.security.UserPrincipal;
 import com.hrms.employee.entity.Employee;
 import com.hrms.employee.repository.EmployeeRepository;
@@ -184,54 +182,83 @@ public UserResponse me(UserPrincipal principal) {
 
     public AuthResponse register(RegisterRequest request) {
 
-    System.out.println("REGISTER: starting for email = " + request.getEmail());
+    String email = request.getEmail().trim().toLowerCase();
 
-    if (userRepository.existsByEmail(request.getEmail())) {
+    System.out.println("REGISTER: starting for email = " + email);
+
+    // 1. User must not already exist
+    if (userRepository.existsByEmailIgnoreCase(email)) {
         throw new BadRequestException("Email already registered");
     }
 
-    System.out.println("REGISTER: creating user");
+    // 2. Employee must already exist because HR creates employees first
+    Employee employee = employeeRepository.findByEmailIgnoreCase(email)
+            .orElseThrow(() -> new NotFoundException(
+                    "No employee found with this email. Please contact HR."
+            ));
 
+    // 3. Employee can register only once
+    if (employee.getUser() != null) {
+        throw new BadRequestException("This employee is already registered");
+    }
+
+    // 4. Employee must be active
+    if (!employee.isActive() || employee.isDeleted()) {
+        throw new BadRequestException(
+                "This employee account is inactive. Please contact HR."
+        );
+    }
+
+    System.out.println("REGISTER: existing employee found, id = " + employee.getId());
+
+    // 5. Create User account
     User user = new User();
-    user.setEmail(request.getEmail());
+    user.setEmail(email);
     user.setPassword(passwordEncoder.encode(request.getPassword()));
-    user.setFirstName(request.getFirstName());
-    user.setLastName(request.getLastName());
+
+    // Use employee's existing name rather than creating/changing
+    // employee information during registration.
+    user.setFirstName(employee.getFirstName());
+    user.setLastName(employee.getLastName());
+
     user.setActive(true);
-    user.setRoles(Set.of(UserRole.EMPLOYEE));
+
+    // Employee's role was assigned by HR.
+    // Do NOT blindly force EMPLOYEE here.
+    UserRole role = employee.getAssignedRole();
+
+    if (role == null) {
+        role = UserRole.EMPLOYEE;
+    }
+
+    user.setRoles(Set.of(role));
+
+    System.out.println("REGISTER: creating user");
 
     userRepository.save(user);
 
     System.out.println("REGISTER: user saved, id = " + user.getId());
 
-    Employee employee = new Employee();
+    // 6. Link the EXISTING employee to the newly created user
     employee.setUser(user);
-    employee.setFirstName(request.getFirstName());
-    employee.setLastName(request.getLastName());
-    employee.setEmail(request.getEmail());
-    employee.setActive(true);
-    employee.setDeleted(false);
-    employee.setEmployeeId("EMP" + System.currentTimeMillis());
 
-    // Required Employee fields
-    employee.setAssignedRole(UserRole.EMPLOYEE);
-    employee.setEmploymentType(EmploymentType.FULL_TIME);
-    employee.setEmploymentStatus(EmploymentStatus.ACTIVE);
-    System.out.println("REGISTER: saving employee");
-
+    // Keep HR-assigned employee data unchanged.
     employeeRepository.save(employee);
 
-    System.out.println("REGISTER: employee saved, id = " + employee.getId());
+    System.out.println(
+            "REGISTER: existing employee linked to user, employee id = "
+                    + employee.getId()
+    );
 
+    // 7. Generate tokens
     String accessToken = jwtService.generateAccessToken(user);
     String refreshToken = jwtService.generateRefreshToken(user);
 
+    // 8. Save refresh token
     RefreshToken refreshTokenEntity = new RefreshToken();
     refreshTokenEntity.setUser(user);
     refreshTokenEntity.setTokenHash(refreshToken);
     refreshTokenEntity.setExpiresAt(Instant.now().plusSeconds(86400));
-
-    System.out.println("REGISTER: saving refresh token");
 
     refreshTokenRepository.save(refreshTokenEntity);
 
