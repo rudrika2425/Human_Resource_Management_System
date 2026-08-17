@@ -28,10 +28,6 @@ function StatCard({ label, value, hint }) {
   );
 }
 
-/* ============================================================
- * TIME HELPERS
- * ============================================================ */
-
 function formatDuration(milliseconds) {
   const totalSeconds = Math.max(
     0,
@@ -81,28 +77,6 @@ function formatTime(value) {
     second: '2-digit',
   });
 }
-
-/* ============================================================
- * LOCAL DATE
- * ============================================================ */
-
-function getLocalDateString(date = new Date()) {
-  const year = date.getFullYear();
-
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, '0');
-
-  const day = String(
-    date.getDate()
-  ).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-}
-
-/* ============================================================
- * ATTENDANCE STATUS
- * ============================================================ */
 
 function getAttendanceStatus(attendance) {
   if (!attendance) {
@@ -164,37 +138,33 @@ function getStatusLabel(status) {
   }
 }
 
-/* ============================================================
- * ATTENDANCE STATUS / LIVE TIMER
+/*
+ * ============================================================
+ * ATTENDANCE STATUS
  *
  * IMPORTANT:
  *
- * Frontend NEVER creates attendance.
+ * This component does NOT create a check-in.
  *
- * Backend:
+ * Backend is the source of truth:
  *
- * LOGIN
- *   -> AuthService.login()
- *   -> attendanceService.checkInForLogin()
- *   -> checkInAt saved in DB
+ * Login
+ *   -> backend checkInForLogin()
+ *   -> attendance.checkInAt
  *
- * FRONTEND
- *   -> /attendance/my-history
- *   -> reads checkInAt
- *   -> timer starts from checkInAt
+ * Logout
+ *   -> backend checkOutForLogout()
+ *   -> attendance.checkOutAt
  *
- * LOGOUT
- *   -> AuthService.logout()
- *   -> attendanceService.checkOutIfCheckedIn()
- *   -> checkOutAt + workedMinutes saved
- * ============================================================ */
-
+ * Frontend only calculates the LIVE elapsed time between:
+ *
+ * checkInAt -> now
+ *
+ * ============================================================
+ */
 function AttendanceStatus({ attendance }) {
   const [now, setNow] = useState(Date.now());
 
-  /*
-   * Refresh the displayed timer every second.
-   */
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(Date.now());
@@ -205,7 +175,9 @@ function AttendanceStatus({ attendance }) {
 
   const state = useMemo(() => {
     /*
-     * No backend attendance record.
+     * NO BACKEND ATTENDANCE RECORD
+     *
+     * Do not start timer.
      */
     if (!attendance) {
       return {
@@ -214,35 +186,29 @@ function AttendanceStatus({ attendance }) {
         checkOut: null,
         workedMinutes: 0,
         elapsedMilliseconds: 0,
-        remainingMilliseconds:
-          8 * 60 * 60 * 1000,
+        remainingMilliseconds: 8 * 60 * 60 * 1000,
         progress: 0,
         checkedIn: false,
         checkedOut: false,
       };
     }
 
-    const status =
-      getAttendanceStatus(attendance);
+    const status = getAttendanceStatus(attendance);
 
     /*
-     * These are the actual fields returned by
-     * AttendanceResponse:
-     *
-     * checkInAt
-     * checkOutAt
-     * workedMinutes
-     * status
+     * ONLY use backend check-in fields.
      */
     const checkInValue =
       attendance.checkInAt ??
       attendance.checkInTime ??
-      attendance.loginTime;
+      attendance.loginTime ??
+      null;
 
     const checkOutValue =
       attendance.checkOutAt ??
       attendance.checkOutTime ??
-      attendance.logoutTime;
+      attendance.logoutTime ??
+      null;
 
     const checkIn = checkInValue
       ? new Date(checkInValue)
@@ -260,48 +226,50 @@ function AttendanceStatus({ attendance }) {
       checkOut &&
       !Number.isNaN(checkOut.getTime());
 
-    const checkedIn = Boolean(validCheckIn);
-    const checkedOut = Boolean(validCheckOut);
-
     /*
-     * Backend is the source of truth for
-     * completed sessions.
+     * TIMER STARTS ONLY IF BACKEND
+     * HAS GIVEN checkInAt.
      */
-    let workedMinutes =
-      attendance.workedMinutes ?? null;
+    const checkedIn = Boolean(validCheckIn);
+
+    const checkedOut = Boolean(validCheckOut);
 
     let elapsedMilliseconds = 0;
 
     /*
-     * ========================================================
-     * CURRENTLY LOGGED IN
-     *
-     * Timer starts EXACTLY from backend checkInAt.
-     * ========================================================
+     * Backend's accumulated workedMinutes.
      */
-    if (validCheckIn && !validCheckOut) {
+    let workedMinutes =
+      attendance.workedMinutes ?? null;
+
+    /*
+     * ----------------------------------------------------------
+     * CURRENT SESSION
+     *
+     * If checked in and not checked out:
+     *
+     * checkInAt -> current time
+     * ----------------------------------------------------------
+     */
+    if (checkedIn && !checkedOut) {
       elapsedMilliseconds = Math.max(
         0,
         now - checkIn.getTime()
       );
 
-      /*
-       * Display only.
-       * We do NOT save this value to backend.
-       */
       workedMinutes = Math.floor(
         elapsedMilliseconds / 60000
       );
     }
 
     /*
-     * ========================================================
-     * LOGGED OUT
+     * ----------------------------------------------------------
+     * CHECKED OUT
      *
-     * Backend workedMinutes is authoritative.
-     * ========================================================
+     * Backend is source of truth.
+     * ----------------------------------------------------------
      */
-    if (validCheckOut) {
+    if (checkedIn && checkedOut) {
       if (workedMinutes != null) {
         elapsedMilliseconds =
           Math.max(0, workedMinutes) *
@@ -479,16 +447,39 @@ function AttendanceStatus({ attendance }) {
       </div>
 
       <p className="mt-4 text-xs text-gray-400">
-        Check-in and check-out are handled automatically
-        by the backend when you log in and log out.
+        Check-in and check-out are controlled by
+        the backend during login and logout.
       </p>
     </div>
   );
 }
 
-/* ============================================================
- * FIND TODAY'S ATTENDANCE
- * ============================================================ */
+function extractAttendance(data) {
+  if (!data) {
+    return null;
+  }
+
+  return (
+    data.attendance ??
+    data.todayAttendance ??
+    data.today ??
+    null
+  );
+}
+
+function getLocalDateString(date = new Date()) {
+  const year = date.getFullYear();
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, '0');
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
 
 function findTodaysAttendance(records) {
   if (!Array.isArray(records)) {
@@ -527,16 +518,11 @@ function findTodaysAttendance(records) {
       }
 
       return (
-        getLocalDateString(date) ===
-        today
+        getLocalDateString(date) === today
       );
     }) || null
   );
 }
-
-/* ============================================================
- * DASHBOARD PAGE
- * ============================================================ */
 
 export default function DashboardPage() {
   const {
@@ -544,10 +530,11 @@ export default function DashboardPage() {
     loading: authLoading,
   } = useAuth();
 
-  /* ==========================================================
+  /*
+   * ============================================================
    * ROLE
-   * ========================================================== */
-
+   * ============================================================
+   */
   const role =
     user?.assignedRole
       ?.toString()
@@ -561,16 +548,16 @@ export default function DashboardPage() {
   const employeeId =
     user?.employeeId;
 
-  /* ==========================================================
+  /*
+   * ============================================================
    * DASHBOARD ENDPOINT
-   *
-   * These exactly match DashboardController.
-   * ========================================================== */
-
+   * ============================================================
+   */
   let endpoint = null;
 
   if (role === 'HR') {
-    endpoint = '/api/v1/dashboard/hr';
+    endpoint =
+      '/api/v1/dashboard/hr';
   }
 
   if (
@@ -589,10 +576,11 @@ export default function DashboardPage() {
       `/api/v1/dashboard/employee/${employeeId}`;
   }
 
-  /* ==========================================================
-   * DASHBOARD QUERY
-   * ========================================================== */
-
+  /*
+   * ============================================================
+   * DASHBOARD
+   * ============================================================
+   */
   const {
     data,
     isLoading,
@@ -620,31 +608,20 @@ export default function DashboardPage() {
     refetchInterval: 30000,
   });
 
-  /* ==========================================================
+  /*
+   * ============================================================
    * OWN ATTENDANCE
    *
-   * IMPORTANT:
+   * This is ONLY for getting the backend attendance record.
    *
-   * This is the ONLY attendance source used for the
-   * attendance timer.
-   *
-   * Backend login creates:
-   *
-   * attendance.checkInAt
-   *
-   * Therefore the frontend simply reads it.
-   * ========================================================== */
-
+   * It does NOT create attendance.
+   * ============================================================
+   */
   const {
     data: ownAttendanceData,
-    isLoading:
-      ownAttendanceLoading,
-    refetch:
-      refetchOwnAttendance,
   } = useQuery({
     queryKey: [
       'dashboard-own-attendance',
-      user?.email,
       role,
       employeeId,
     ],
@@ -657,8 +634,7 @@ export default function DashboardPage() {
           );
 
         return (
-          response.data?.data ??
-          []
+          response.data?.data ?? []
         );
       } catch (attendanceError) {
         console.warn(
@@ -675,49 +651,16 @@ export default function DashboardPage() {
       Boolean(user) &&
       Boolean(role),
 
-    /*
-     * Refresh every 30 seconds so that after
-     * login/logout the latest backend attendance
-     * is reflected.
-     */
     refetchInterval: 30000,
 
     retry: false,
   });
 
   /*
-   * Extra refresh after the page becomes visible.
-   *
-   * Useful when user logs in and then returns
-   * to the dashboard.
+   * ============================================================
+   * AUTH
+   * ============================================================
    */
-  useEffect(() => {
-    const handleVisibility = () => {
-      if (
-        document.visibilityState ===
-        'visible'
-      ) {
-        refetchOwnAttendance();
-      }
-    };
-
-    document.addEventListener(
-      'visibilitychange',
-      handleVisibility
-    );
-
-    return () => {
-      document.removeEventListener(
-        'visibilitychange',
-        handleVisibility
-      );
-    };
-  }, [refetchOwnAttendance]);
-
-  /* ==========================================================
-   * AUTH LOADING
-   * ========================================================== */
-
   if (authLoading) {
     return (
       <Spinner label="Loading account..." />
@@ -764,10 +707,6 @@ export default function DashboardPage() {
     );
   }
 
-  /* ==========================================================
-   * DASHBOARD LOADING
-   * ========================================================== */
-
   if (isLoading) {
     return (
       <Spinner label="Loading dashboard..." />
@@ -797,24 +736,32 @@ export default function DashboardPage() {
     );
   }
 
-  /* ==========================================================
-   * TODAY'S OWN ATTENDANCE
+  /*
+   * ============================================================
+   * ATTENDANCE
    *
-   * Backend source:
-   * GET /api/v1/attendance/my-history
-   *
-   * We ONLY display what backend returned.
-   * ========================================================== */
-
-  const attendance =
+   * Backend attendance record is preferred.
+   * Dashboard attendance is fallback.
+   * ============================================================
+   */
+  const attendanceFromHistory =
     findTodaysAttendance(
       ownAttendanceData
     );
 
-  /* ==========================================================
-   * HR DASHBOARD
-   * ========================================================== */
+  const dashboardAttendance =
+    extractAttendance(data);
 
+  const attendance =
+    attendanceFromHistory ??
+    dashboardAttendance ??
+    null;
+
+  /*
+   * ============================================================
+   * HR
+   * ============================================================
+   */
   if (role === 'HR') {
     return (
       <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50">
@@ -835,25 +782,19 @@ export default function DashboardPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Total employees"
-            value={
-              data.totalEmployees
-            }
+            value={data.totalEmployees}
             hint="All registered employees"
           />
 
           <StatCard
             label="Active employees"
-            value={
-              data.activeEmployees
-            }
+            value={data.activeEmployees}
             hint="Currently active records"
           />
 
           <StatCard
             label="Present today"
-            value={
-              data.presentToday
-            }
+            value={data.presentToday}
             hint="Employees checked in today"
           />
         </div>
@@ -871,8 +812,7 @@ export default function DashboardPage() {
                 </p>
 
                 <p className="text-2xl font-semibold text-gray-900">
-                  {data.employeesOnLeave ??
-                    0}
+                  {data.employeesOnLeave ?? 0}
                 </p>
               </div>
 
@@ -882,8 +822,7 @@ export default function DashboardPage() {
                 </p>
 
                 <p className="text-2xl font-semibold text-gray-900">
-                  {data.pendingLeave ??
-                    0}
+                  {data.pendingLeave ?? 0}
                 </p>
               </div>
             </div>
@@ -907,22 +846,21 @@ export default function DashboardPage() {
     );
   }
 
-  /* ==========================================================
-   * MANAGER DASHBOARD
+  /*
+   * ============================================================
+   * MANAGER
    *
-   * BACKEND RESPONSE:
+   * IMPORTANT:
+   * teamSize comes DIRECTLY from:
    *
-   * ManagerDashboardResponse(
-   *     teamSize,
-   *     teamPresentToday,
-   *     pendingApprovals,
-   *     goals,
-   *     performanceReviews
-   * )
+   * ManagerDashboardResponse.teamSize
    *
-   * Therefore use those exact fields.
-   * ========================================================== */
-
+   * Backend already calculates:
+   *
+   * employee.manager.id == managerEmployeeId
+   *
+   * ============================================================
+   */
   if (role === 'MANAGER') {
     return (
       <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50">
@@ -941,50 +879,29 @@ export default function DashboardPage() {
         />
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {/* ==================================================
-              TEAM SIZE
-              
-              DIRECTLY FROM:
-              DashboardService.managerDashboard()
 
-              employeeRepository.findAll()
-                .filter(employee ->
-                    employee.getManager().getId()
-                        .equals(managerEmployeeId)
-                )
-                .count();
-
-              If two employees are assigned to this manager,
-              backend returns teamSize = 2.
-             ================================================== */}
-
+          {/* THIS IS THE REAL BACKEND TEAM SIZE */}
           <StatCard
             label="Team size"
-            value={data.teamSize ?? 0}
-            hint="Employees reporting to you"
+            value={data.teamSize}
+            hint="Employees assigned to you"
           />
 
           <StatCard
             label="Present today"
-            value={
-              data.teamPresentToday ?? 0
-            }
-            hint="Team members present today"
+            value={data.teamPresentToday}
+            hint="Your team members present today"
           />
 
           <StatCard
             label="Pending approvals"
-            value={
-              data.pendingApprovals ?? 0
-            }
-            hint="Requests awaiting action"
+            value={data.pendingApprovals}
+            hint="Leave requests awaiting action"
           />
 
           <StatCard
             label="Goals"
-            value={
-              data.goals ?? 0
-            }
+            value={data.goals}
             hint="Goals assigned to your team"
           />
         </div>
@@ -996,12 +913,11 @@ export default function DashboardPage() {
             </p>
 
             <p className="mt-4 text-3xl font-semibold text-gray-900">
-              {data.performanceReviews ??
-                0}
+              {data.performanceReviews ?? 0}
             </p>
 
             <p className="mt-2 text-sm text-gray-500">
-              Reviews assigned to you
+              Reviews managed by you
             </p>
           </div>
         </div>
@@ -1009,12 +925,13 @@ export default function DashboardPage() {
     );
   }
 
-  /* ==========================================================
-   * EMPLOYEE DASHBOARD
+  /*
+   * ============================================================
+   * EMPLOYEE
    *
    * NO TEAM SIZE HERE.
-   * ========================================================== */
-
+   * ============================================================
+   */
   if (role === 'EMPLOYEE') {
     return (
       <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50">
@@ -1036,12 +953,9 @@ export default function DashboardPage() {
           <StatCard
             label="Attendance"
             value={
-              data.attendancePercentage !=
-              null
+              data.attendancePercentage != null
                 ? `${data.attendancePercentage}%`
-                : data.attendanceRecords ??
-                  data.attendance ??
-                  0
+                : data.attendanceRecords ?? 0
             }
             hint="Your attendance records"
           />
@@ -1059,7 +973,7 @@ export default function DashboardPage() {
             value={
               data.payrollRecords ?? 0
             }
-            hint="Your payroll records"
+            hint="Available payroll records"
           />
 
           <StatCard
