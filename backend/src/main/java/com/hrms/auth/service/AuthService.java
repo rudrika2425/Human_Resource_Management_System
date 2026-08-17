@@ -181,42 +181,62 @@ public UserResponse me(UserPrincipal principal) {
     }
 
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email already registered");
-        }
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setActive(true);
-        user.setRoles(Set.of(UserRole.EMPLOYEE));
-        userRepository.save(user);
+    System.out.println("REGISTER: starting for email = " + request.getEmail());
 
-        
-        Employee employee = new Employee();
-        employee.setUser(user);
-        employee.setFirstName(request.getFirstName());
-        employee.setLastName(request.getLastName());
-        employee.setEmail(request.getEmail());
-        employee.setActive(true);
-        employee.setDeleted(false);
-        employee.setEmployeeId("EMP" + System.currentTimeMillis());
-        employeeRepository.save(employee);
-
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-
-        
-        RefreshToken refreshTokenEntity = new RefreshToken();
-        refreshTokenEntity.setUser(user);
-        refreshTokenEntity.setTokenHash(refreshToken);
-        refreshTokenEntity.setExpiresAt(Instant.now().plusSeconds(86400));
-        refreshTokenRepository.save(refreshTokenEntity);
-
-        return new AuthResponse(accessToken, refreshToken, getUserResponse(user));
+    if (userRepository.existsByEmail(request.getEmail())) {
+        throw new BadRequestException("Email already registered");
     }
+
+    System.out.println("REGISTER: creating user");
+
+    User user = new User();
+    user.setEmail(request.getEmail());
+    user.setPassword(passwordEncoder.encode(request.getPassword()));
+    user.setFirstName(request.getFirstName());
+    user.setLastName(request.getLastName());
+    user.setActive(true);
+    user.setRoles(Set.of(UserRole.EMPLOYEE));
+
+    userRepository.save(user);
+
+    System.out.println("REGISTER: user saved, id = " + user.getId());
+
+    Employee employee = new Employee();
+    employee.setUser(user);
+    employee.setFirstName(request.getFirstName());
+    employee.setLastName(request.getLastName());
+    employee.setEmail(request.getEmail());
+    employee.setActive(true);
+    employee.setDeleted(false);
+    employee.setEmployeeId("EMP" + System.currentTimeMillis());
+
+    System.out.println("REGISTER: saving employee");
+
+    employeeRepository.save(employee);
+
+    System.out.println("REGISTER: employee saved, id = " + employee.getId());
+
+    String accessToken = jwtService.generateAccessToken(user);
+    String refreshToken = jwtService.generateRefreshToken(user);
+
+    RefreshToken refreshTokenEntity = new RefreshToken();
+    refreshTokenEntity.setUser(user);
+    refreshTokenEntity.setTokenHash(refreshToken);
+    refreshTokenEntity.setExpiresAt(Instant.now().plusSeconds(86400));
+
+    System.out.println("REGISTER: saving refresh token");
+
+    refreshTokenRepository.save(refreshTokenEntity);
+
+    System.out.println("REGISTER: registration completed");
+
+    return new AuthResponse(
+            accessToken,
+            refreshToken,
+            getUserResponse(user)
+    );
+}
 
     public UserResponse activate(Long userId) {
         User user = userRepository.findById(userId)
