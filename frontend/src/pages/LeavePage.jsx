@@ -625,29 +625,29 @@ export default function LeavePage() {
   };
 
   const statistics = useMemo(() => {
-    const pending = history.filter(
-      (item) => item.status === 'PENDING'
-    ).length;
+  const pending = history.filter(
+    (item) => item.status === 'PENDING'
+  ).length;
 
-    const approved = history.filter(
-      (item) => item.status === 'APPROVED'
-    ).length;
+  const approved = history.filter(
+    (item) => item.status === 'APPROVED'
+  ).length;
 
-    const rejected = history.filter(
-      (item) => item.status === 'REJECTED'
-    ).length;
+  const rejected = history.filter(
+    (item) => item.status === 'REJECTED'
+  ).length;
 
-    const cancelled = history.filter(
-      (item) => item.status === 'CANCELLED'
-    ).length;
+  const cancelled = history.filter(
+    (item) => item.status === 'CANCELLED'
+  ).length;
 
-    return {
-      pending,
-      approved,
-      rejected,
-      cancelled,
-    };
-  }, [history]);
+  return {
+    pending,
+    approved,
+    rejected,
+    cancelled,
+  };
+}, [history]);
 
   const teamStatistics = useMemo(() => {
     const pending = teamLeaves.filter(
