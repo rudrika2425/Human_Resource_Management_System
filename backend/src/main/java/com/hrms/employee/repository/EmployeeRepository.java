@@ -29,4 +29,6 @@ public interface EmployeeRepository
     Optional<Employee> findByUser_Id(Long userId);
 
     List<Employee> findByManager_Id(Long managerId);
+
+    Optional<Employee> findByEmail(String email);
 }

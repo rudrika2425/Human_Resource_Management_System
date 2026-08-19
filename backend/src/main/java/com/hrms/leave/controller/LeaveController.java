@@ -1,6 +1,9 @@
 package com.hrms.leave.controller;
-
+import com.hrms.common.exception.NotFoundException; 
 import com.hrms.common.response.ApiResponse;
+import com.hrms.common.security.UserPrincipal;
+import com.hrms.employee.entity.Employee;
+import com.hrms.employee.repository.EmployeeRepository;
 import com.hrms.leave.dto.LeaveActionDto;
 import com.hrms.leave.dto.LeaveBalanceResponse;
 import com.hrms.leave.dto.LeaveRequestDto;
@@ -9,6 +12,7 @@ import com.hrms.leave.entity.LeaveType;
 import com.hrms.leave.service.LeaveService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,10 +22,12 @@ import java.util.List;
 public class LeaveController {
 
     private final LeaveService leaveService;
+    private final EmployeeRepository employeeRepository; 
 
-    // Constructor Injection - NO @Autowired or @RequiredArgsConstructor needed
-    public LeaveController(LeaveService leaveService) {
+    
+    public LeaveController(LeaveService leaveService, EmployeeRepository employeeRepository) {  // ADD employeeRepository parameter
         this.leaveService = leaveService;
+        this.employeeRepository = employeeRepository;  
     }
 
     @PostMapping
@@ -60,15 +66,20 @@ public class LeaveController {
         return ApiResponse.success("Leave balance", leaveService.balance(employeeId, leaveType));
     }
 
+    // UPDATED: Now accepts AuthenticationPrincipal to get the logged-in user
     @GetMapping("/pending")
     @PreAuthorize("hasAnyRole('HR', 'MANAGER')")
-    public ApiResponse<List<LeaveResponse>> pendingLeaves() {
-        return ApiResponse.success("Pending leaves", leaveService.pendingLeaves());
+    public ApiResponse<List<LeaveResponse>> pendingLeaves(@AuthenticationPrincipal UserPrincipal principal) {
+        // Find employee by email (the User's email is the username)
+        Employee manager = employeeRepository.findByEmail(principal.getUsername())
+                .orElseThrow(() -> new NotFoundException("Employee not found for this user"));
+        
+        return ApiResponse.success("Pending leaves", leaveService.pendingLeaves(manager.getId()));
     }
+
     @GetMapping("/team")
     @PreAuthorize("hasAnyRole('HR', 'MANAGER')")
     public ApiResponse<List<LeaveResponse>> teamLeaves(@RequestParam Long managerId) {
         return ApiResponse.success("Team leaves", leaveService.teamLeaves(managerId));
     }
-    
 }
