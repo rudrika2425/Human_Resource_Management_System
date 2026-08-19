@@ -81,8 +81,6 @@ const LEAVE_TYPES = [
   'CASUAL',
   'SICK',
   'ANNUAL',
-  'MATERNITY',
-  'PATERNITY',
   'UNPAID',
 ];
 
@@ -90,8 +88,6 @@ const LEAVE_TYPE_LABELS = {
   CASUAL: 'Casual Leave',
   SICK: 'Sick Leave',
   ANNUAL: 'Annual Leave',
-  MATERNITY: 'Maternity Leave',
-  PATERNITY: 'Paternity Leave',
   UNPAID: 'Unpaid Leave',
 };
 
@@ -99,8 +95,6 @@ const LEAVE_TYPE_DESCRIPTIONS = {
   CASUAL: 'For personal or short-term needs.',
   SICK: 'For illness or medical recovery.',
   ANNUAL: 'For planned vacations or personal time.',
-  MATERNITY: 'Maternity-related leave.',
-  PATERNITY: 'Paternity-related leave.',
   UNPAID: 'Leave without paid entitlement.',
 };
 
@@ -474,21 +468,20 @@ export default function LeavePage() {
 
   const hasManager = Boolean(managerInfo?.managerId);
 
-  const {
-    data: teamLeaveResponse,
-    isLoading: teamLeaveLoading,
-    error: teamLeaveError,
-  } = useQuery({
-    queryKey: ['team-leaves'],
-    queryFn: async () => {
-      const response = await api.get(
-        '/api/v1/leaves/team'
-      );
-
-      return response.data?.data ?? [];
-    },
-    enabled: isManager,
-  });
+ const {
+  data: teamLeaveResponse,
+  isLoading: teamLeaveLoading,
+  error: teamLeaveError,
+} = useQuery({
+  queryKey: ['team-leaves', employeeId],
+  queryFn: async () => {
+    const response = await api.get('/api/v1/leaves/team', {
+      params: { managerId: employeeId },
+    });
+    return response.data?.data ?? [];
+  },
+  enabled: isManager && Boolean(employeeId),
+});
 
   const teamLeaves = Array.isArray(teamLeaveResponse)
     ? teamLeaveResponse

@@ -65,4 +65,9 @@ public class LeaveController {
     public ApiResponse<List<LeaveResponse>> pendingLeaves() {
         return ApiResponse.success("Pending leaves", leaveService.pendingLeaves());
     }
+    @GetMapping("/team")
+    @PreAuthorize("hasAnyRole('HR', 'MANAGER')")
+    public ApiResponse<List<LeaveResponse>> teamLeaves(@RequestParam Long managerId) {
+        return ApiResponse.success("Team leaves", leaveService.teamLeaves(managerId));
+    }
 }

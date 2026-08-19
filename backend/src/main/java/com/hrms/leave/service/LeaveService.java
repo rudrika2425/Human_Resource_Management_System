@@ -137,7 +137,6 @@ public class LeaveService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     public LeaveBalanceResponse balance(Long employeeId, LeaveType leaveType) {
         LeaveBalance balance = getOrCreateBalance(findActiveEmployee(employeeId), leaveType);
         return new LeaveBalanceResponse(
@@ -223,4 +222,11 @@ public class LeaveService {
                 leave.getCancelledAt()
         );
     }
+    @Transactional(readOnly = true)
+public List<LeaveResponse> teamLeaves(Long managerId) {
+    return leaveRequestRepository.findByEmployee_Manager_IdOrderByStartDateDesc(managerId)
+            .stream()
+            .map(this::toResponse)
+            .toList();
+}
 }

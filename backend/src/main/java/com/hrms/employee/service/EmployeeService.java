@@ -1,5 +1,5 @@
 package com.hrms.employee.service;
-
+import com.hrms.employee.dto.ManagerResponse;
 import com.hrms.auth.repository.UserRepository;
 import com.hrms.common.exception.ConflictException;
 import com.hrms.common.exception.NotFoundException;
@@ -322,21 +322,22 @@ public class EmployeeService {
                 employee.getUpdatedAt()
         );
     }
+    
+
     @Transactional(readOnly = true)
-public ManagerInfoResponse getManagerInfo(Long employeeId) {
+    public ManagerResponse getManager(Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new NotFoundException("Employee not found"));
 
-    Employee employee = employeeRepository.findById(employeeId)
-            .orElseThrow(() -> new NotFoundException("Employee not found"));
+        Employee manager = employee.getManager();
 
-    Employee manager = employee.getManager();
+        if (manager == null) {
+            return null;
+        }
 
-    if (manager == null) {
-        return new ManagerInfoResponse(null, null);
+        return new ManagerResponse(
+                manager.getId(),
+                manager.getFirstName() + " " + manager.getLastName()
+        );
     }
-
-    return new ManagerInfoResponse(
-            manager.getId(),
-            manager.getFirstName() + " " + manager.getLastName()
-    );
-}
 }

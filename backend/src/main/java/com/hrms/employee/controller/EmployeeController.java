@@ -6,6 +6,7 @@ import com.hrms.common.security.UserPrincipal;
 import com.hrms.employee.dto.EmployeePatchRequest;
 import com.hrms.employee.dto.EmployeeRequest;
 import com.hrms.employee.dto.EmployeeResponse;
+import com.hrms.employee.dto.ManagerResponse;
 import com.hrms.employee.entity.EmploymentStatus;
 import com.hrms.employee.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -114,9 +115,11 @@ public class EmployeeController {
     public ApiResponse<EmployeeResponse> delete(@PathVariable Long id) {
         return ApiResponse.success("Employee deleted", employeeService.delete(id));
     }
+    
+
     @GetMapping("/{employeeId}/manager")
     @PreAuthorize("hasAnyRole('HR', 'MANAGER', 'EMPLOYEE')")
-    public ApiResponse<ManagerInfoResponse> managerInfo(@PathVariable Long employeeId) {
-        return ApiResponse.success("Manager info", employeeService.getManagerInfo(employeeId));
+    public ApiResponse<ManagerResponse> manager(@PathVariable Long employeeId) {
+        return ApiResponse.success("Manager", employeeService.getManager(employeeId));
     }
 }
