@@ -1,5 +1,5 @@
 package com.hrms.dashboard.service;
-
+import java.util.List;
 import com.hrms.attendance.entity.AttendanceStatus;
 import com.hrms.attendance.repository.AttendanceRepository;
 import com.hrms.audit.repository.AuditLogRepository;
@@ -87,41 +87,45 @@ public class DashboardService {
     }
 
     public ManagerDashboardResponse managerDashboard(Long managerEmployeeId) {
-        long teamSize = employeeRepository.findAll().stream()
-                .filter(employee -> employee.getManager() != null && 
-                        employee.getManager().getId().equals(managerEmployeeId))
-                .count();
-        
-        long teamPresentToday = attendanceRepository.findAll().stream()
-                .filter(attendance -> attendance.getWorkDate().equals(LocalDate.now()))
-                .filter(attendance -> attendance.getEmployee().getManager() != null && 
-                        attendance.getEmployee().getManager().getId().equals(managerEmployeeId))
-                .filter(attendance -> attendance.getStatus() == AttendanceStatus.PRESENT || 
-                        attendance.getStatus() == AttendanceStatus.LATE)
-                .count();
-        
-        long pendingApprovals = leaveRequestRepository.findAll().stream()
-                .filter(leave -> leave.getStatus() == LeaveStatus.PENDING)
-                .count();
-        
-        long goals = goalRepository.findAll().stream()
-                .filter(goal -> goal.getManager() != null && 
-                        goal.getManager().getId().equals(managerEmployeeId))
-                .count();
-        
-        long performanceReviews = performanceReviewRepository.findAll().stream()
-                .filter(review -> review.getManager() != null && 
-                        review.getManager().getId().equals(managerEmployeeId))
-                .count();
-        
-        return new ManagerDashboardResponse(
-            teamSize, 
-            teamPresentToday, 
-            pendingApprovals, 
-            goals, 
-            performanceReviews
-        );
-    }
+
+    List<Employee> team = employeeRepository
+            .findByManager_IdAndDeletedFalse(managerEmployeeId);
+
+    long teamSize = team.size();
+
+    LocalDate today = LocalDate.now();
+
+    long teamPresentToday = team.stream()
+            .map(Employee::getId)
+            .map(id -> attendanceRepository.findByEmployee_IdAndWorkDate(id, today))
+            .filter(java.util.Optional::isPresent)
+            .map(java.util.Optional::get)
+            .filter(attendance -> attendance.getStatus() == AttendanceStatus.PRESENT
+                    || attendance.getStatus() == AttendanceStatus.LATE)
+            .count();
+
+    long pendingApprovals = leaveRequestRepository.findAll().stream()
+            .filter(leave -> leave.getStatus() == LeaveStatus.PENDING)
+            .count();
+
+    long goals = goalRepository.findAll().stream()
+            .filter(goal -> goal.getManager() != null &&
+                    goal.getManager().getId().equals(managerEmployeeId))
+            .count();
+
+    long performanceReviews = performanceReviewRepository.findAll().stream()
+            .filter(review -> review.getManager() != null &&
+                    review.getManager().getId().equals(managerEmployeeId))
+            .count();
+
+    return new ManagerDashboardResponse(
+        teamSize,
+        teamPresentToday,
+        pendingApprovals,
+        goals,
+        performanceReviews
+    );
+}
 
     public EmployeeDashboardResponse employeeDashboard(Long employeeId) {
         long attendanceRecords = attendanceRepository
