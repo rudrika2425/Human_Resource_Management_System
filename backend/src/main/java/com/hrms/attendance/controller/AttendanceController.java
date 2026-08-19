@@ -164,4 +164,13 @@ public class AttendanceController {
                 attendanceService.allTodayAttendance()
         );
     }
+
+    @GetMapping("/my/today")
+        @PreAuthorize("hasAnyRole('HR', 'MANAGER', 'EMPLOYEE')")
+        public ApiResponse<AttendanceResponse> myToday(Authentication authentication) {
+        return ApiResponse.success(
+                "Today's attendance",
+                attendanceService.todayAttendance(authentication.getName())
+        );
+        }
 }

@@ -82,9 +82,6 @@ public class AuthService {
         refreshTokenEntity.setExpiresAt(Instant.now().plusSeconds(86400)); 
         refreshTokenRepository.save(refreshTokenEntity);
 
-        
-        attendanceService.checkInForLogin(user.getEmail());
-
         return new AuthResponse(accessToken, refreshToken, getUserResponse(user));
     }
 
@@ -130,15 +127,6 @@ public class AuthService {
             refreshTokenRepository.save(tokenEntity);
         }
 
-        
-        String email = jwtService.getEmail(refreshToken);
-        if (email != null) {
-            User user = userRepository.findByEmail(email).orElse(null);
-            if (user != null) {
-                employeeRepository.findByUserId(user.getId())
-                        .ifPresent(employee -> attendanceService.checkOutIfCheckedIn(employee.getId()));
-            }
-        }
     }
 
     

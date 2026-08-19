@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '../services/api';
 import Spinner from '../components/Spinner';
@@ -140,30 +140,34 @@ function getStatusLabel(status) {
 
 /*
  * ============================================================
- * ATTENDANCE STATUS
+ * ATTENDANCE STATUS + CHECK-IN / CHECK-OUT BUTTONS
  *
  * IMPORTANT:
  *
- * This component does NOT create a check-in.
+ * Check-in and check-out are now 100% MANUAL.
  *
- * Backend is the source of truth:
+ * - Login/logout no longer touch attendance at all.
+ * - The timer only starts after the user clicks "Check In".
+ * - The timer only stops after the user confirms "Check Out".
  *
- * Login
- *   -> backend checkInForLogin()
- *   -> attendance.checkInAt
+ * Backend is still the source of truth for checkInAt/checkOutAt;
+ * this component just renders it and triggers the two manual
+ * endpoints:
  *
- * Logout
- *   -> backend checkOutForLogout()
- *   -> attendance.checkOutAt
- *
- * Frontend only calculates the LIVE elapsed time between:
- *
- * checkInAt -> now
- *
+ *   POST /api/v1/attendance/my/check-in
+ *   POST /api/v1/attendance/my/check-out
  * ============================================================
  */
-function AttendanceStatus({ attendance }) {
+function AttendanceStatus({
+  attendance,
+  onCheckIn,
+  onCheckOut,
+  isCheckingIn,
+  isCheckingOut,
+}) {
   const [now, setNow] = useState(Date.now());
+  const [showConfirmCheckOut, setShowConfirmCheckOut] =
+    useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -175,9 +179,9 @@ function AttendanceStatus({ attendance }) {
 
   const state = useMemo(() => {
     /*
-     * NO BACKEND ATTENDANCE RECORD
+     * NO BACKEND ATTENDANCE RECORD FOR TODAY YET
      *
-     * Do not start timer.
+     * Do not start timer. "Check In" button is shown.
      */
     if (!attendance) {
       return {
@@ -195,19 +199,14 @@ function AttendanceStatus({ attendance }) {
 
     const status = getAttendanceStatus(attendance);
 
-    /*
-     * ONLY use backend check-in fields.
-     */
     const checkInValue =
       attendance.checkInAt ??
       attendance.checkInTime ??
-      attendance.loginTime ??
       null;
 
     const checkOutValue =
       attendance.checkOutAt ??
       attendance.checkOutTime ??
-      attendance.logoutTime ??
       null;
 
     const checkIn = checkInValue
@@ -227,8 +226,8 @@ function AttendanceStatus({ attendance }) {
       !Number.isNaN(checkOut.getTime());
 
     /*
-     * TIMER STARTS ONLY IF BACKEND
-     * HAS GIVEN checkInAt.
+     * TIMER STARTS ONLY IF THE USER HAS CLICKED
+     * "Check In" (i.e. backend has checkInAt).
      */
     const checkedIn = Boolean(validCheckIn);
 
@@ -236,19 +235,12 @@ function AttendanceStatus({ attendance }) {
 
     let elapsedMilliseconds = 0;
 
-    /*
-     * Backend's accumulated workedMinutes.
-     */
     let workedMinutes =
       attendance.workedMinutes ?? null;
 
     /*
      * ----------------------------------------------------------
-     * CURRENT SESSION
-     *
-     * If checked in and not checked out:
-     *
-     * checkInAt -> current time
+     * CURRENT SESSION: checked in, not yet checked out.
      * ----------------------------------------------------------
      */
     if (checkedIn && !checkedOut) {
@@ -264,9 +256,7 @@ function AttendanceStatus({ attendance }) {
 
     /*
      * ----------------------------------------------------------
-     * CHECKED OUT
-     *
-     * Backend is source of truth.
+     * CHECKED OUT: freeze timer at backend's worked time.
      * ----------------------------------------------------------
      */
     if (checkedIn && checkedOut) {
@@ -307,25 +297,13 @@ function AttendanceStatus({ attendance }) {
 
     return {
       status,
-
-      checkIn: validCheckIn
-        ? checkIn
-        : null,
-
-      checkOut: validCheckOut
-        ? checkOut
-        : null,
-
+      checkIn: validCheckIn ? checkIn : null,
+      checkOut: validCheckOut ? checkOut : null,
       workedMinutes,
-
       elapsedMilliseconds,
-
       remainingMilliseconds,
-
       progress,
-
       checkedIn,
-
       checkedOut,
     };
   }, [attendance, now]);
@@ -346,9 +324,47 @@ function AttendanceStatus({ attendance }) {
     heading = 'Checked in';
   }
 
+  /*
+   * A new "Check In" is only allowed again once the day is
+   * fully closed out (checked in AND checked out), or if there
+   * is no record at all yet. While checked in and not checked
+   * out, only "Check Out" is available.
+   */
+  const canCheckIn =
+    !state.checkedIn ||
+    (state.checkedIn && state.checkedOut);
+
+  const canCheckOut =
+    state.checkedIn && !state.checkedOut;
+
+  const handleCheckInClick = () => {
+    if (!canCheckIn || isCheckingIn) {
+      return;
+    }
+
+    onCheckIn();
+  };
+
+  const handleCheckOutClick = () => {
+    if (!canCheckOut || isCheckingOut) {
+      return;
+    }
+
+    setShowConfirmCheckOut(true);
+  };
+
+  const handleConfirmCheckOut = () => {
+    setShowConfirmCheckOut(false);
+    onCheckOut();
+  };
+
+  const handleCancelCheckOut = () => {
+    setShowConfirmCheckOut(false);
+  };
+
   return (
     <div className={cardClass}>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-sm text-gray-500">
             Today's attendance
@@ -359,12 +375,36 @@ function AttendanceStatus({ attendance }) {
           </p>
         </div>
 
-        <div
-          className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusClasses(
-            state.status
-          )}`}
-        >
-          {getStatusLabel(state.status)}
+        <div className="flex items-center gap-3">
+          <div
+            className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusClasses(
+              state.status
+            )}`}
+          >
+            {getStatusLabel(state.status)}
+          </div>
+
+          {canCheckIn && (
+            <button
+              type="button"
+              onClick={handleCheckInClick}
+              disabled={isCheckingIn}
+              className="rounded-xl bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-200 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isCheckingIn ? 'Checking in...' : 'Check In'}
+            </button>
+          )}
+
+          {canCheckOut && (
+            <button
+              type="button"
+              onClick={handleCheckOutClick}
+              disabled={isCheckingOut}
+              className="rounded-xl bg-rose-600 px-5 py-2 text-sm font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isCheckingOut ? 'Checking out...' : 'Check Out'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -447,9 +487,46 @@ function AttendanceStatus({ attendance }) {
       </div>
 
       <p className="mt-4 text-xs text-gray-400">
-        Check-in and check-out are controlled by
-        the backend during login and logout.
+        Check-in and check-out are triggered only when you click
+        the buttons above.
       </p>
+
+      {/* ---------------------------------------------------------- */}
+      {/* CONFIRM CHECK-OUT DIALOG                                    */}
+      {/* ---------------------------------------------------------- */}
+      {showConfirmCheckOut && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <p className="text-lg font-semibold text-gray-900">
+              Confirm check-out
+            </p>
+
+            <p className="mt-2 text-sm text-gray-500">
+              Are you sure you want to check out? Your timer will
+              stop and today's attendance will be finalized.
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={handleCancelCheckOut}
+                className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleConfirmCheckOut}
+                disabled={isCheckingOut}
+                className="rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isCheckingOut ? 'Checking out...' : 'Yes, check out'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -467,68 +544,13 @@ function extractAttendance(data) {
   );
 }
 
-function getLocalDateString(date = new Date()) {
-  const year = date.getFullYear();
-
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, '0');
-
-  const day = String(
-    date.getDate()
-  ).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-}
-
-function findTodaysAttendance(records) {
-  if (!Array.isArray(records)) {
-    return null;
-  }
-
-  const today = getLocalDateString();
-
-  return (
-    records.find((record) => {
-      if (!record) {
-        return false;
-      }
-
-      if (record.workDate) {
-        return (
-          String(record.workDate).slice(0, 10) ===
-          today
-        );
-      }
-
-      const dateValue =
-        record.date ??
-        record.attendanceDate ??
-        record.checkInAt ??
-        record.checkInTime;
-
-      if (!dateValue) {
-        return false;
-      }
-
-      const date = new Date(dateValue);
-
-      if (Number.isNaN(date.getTime())) {
-        return false;
-      }
-
-      return (
-        getLocalDateString(date) === today
-      );
-    }) || null
-  );
-}
-
 export default function DashboardPage() {
   const {
     user,
     loading: authLoading,
   } = useAuth();
+
+  const queryClient = useQueryClient();
 
   /*
    * ============================================================
@@ -610,35 +632,37 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * OWN ATTENDANCE
+   * TODAY'S ATTENDANCE (single source of truth for the timer)
    *
-   * This is ONLY for getting the backend attendance record.
+   * Uses GET /api/v1/attendance/my/today, which returns:
+   *   - null if the user hasn't checked in yet today
+   *   - the record with checkInAt (and checkOutAt once checked out)
    *
-   * It does NOT create attendance.
+   * This does NOT create attendance. It only reads it. Attendance
+   * is only ever created/updated by clicking Check In / Check Out.
    * ============================================================
    */
+  const attendanceQueryKey = [
+    'attendance-today',
+    role,
+    employeeId,
+  ];
+
   const {
-    data: ownAttendanceData,
+    data: todayAttendance,
   } = useQuery({
-    queryKey: [
-      'dashboard-own-attendance',
-      role,
-      employeeId,
-    ],
+    queryKey: attendanceQueryKey,
 
     queryFn: async () => {
       try {
-        const response =
-          await api.get(
-            '/api/v1/attendance/my-history'
-          );
-
-        return (
-          response.data?.data ?? []
+        const response = await api.get(
+          '/api/v1/attendance/my/today'
         );
+
+        return response.data?.data ?? null;
       } catch (attendanceError) {
         console.warn(
-          'Own attendance history unavailable:',
+          "Today's attendance unavailable:",
           attendanceError
         );
 
@@ -651,9 +675,71 @@ export default function DashboardPage() {
       Boolean(user) &&
       Boolean(role),
 
+    // Keep the record fresh, but the live timer itself is driven
+    // by a local 1-second interval inside AttendanceStatus.
     refetchInterval: 30000,
 
     retry: false,
+  });
+
+  /*
+   * ============================================================
+   * MANUAL CHECK-IN
+   * ============================================================
+   */
+  const checkInMutation = useMutation({
+    mutationFn: async () => {
+      const response = await api.post(
+        '/api/v1/attendance/my/check-in'
+      );
+
+      return response.data?.data ?? null;
+    },
+
+    onSuccess: (attendance) => {
+      queryClient.setQueryData(
+        attendanceQueryKey,
+        attendance
+      );
+
+      queryClient.invalidateQueries({
+        queryKey: attendanceQueryKey,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard', role, employeeId],
+      });
+    },
+  });
+
+  /*
+   * ============================================================
+   * MANUAL CHECK-OUT
+   * ============================================================
+   */
+  const checkOutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await api.post(
+        '/api/v1/attendance/my/check-out'
+      );
+
+      return response.data?.data ?? null;
+    },
+
+    onSuccess: (attendance) => {
+      queryClient.setQueryData(
+        attendanceQueryKey,
+        attendance
+      );
+
+      queryClient.invalidateQueries({
+        queryKey: attendanceQueryKey,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard', role, employeeId],
+      });
+    },
   });
 
   /*
@@ -740,22 +826,25 @@ export default function DashboardPage() {
    * ============================================================
    * ATTENDANCE
    *
-   * Backend attendance record is preferred.
-   * Dashboard attendance is fallback.
+   * /my/today is preferred. Dashboard payload is fallback only
+   * (e.g. before the first refetch completes).
    * ============================================================
    */
-  const attendanceFromHistory =
-    findTodaysAttendance(
-      ownAttendanceData
-    );
-
   const dashboardAttendance =
     extractAttendance(data);
 
   const attendance =
-    attendanceFromHistory ??
+    todayAttendance ??
     dashboardAttendance ??
     null;
+
+  const attendanceButtonProps = {
+    attendance,
+    onCheckIn: () => checkInMutation.mutate(),
+    onCheckOut: () => checkOutMutation.mutate(),
+    isCheckingIn: checkInMutation.isPending,
+    isCheckingOut: checkOutMutation.isPending,
+  };
 
   /*
    * ============================================================
@@ -775,9 +864,7 @@ export default function DashboardPage() {
           </h1>
         </div>
 
-        <AttendanceStatus
-          attendance={attendance}
-        />
+        <AttendanceStatus {...attendanceButtonProps} />
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
@@ -849,16 +936,6 @@ export default function DashboardPage() {
   /*
    * ============================================================
    * MANAGER
-   *
-   * IMPORTANT:
-   * teamSize comes DIRECTLY from:
-   *
-   * ManagerDashboardResponse.teamSize
-   *
-   * Backend already calculates:
-   *
-   * employee.manager.id == managerEmployeeId
-   *
    * ============================================================
    */
   if (role === 'MANAGER') {
@@ -874,13 +951,9 @@ export default function DashboardPage() {
           </h1>
         </div>
 
-        <AttendanceStatus
-          attendance={attendance}
-        />
+        <AttendanceStatus {...attendanceButtonProps} />
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-
-          {/* THIS IS THE REAL BACKEND TEAM SIZE */}
           <StatCard
             label="Team size"
             value={data.teamSize}
@@ -928,8 +1001,6 @@ export default function DashboardPage() {
   /*
    * ============================================================
    * EMPLOYEE
-   *
-   * NO TEAM SIZE HERE.
    * ============================================================
    */
   if (role === 'EMPLOYEE') {
@@ -945,9 +1016,7 @@ export default function DashboardPage() {
           </h1>
         </div>
 
-        <AttendanceStatus
-          attendance={attendance}
-        />
+        <AttendanceStatus {...attendanceButtonProps} />
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
