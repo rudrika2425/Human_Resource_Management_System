@@ -114,4 +114,9 @@ public class EmployeeController {
     public ApiResponse<EmployeeResponse> delete(@PathVariable Long id) {
         return ApiResponse.success("Employee deleted", employeeService.delete(id));
     }
+    @GetMapping("/{employeeId}/manager")
+    @PreAuthorize("hasAnyRole('HR', 'MANAGER', 'EMPLOYEE')")
+    public ApiResponse<ManagerInfoResponse> managerInfo(@PathVariable Long employeeId) {
+        return ApiResponse.success("Manager info", employeeService.getManagerInfo(employeeId));
+    }
 }

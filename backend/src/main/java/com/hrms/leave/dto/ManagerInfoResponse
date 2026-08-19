@@ -1,0 +1,4 @@
+package com.hrms.employee.dto;
+
+public record ManagerInfoResponse(Long managerId, String managerName) {
+}

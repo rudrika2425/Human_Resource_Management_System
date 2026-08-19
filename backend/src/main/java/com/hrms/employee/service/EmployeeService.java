@@ -322,4 +322,21 @@ public class EmployeeService {
                 employee.getUpdatedAt()
         );
     }
+    @Transactional(readOnly = true)
+public ManagerInfoResponse getManagerInfo(Long employeeId) {
+
+    Employee employee = employeeRepository.findById(employeeId)
+            .orElseThrow(() -> new NotFoundException("Employee not found"));
+
+    Employee manager = employee.getManager();
+
+    if (manager == null) {
+        return new ManagerInfoResponse(null, null);
+    }
+
+    return new ManagerInfoResponse(
+            manager.getId(),
+            manager.getFirstName() + " " + manager.getLastName()
+    );
+}
 }

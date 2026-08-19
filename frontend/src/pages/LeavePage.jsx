@@ -395,6 +395,7 @@ export default function LeavePage() {
   const isManager = role === 'MANAGER';
 
   const canApprove = isHr || isManager;
+  const canApply = isEmployee || isManager || isHr;
 
   const {
     data: historyResponse,
@@ -409,9 +410,7 @@ export default function LeavePage() {
 
       return response.data?.data ?? [];
     },
-    enabled:
-      Boolean(employeeId) &&
-      (isEmployee || isManager),
+    enabled: Boolean(employeeId) && canApply,
   });
 
   const history = Array.isArray(historyResponse)
@@ -451,14 +450,29 @@ export default function LeavePage() {
 
       return responses.filter(Boolean);
     },
-    enabled:
-      Boolean(employeeId) &&
-      (isEmployee || isManager),
+    enabled: Boolean(employeeId) && canApply,
   });
 
   const balances = Array.isArray(balanceResponse)
     ? balanceResponse
     : [];
+
+  const {
+    data: managerInfo,
+    isLoading: managerInfoLoading,
+  } = useQuery({
+    queryKey: ['reporting-manager', employeeId],
+    queryFn: async () => {
+      const response = await api.get(
+        `/api/v1/employees/${employeeId}/manager`
+      );
+
+      return response.data?.data ?? null;
+    },
+    enabled: Boolean(employeeId) && canApply,
+  });
+
+  const hasManager = Boolean(managerInfo?.managerId);
 
   const {
     data: teamLeaveResponse,
@@ -604,7 +618,7 @@ export default function LeavePage() {
   const handleApply = (event) => {
     event.preventDefault();
 
-    if (!employeeId) return;
+    if (!employeeId || !hasManager) return;
 
     if (!form.startDate || !form.endDate) return;
 
@@ -768,10 +782,7 @@ export default function LeavePage() {
     );
   }
 
-  if (
-    (isEmployee || isManager) &&
-    !employeeId
-  ) {
+  if (canApply && !employeeId) {
     return (
       <ErrorState
         description="Employee ID was not found for your account."
@@ -848,7 +859,7 @@ export default function LeavePage() {
             Overview
           </button>
 
-          {(isEmployee || isManager) && (
+          {canApply && (
             <button
               type="button"
               onClick={() => setActiveTab('apply')}
@@ -862,7 +873,7 @@ export default function LeavePage() {
             </button>
           )}
 
-          {(isEmployee || isManager) && (
+          {canApply && (
             <button
               type="button"
               onClick={() => setActiveTab('history')}
@@ -1015,8 +1026,7 @@ export default function LeavePage() {
         )}
 
         {/* Apply Leave */}
-        {activeTab === 'apply' &&
-          (isEmployee || isManager) && (
+        {activeTab === 'apply' && canApply && (
             <section className="rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
               <div className="border-b border-black/10 px-5 py-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
@@ -1030,6 +1040,36 @@ export default function LeavePage() {
                 <p className="mt-1 text-sm text-gray-500">
                   Submit your leave request for manager or HR approval.
                 </p>
+              </div>
+
+              <div className="px-5 pt-5">
+                {managerInfoLoading ? (
+                  <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4 text-sm text-gray-500">
+                    Checking your reporting manager...
+                  </div>
+                ) : hasManager ? (
+                  <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-400">
+                      Reporting Manager
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-gray-900">
+                      {managerInfo.managerName}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-400">
+                      Your request will be routed to this manager for approval.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
+                    <p className="text-sm font-semibold text-rose-700">
+                      No manager assigned
+                    </p>
+                    <p className="mt-1 text-sm text-rose-600">
+                      You don't have a manager assigned yet. Please contact HR to get a
+                      manager assigned before applying for leave.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <form
@@ -1150,12 +1190,14 @@ export default function LeavePage() {
                 <div className="flex justify-end border-t border-black/10 pt-5">
                   <button
                     type="submit"
-                    disabled={applyMutation.isPending}
+                    disabled={applyMutation.isPending || managerInfoLoading || !hasManager}
                     className="rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {applyMutation.isPending
                       ? 'Submitting...'
-                      : 'Submit Request'}
+                      : !hasManager
+                        ? 'No manager assigned'
+                        : 'Submit Request'}
                   </button>
                 </div>
               </form>
@@ -1163,8 +1205,7 @@ export default function LeavePage() {
           )}
 
         {/* Personal History */}
-        {activeTab === 'history' &&
-          (isEmployee || isManager) && (
+        {activeTab === 'history' && canApply && (
             <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
               <div className="flex flex-col justify-between gap-2 border-b border-black/10 px-5 py-5 md:flex-row md:items-center">
                 <div>
