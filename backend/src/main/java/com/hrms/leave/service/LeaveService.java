@@ -148,9 +148,14 @@ public class LeaveService {
     }
 
     @Transactional(readOnly = true)
-    public List<LeaveResponse> pendingLeaves() {
+    public List<LeaveResponse> pendingLeaves(Long managerId) {
+        
+        Employee manager = employeeRepository.findById(managerId)
+                .orElseThrow(() -> new NotFoundException("Manager not found"));
+        
+        
         return leaveRequestRepository
-                .findByStatusOrderByStartDateAsc(LeaveStatus.PENDING)
+                .findByEmployee_Manager_IdAndStatusOrderByStartDateAsc(managerId, LeaveStatus.PENDING)
                 .stream()
                 .map(this::toResponse)
                 .toList();

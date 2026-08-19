@@ -17,5 +17,6 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
 );
 List<LeaveRequest> findByStatusOrderByStartDateAsc(LeaveStatus status);
 List<LeaveRequest> findByEmployee_Manager_IdOrderByStartDateDesc(Long managerId); 
+List<LeaveRequest> findByEmployee_Manager_IdAndStatusOrderByStartDateAsc(Long managerId, LeaveStatus status);
 
 }

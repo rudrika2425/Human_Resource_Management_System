@@ -85,11 +85,6 @@ public class DataSeeder implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
 
-        /*
-         * ============================================================
-         * ADMIN USER
-         * ============================================================
-         */
         String normalizedEmail = adminEmail.toLowerCase();
 
         User admin = userRepository.findByEmail(normalizedEmail)
@@ -104,11 +99,6 @@ public class DataSeeder implements ApplicationRunner {
                     return userRepository.save(newAdmin);
                 });
 
-        /*
-         * ============================================================
-         * DEPARTMENTS
-         * ============================================================
-         */
         Department hrDepartment = departmentRepository.findByName("HR")
                 .orElseGet(() -> {
                     Department dept = new Department();
@@ -154,11 +144,6 @@ public class DataSeeder implements ApplicationRunner {
                     return departmentRepository.save(dept);
                 });
 
-        /*
-         * ============================================================
-         * DESIGNATIONS
-         * ============================================================
-         */
         Designation hrManager = designationRepository
                 .findByNameAndDepartment("HR Manager", hrDepartment)
                 .orElseGet(() -> {
@@ -219,11 +204,6 @@ public class DataSeeder implements ApplicationRunner {
                     return designationRepository.save(desig);
                 });
 
-        /*
-         * ============================================================
-         * EMPLOYEE
-         * ============================================================
-         */
         Employee employee = employeeRepository.findByEmployeeId("EMP-001")
                 .orElseGet(() -> {
                     Employee emp = new Employee();
@@ -244,11 +224,6 @@ public class DataSeeder implements ApplicationRunner {
                     return employeeRepository.save(emp);
                 });
 
-        /*
-         * ============================================================
-         * SALARY STRUCTURE
-         * ============================================================
-         */
         if (!salaryStructureRepository.existsByEmployee(employee)) {
             SalaryStructure salary = new SalaryStructure();
             salary.setEmployee(employee);
@@ -291,30 +266,9 @@ public class DataSeeder implements ApplicationRunner {
             leaveBalanceRepository.save(leaveBalance);
         }
 
-        /*
-         * ============================================================
-         * LEAVE REQUEST
-         * ============================================================
-         */
         LocalDate leaveStartDate = today.plusDays(7);
 
-        if (!leaveRequestRepository.existsByEmployeeAndLeaveTypeAndStartDate(
-                employee, LeaveType.CASUAL, leaveStartDate)) {
-            LeaveRequest leaveRequest = new LeaveRequest();
-            leaveRequest.setEmployee(employee);
-            leaveRequest.setLeaveType(LeaveType.CASUAL);
-            leaveRequest.setStartDate(leaveStartDate);
-            leaveRequest.setEndDate(today.plusDays(8));
-            leaveRequest.setReason("Family time");
-            leaveRequest.setStatus(LeaveStatus.PENDING);
-            leaveRequestRepository.save(leaveRequest);
-        }
 
-        /*
-         * ============================================================
-         * GOALS
-         * ============================================================
-         */
         if (!goalRepository.existsByTitleAndEmployee("Reduce onboarding time", employee)) {
             Goal goal = new Goal();
             goal.setTitle("Reduce onboarding time");
