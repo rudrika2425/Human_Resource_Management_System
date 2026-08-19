@@ -628,4 +628,88 @@ public class AttendanceService {
                 attendance.getWorkedMinutes()
         );
     }
+
+    /*
+ * ============================================================
+ * SELF CHECK-IN (manual, single per day)
+ *
+ * Used by the employee's own Check In button.
+ * Unlike checkInForLogin(), this does NOT allow a second
+ * session on the same day — it throws if already checked in.
+ * ============================================================
+ */
+public AttendanceResponse checkInSelf(String email) {
+
+    Employee employee = findActiveEmployeeByEmail(email);
+
+    LocalDate today = LocalDate.now();
+
+    Attendance attendance = attendanceRepository
+            .findByEmployee_IdAndWorkDate(employee.getId(), today)
+            .orElse(null);
+
+    if (attendance != null && attendance.getCheckInAt() != null) {
+        throw new ConflictException("You have already checked in today");
+    }
+
+    if (attendance == null) {
+        attendance = new Attendance();
+        attendance.setEmployee(employee);
+        attendance.setWorkDate(today);
+    }
+
+    LocalDateTime checkInAt = LocalDateTime.now();
+
+    attendance.setCheckInAt(checkInAt);
+    attendance.setCheckOutAt(null);
+    attendance.setWorkedMinutes(null);
+    attendance.setStatus(isLate(checkInAt) ? AttendanceStatus.LATE : AttendanceStatus.PRESENT);
+
+    return toResponse(attendanceRepository.save(attendance));
+}
+
+/*
+ * ============================================================
+ * SELF CHECK-OUT (manual, single per day)
+ * ============================================================
+ */
+public AttendanceResponse checkOutSelf(String email) {
+
+    Employee employee = findActiveEmployeeByEmail(email);
+
+    Attendance attendance = attendanceRepository
+            .findByEmployee_IdAndWorkDate(employee.getId(), LocalDate.now())
+            .orElseThrow(() -> new ConflictException("You have not checked in today"));
+
+    if (attendance.getCheckInAt() == null) {
+        throw new ConflictException("You have not checked in today");
+    }
+
+    if (attendance.getCheckOutAt() != null) {
+        throw new ConflictException("You have already checked out today");
+    }
+
+    LocalDateTime checkOutAt = LocalDateTime.now();
+
+    if (checkOutAt.isBefore(attendance.getCheckInAt())) {
+        throw new ConflictException("Checkout cannot be before check-in");
+    }
+
+    long workedMinutes = Duration
+            .between(attendance.getCheckInAt(), checkOutAt)
+            .toMinutes();
+
+    attendance.setCheckOutAt(checkOutAt);
+    attendance.setWorkedMinutes(workedMinutes);
+
+    if (workedMinutes < 240) {
+        if (attendance.getStatus() != AttendanceStatus.LATE) {
+            attendance.setStatus(AttendanceStatus.HALF_DAY);
+        }
+    } else if (attendance.getStatus() != AttendanceStatus.LATE) {
+        attendance.setStatus(AttendanceStatus.PRESENT);
+    }
+
+    return toResponse(attendanceRepository.save(attendance));
+}
 }

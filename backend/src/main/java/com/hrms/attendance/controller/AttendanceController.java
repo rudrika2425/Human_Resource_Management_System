@@ -27,41 +27,10 @@ public class AttendanceController {
 
     /*
      * ============================================================
-     * AUTOMATIC / SELF CHECK-IN
-     * ============================================================
-     */
-    @PostMapping("/my/check-in")
-    @PreAuthorize("hasAnyRole('HR', 'MANAGER', 'EMPLOYEE')")
-    public ApiResponse<AttendanceResponse> myCheckIn(
-            Authentication authentication
-    ) {
-
-        return ApiResponse.success(
-                "Check-in successful",
-                attendanceService.checkInForLogin(
-                        authentication.getName()
-                )
-        );
-    }
-
-    /*
-     * ============================================================
      * AUTOMATIC / SELF CHECK-OUT
      * ============================================================
      */
-    @PostMapping("/my/check-out")
-    @PreAuthorize("hasAnyRole('HR', 'MANAGER', 'EMPLOYEE')")
-    public ApiResponse<AttendanceResponse> myCheckOut(
-            Authentication authentication
-    ) {
-
-        return ApiResponse.success(
-                "Check-out successful",
-                attendanceService.checkOutForLogout(
-                        authentication.getName()
-                )
-        );
-    }
+    
 
     /*
      * Existing HR / Manager check-in.
@@ -164,6 +133,7 @@ public class AttendanceController {
                 attendanceService.allTodayAttendance()
         );
     }
+    
 
     @GetMapping("/my/today")
         @PreAuthorize("hasAnyRole('HR', 'MANAGER', 'EMPLOYEE')")
@@ -171,6 +141,24 @@ public class AttendanceController {
         return ApiResponse.success(
                 "Today's attendance",
                 attendanceService.todayAttendance(authentication.getName())
+        );
+        }
+
+        @PostMapping("/my/check-in")
+        @PreAuthorize("hasAnyRole('HR', 'MANAGER', 'EMPLOYEE')")
+        public ApiResponse<AttendanceResponse> myCheckIn(Authentication authentication) {
+        return ApiResponse.success(
+                "Check-in successful",
+                attendanceService.checkInSelf(authentication.getName())   // was checkInForLogin
+        );
+        }
+
+        @PostMapping("/my/check-out")
+        @PreAuthorize("hasAnyRole('HR', 'MANAGER', 'EMPLOYEE')")
+        public ApiResponse<AttendanceResponse> myCheckOut(Authentication authentication) {
+        return ApiResponse.success(
+                "Check-out successful",
+                attendanceService.checkOutSelf(authentication.getName())   // was checkOutForLogout
         );
         }
 }

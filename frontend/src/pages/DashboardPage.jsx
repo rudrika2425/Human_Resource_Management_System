@@ -325,14 +325,15 @@ function AttendanceStatus({
   }
 
   /*
-   * A new "Check In" is only allowed again once the day is
-   * fully closed out (checked in AND checked out), or if there
-   * is no record at all yet. While checked in and not checked
-   * out, only "Check Out" is available.
+   * Single check-in / single check-out per day.
+   *
+   * "Check In" is only available when there is no check-in yet
+   * today. Once checked in, only "Check Out" is available. Once
+   * checked out, NEITHER button is shown again for the rest of
+   * the day — the day is closed out. Both buttons reappear
+   * naturally tomorrow once /my/today returns null again.
    */
-  const canCheckIn =
-    !state.checkedIn ||
-    (state.checkedIn && state.checkedOut);
+  const canCheckIn = !state.checkedIn;
 
   const canCheckOut =
     state.checkedIn && !state.checkedOut;
