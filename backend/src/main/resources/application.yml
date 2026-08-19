@@ -19,12 +19,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
-        jdbc:
-          time_zone: UTC
+        
 
   sql:
     init:
       mode: never
+
+  jackson:
+    time-zone: Asia/Kolkata
 
 server:
   port: 8080

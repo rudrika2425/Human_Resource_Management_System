@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 public class HrmsApplication {
 
     public static void main(String[] args) {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Kolkata"));
         SpringApplication.run(HrmsApplication.class, args);
     }
 }
