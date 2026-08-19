@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';  // ✅ Removed Outlet
+import { NavLink, Outlet } from 'react-router-dom';  // ✅ v6
 import {
   Bell,
   LogOut,
@@ -33,7 +33,7 @@ const navItems = [
   { to: '/profile', label: 'Profile', icon: User },
 ];
 
-export default function AppLayout({ children }) {  // ✅ Added children prop
+export default function AppLayout() {  // ✅ No children prop for v6
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -43,9 +43,7 @@ export default function AppLayout({ children }) {  // ✅ Added children prop
       {/* Main application container */}
       <div className="mx-auto flex min-h-screen max-w-[1600px]">
 
-        {/* =========================================================
-            MOBILE BACKDROP
-        ========================================================== */}
+        {/* Mobile backdrop */}
         {mobileOpen && (
           <div
             className="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm md:hidden"
@@ -53,13 +51,7 @@ export default function AppLayout({ children }) {  // ✅ Added children prop
           />
         )}
 
-        {/* =========================================================
-            SIDEBAR
-            - Fixed on mobile
-            - Sticky on desktop
-            - Full viewport height
-            - Does NOT move when page scrolls
-        ========================================================== */}
+        {/* Sidebar */}
         <aside
           className={`
             fixed
@@ -88,9 +80,7 @@ export default function AppLayout({ children }) {  // ✅ Added children prop
           `}
         >
 
-          {/* =====================================================
-              SIDEBAR HEADER
-          ====================================================== */}
+          {/* Sidebar Header */}
           <div className="flex shrink-0 items-center justify-between gap-3 rounded-2xl border border-purple-100 bg-purple-50/60 p-4">
 
             <div className="flex items-center gap-3">
@@ -122,15 +112,7 @@ export default function AppLayout({ children }) {  // ✅ Added children prop
 
           </div>
 
-          {/* =====================================================
-              SIDEBAR NAVIGATION
-
-              flex-1 means it takes remaining sidebar height.
-              overflow-hidden prevents sidebar from scrolling.
-
-              If your menu becomes larger than the screen, change
-              overflow-hidden to overflow-y-auto.
-          ====================================================== */}
+          {/* Navigation */}
           <nav className="mt-6 flex-1 space-y-1 overflow-hidden pr-1 text-sm">
 
             {navItems.map((item) => {
@@ -140,7 +122,7 @@ export default function AppLayout({ children }) {  // ✅ Added children prop
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  exact={item.to === '/'}  // ✅ v5 uses 'exact' instead of 'end'
+                  end={item.to === '/'}  // ✅ v6 uses 'end' instead of 'exact'
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
                     `
@@ -185,9 +167,7 @@ export default function AppLayout({ children }) {  // ✅ Added children prop
 
           </nav>
 
-          {/* =====================================================
-              OPTIONAL SIDEBAR FOOTER
-          ====================================================== */}
+          {/* Sidebar Footer */}
           <div className="mt-4 shrink-0 border-t border-purple-100 pt-4">
             <p className="text-center text-[10px] font-medium uppercase tracking-[0.2em] text-gray-400">
               HRMS Platform
@@ -196,14 +176,10 @@ export default function AppLayout({ children }) {  // ✅ Added children prop
 
         </aside>
 
-        {/* =========================================================
-            MAIN CONTENT AREA
-        ========================================================== */}
+        {/* Main Content Area */}
         <div className="flex min-w-0 flex-1 flex-col">
 
-          {/* =====================================================
-              TOP HEADER
-          ====================================================== */}
+          {/* Top Header */}
           <header className="sticky top-0 z-20 border-b border-purple-100 bg-white/80 backdrop-blur-xl">
 
             <div className="flex items-center justify-between gap-4 px-4 py-4 md:px-8">
@@ -238,9 +214,6 @@ export default function AppLayout({ children }) {  // ✅ Added children prop
 
               {/* RIGHT SIDE */}
               <div className="flex items-center gap-3">
-
-                {/* Notification button */}
-               
 
                 {/* USER INFORMATION */}
                 <div className="hidden items-center gap-3 rounded-2xl border border-purple-100 bg-purple-50/60 px-4 py-2 transition hover:border-purple-200 md:flex">
@@ -322,11 +295,9 @@ export default function AppLayout({ children }) {  // ✅ Added children prop
 
           </header>
 
-          {/* =====================================================
-              PAGE CONTENT
-          ====================================================== */}
+          {/* PAGE CONTENT */}
           <main className="flex-1 p-4 md:p-8">
-            {children}  {/* ✅ v5 uses children instead of Outlet */}
+            <Outlet />  {/* ✅ v6 uses Outlet */}
           </main>
 
         </div>

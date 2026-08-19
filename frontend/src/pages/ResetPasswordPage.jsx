@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';  // ✅ Changed
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';  // ✅ v6 syntax
 import { Lock, CheckCircle, AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
 
 export default function ResetPasswordPage() {
-  const location = useLocation();  
-  const history = useHistory();
-  
- 
-  const searchParams = new URLSearchParams(location.search);
+  const [searchParams] = useSearchParams();  // ✅ v6: useSearchParams
+  const navigate = useNavigate();  // ✅ v6: useNavigate
   const token = searchParams.get('token');
 
   const [form, setForm] = useState({
@@ -57,7 +54,7 @@ export default function ResetPasswordPage() {
       });
       setSuccess(true);
       toast.success('Password reset successful! Redirecting to login...');
-      setTimeout(() => history.push('/login'), 3000);  
+      setTimeout(() => navigate('/login'), 3000);  // ✅ v6: navigate
     } catch (err) {
       const message = err?.response?.data?.message || 'Failed to reset password';
       setError(message);

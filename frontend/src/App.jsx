@@ -1,4 +1,4 @@
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';  // ✅ Changed
+import { Routes, Route, Navigate } from 'react-router-dom';  // ✅ v6
 import PerformancePage from './pages/PerformancePage';
 import Goals from './pages/Goals';
 import { Toaster } from 'react-hot-toast';
@@ -24,7 +24,6 @@ import DepartmentFormPage from './pages/Departmentformpage';
 import AttendancePage from './pages/AttendancePage';
 import LeavePage from './pages/LeavePage';
 
-// Import useAuth hook
 import { useAuth } from './hooks/useAuth';
 
 const genericPages = [
@@ -33,161 +32,219 @@ const genericPages = [
   ['audit-logs', 'Audit Logs', '/api/v1/audit-logs'],
 ];
 
-// Wrapper component to pass roles to GenericResourcePage
-function GenericResourcePageWithAuth({ title, endpoint, createPath, createLabel, editPath }) {
-  const { user } = useAuth();
-  const roles = user?.roles || [];
-  
-  return (
-    <GenericResourcePage
-      title={title}
-      endpoint={endpoint}
-      createPath={createPath}
-      createLabel={createLabel}
-      editPath={editPath}
-      roles={roles}
-      requiredRole="HR"
-    />
-  );
-}
-
 export default function App() {
   const { user } = useAuth();
   const roles = user?.roles || [];
 
   return (
-    <BrowserRouter>  {/* ✅ v5 uses BrowserRouter here */}
-      <>
-        <Toaster 
-          position="top-right"
-          toastOptions={{
-            duration: 5000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-          }}
-        />
-        
-        <Switch>  {/* ✅ v5 uses Switch instead of Routes */}
-          {/* Public routes */}
-          <Route path="/login" component={LoginPage} />
-          <Route path="/register" component={RegisterPage} />
-          <Route path="/forgot-password" component={ForgotPasswordPage} />
-          <Route path="/reset-password" component={ResetPasswordPage} />
+    <>
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 5000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
+      
+      <Routes>  {/* ✅ v6: Routes */}
+        {/* Public routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-          {/* Protected routes - v5 doesn't use nested routes like v6 */}
-          <Route
-            path="/"
-            render={() => (
-              <RequireAuth>
-                <AppLayout>
-                  <Switch>
-                    <Route exact path="/" component={DashboardPage} />
-                    <Route path="/employees" component={EmployeesPage} />
-                    <Route path="/documents" component={DocumentsPage} />
-                    <Route path="/employees/new" render={() => <EmployeeFormPage mode="create" />} />
-                    <Route path="/employees/:id" component={Employee360Page} />
-                    <Route path="/employees/:id/edit" render={() => <EmployeeFormPage mode="edit" />} />
-                    <Route path="/employees/my-team" component={MyTeamPage} />
+        {/* Protected routes with AppLayout */}
+        <Route path="/" element={
+          <RequireAuth>
+            <AppLayout>
+              <DashboardPage />
+            </AppLayout>
+          </RequireAuth>
+        } />
 
-                    {genericPages.map(([path, title, endpoint]) => (
-                      <Route 
-                        key={path} 
-                        path={path} 
-                        render={() => (
-                          <GenericResourcePage 
-                            title={title} 
-                            endpoint={endpoint} 
-                            roles={roles}
-                            requiredRole="HR"
-                          />
-                        )}
-                      />
-                    ))}
+        {/* Other routes inside AppLayout */}
+        <Route path="/employees" element={
+          <RequireAuth>
+            <AppLayout>
+              <EmployeesPage />
+            </AppLayout>
+          </RequireAuth>
+        } />
 
-                    <Route path="/payroll" component={PayrollPage} />
-                    <Route path="/attendance" component={AttendancePage} />
-                    <Route path="/leave" component={LeavePage} />
-                    
-                    <Route
-                      path="/performance"
-                      render={() => (
-                        <RequireAuth>
-                          <PerformancePage />
-                        </RequireAuth>
-                      )}
-                    />
+        <Route path="/employees/new" element={
+          <RequireAuth>
+            <AppLayout>
+              <EmployeeFormPage mode="create" />
+            </AppLayout>
+          </RequireAuth>
+        } />
 
-                    <Route
-                      path="/performance/goals"
-                      render={() => (
-                        <RequireAuth>
-                          <Goals />
-                        </RequireAuth>
-                      )}
-                    />
+        <Route path="/employees/:id" element={
+          <RequireAuth>
+            <AppLayout>
+              <Employee360Page />
+            </AppLayout>
+          </RequireAuth>
+        } />
 
-                    <Route
-                      path="/performance/reviews"
-                      render={() => (
-                        <RequireAuth>
-                          <Review />
-                        </RequireAuth>
-                      )}
-                    />
+        <Route path="/employees/:id/edit" element={
+          <RequireAuth>
+            <AppLayout>
+              <EmployeeFormPage mode="edit" />
+            </AppLayout>
+          </RequireAuth>
+        } />
 
-                    {/* Departments Route */}
-                    <Route
-                      path="/departments"
-                      render={() => (
-                        <GenericResourcePage
-                          title="Departments"
-                          endpoint="/api/v1/departments"
-                          createPath="/departments/create"
-                          createLabel="+ Add Department"
-                          editPath={(row) => `/departments/${row.id}/edit`}
-                          roles={roles}
-                          requiredRole="HR"
-                        />
-                      )}
-                    />
-                    <Route path="/departments/create" render={() => <DepartmentFormPage mode="create" />} />
-                    <Route path="/departments/:id/edit" render={() => <DepartmentFormPage mode="edit" />} />
+        <Route path="/employees/my-team" element={
+          <RequireAuth>
+            <AppLayout>
+              <MyTeamPage />
+            </AppLayout>
+          </RequireAuth>
+        } />
 
-                    {/* Designations Route */}
-                    <Route
-                      path="/designations"
-                      render={() => (
-                        <GenericResourcePage
-                          title="Designations"
-                          endpoint="/api/v1/designations"
-                          createPath="/designations/create"
-                          createLabel="+ Add Designation"
-                          editPath={(row) => `/designations/${row.id}/edit`}
-                          roles={roles}
-                          requiredRole="HR"
-                        />
-                      )}
-                    />
-                    <Route path="/designations/create" render={() => <DesignationFormPage mode="create" />} />
-                    <Route path="/designations/:id/edit" render={() => <DesignationFormPage mode="edit" />} />
+        <Route path="/documents" element={
+          <RequireAuth>
+            <AppLayout>
+              <DocumentsPage />
+            </AppLayout>
+          </RequireAuth>
+        } />
 
-                    <Route path="/notifications" component={NotificationsPage} />
-                    <Route path="/profile" component={ProfilePage} />
-                    
-                    {/* 404 redirect */}
-                    <Route render={() => <Redirect to="/" />} />
-                  </Switch>
-                </AppLayout>
-              </RequireAuth>
-            )}
-          />
+        <Route path="/payroll" element={
+          <RequireAuth>
+            <AppLayout>
+              <PayrollPage />
+            </AppLayout>
+          </RequireAuth>
+        } />
 
-          {/* 404 redirect outside protected routes */}
-          <Route render={() => <Redirect to="/" />} />
-        </Switch>
-      </>
-    </BrowserRouter>
+        <Route path="/attendance" element={
+          <RequireAuth>
+            <AppLayout>
+              <AttendancePage />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/leave" element={
+          <RequireAuth>
+            <AppLayout>
+              <LeavePage />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/performance" element={
+          <RequireAuth>
+            <AppLayout>
+              <PerformancePage />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/performance/goals" element={
+          <RequireAuth>
+            <AppLayout>
+              <Goals />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/performance/reviews" element={
+          <RequireAuth>
+            <AppLayout>
+              <Review />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/departments" element={
+          <RequireAuth>
+            <AppLayout>
+              <GenericResourcePage
+                title="Departments"
+                endpoint="/api/v1/departments"
+                createPath="/departments/create"
+                createLabel="+ Add Department"
+                editPath={(row) => `/departments/${row.id}/edit`}
+                roles={roles}
+                requiredRole="HR"
+              />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/departments/create" element={
+          <RequireAuth>
+            <AppLayout>
+              <DepartmentFormPage mode="create" />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/departments/:id/edit" element={
+          <RequireAuth>
+            <AppLayout>
+              <DepartmentFormPage mode="edit" />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/designations" element={
+          <RequireAuth>
+            <AppLayout>
+              <GenericResourcePage
+                title="Designations"
+                endpoint="/api/v1/designations"
+                createPath="/designations/create"
+                createLabel="+ Add Designation"
+                editPath={(row) => `/designations/${row.id}/edit`}
+                roles={roles}
+                requiredRole="HR"
+              />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/designations/create" element={
+          <RequireAuth>
+            <AppLayout>
+              <DesignationFormPage mode="create" />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/designations/:id/edit" element={
+          <RequireAuth>
+            <AppLayout>
+              <DesignationFormPage mode="edit" />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/notifications" element={
+          <RequireAuth>
+            <AppLayout>
+              <NotificationsPage />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        <Route path="/profile" element={
+          <RequireAuth>
+            <AppLayout>
+              <ProfilePage />
+            </AppLayout>
+          </RequireAuth>
+        } />
+
+        {/* 404 redirect */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }
