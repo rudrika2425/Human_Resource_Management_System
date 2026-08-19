@@ -1,4 +1,3 @@
-
 package com.hrms.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,10 +8,12 @@ import com.hrms.attendance.service.AttendanceService;
 import com.hrms.auth.dto.RegisterRequest;
 import com.hrms.auth.entity.User;
 import com.hrms.auth.entity.UserRole;
+import com.hrms.auth.repository.PasswordResetTokenRepository;
 import com.hrms.auth.repository.RefreshTokenRepository;
 import com.hrms.auth.repository.UserRepository;
 import com.hrms.auth.service.AuthService;
 import com.hrms.common.security.JwtService;
+import com.hrms.common.service.EmailService;
 import com.hrms.employee.entity.Employee;
 import com.hrms.employee.repository.EmployeeRepository;
 import io.jsonwebtoken.Claims;
@@ -44,7 +45,6 @@ class AuthServiceTest {
     @Mock
     private JwtService jwtService;
 
-
     @Mock
     private EmployeeRepository employeeRepository;
 
@@ -55,20 +55,29 @@ class AuthServiceTest {
     @Mock
     private AttendanceService attendanceService;
 
+    // ✅ ADD THIS - For password reset functionality
+    @Mock
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    // ✅ ADD THIS - For sending emails
+    @Mock
+    private EmailService emailService;
+
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-
         authService = new AuthService(
-        userRepository,
-        refreshTokenRepository,
-        passwordEncoder,
-        authenticationManager,
-        jwtService,
-        employeeRepository,
-        attendanceService
-);
+            userRepository,
+            refreshTokenRepository,
+            passwordEncoder,
+            authenticationManager,
+            jwtService,
+            employeeRepository,
+            attendanceService,
+            passwordResetTokenRepository,  // ✅ ADD THIS
+            emailService                   // ✅ ADD THIS
+        );
     }
 
     @Test

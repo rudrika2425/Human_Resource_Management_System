@@ -4,6 +4,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.hrms.auth.dto.AuthResponse;
 import com.hrms.auth.dto.ChangePasswordRequest;
 import com.hrms.auth.dto.LoginRequest;
+import com.hrms.auth.dto.ForgotPasswordRequest; 
+import com.hrms.auth.dto.ResetPasswordRequest;  
+import com.hrms.auth.entity.PasswordResetToken;
+import com.hrms.auth.repository.PasswordResetTokenRepository;
+import com.hrms.common.service.EmailService;
+import org.springframework.beans.factory.annotation.Value;  
 import com.hrms.auth.dto.RefreshRequest;
 import com.hrms.auth.dto.RegisterRequest;
 import com.hrms.auth.dto.UserResponse;
@@ -27,7 +33,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.UUID; 
 import java.time.Instant;
 import java.util.Set;
 
@@ -42,23 +48,32 @@ public class AuthService {
     private final JwtService jwtService;
     private final EmployeeRepository employeeRepository;
     private final AttendanceService attendanceService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository; 
+    private final EmailService emailService; 
+
+    @Value("${app.reset-password.token-expiry-minutes:15}")  // ADD THIS
+    private int tokenExpiryMinutes;
 
     
     public AuthService(UserRepository userRepository,
-                       RefreshTokenRepository refreshTokenRepository,
-                       PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager,
-                       JwtService jwtService,
-                       EmployeeRepository employeeRepository,
-                       AttendanceService attendanceService) {
-        this.userRepository = userRepository;
-        this.refreshTokenRepository = refreshTokenRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
-        this.employeeRepository = employeeRepository;
-        this.attendanceService = attendanceService;
-    }
+                   RefreshTokenRepository refreshTokenRepository,
+                   PasswordEncoder passwordEncoder,
+                   AuthenticationManager authenticationManager,
+                   JwtService jwtService,
+                   EmployeeRepository employeeRepository,
+                   AttendanceService attendanceService,
+                   PasswordResetTokenRepository passwordResetTokenRepository, 
+                   EmailService emailService) {
+    this.userRepository = userRepository;
+    this.refreshTokenRepository = refreshTokenRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.authenticationManager = authenticationManager;
+    this.jwtService = jwtService;
+    this.employeeRepository = employeeRepository;
+    this.attendanceService = attendanceService;
+    this.passwordResetTokenRepository = passwordResetTokenRepository;  
+    this.emailService = emailService;
+}
 
     public AuthResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
@@ -283,4 +298,69 @@ public UserResponse me(UserPrincipal principal) {
     Employee employee = employeeRepository.findByUserId(user.getId()).orElse(null);
     return new UserResponse(user, employee);
 }
+ public void forgotPassword(ForgotPasswordRequest request) {
+        String email = request.email().trim().toLowerCase();
+        
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new NotFoundException("User not found with this email"));
+        
+        // Delete any existing reset tokens for this user
+        passwordResetTokenRepository.deleteByUser_Id(user.getId());
+        
+        // Generate reset token
+        String token = UUID.randomUUID().toString();
+        Instant expiresAt = Instant.now().plusSeconds(tokenExpiryMinutes * 60);
+        
+        PasswordResetToken resetToken = new PasswordResetToken(token, user, expiresAt);
+        passwordResetTokenRepository.save(resetToken);
+        
+        // Get employee name for email
+        String name = user.getFirstName() + " " + user.getLastName();
+        Employee employee = employeeRepository.findByUserId(user.getId()).orElse(null);
+        if (employee != null) {
+            name = employee.getFirstName() + " " + employee.getLastName();
+        }
+        
+        // SEND EMAIL (REAL)
+        try {
+            emailService.sendPasswordResetEmail(email, token, name);
+        } catch (Exception e) {
+            System.err.println("Failed to send password reset email: " + e.getMessage());
+        }
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        // Validate passwords match
+        if (!request.newPassword().equals(request.confirmPassword())) {
+            throw new BadRequestException("Passwords do not match");
+        }
+        
+        // Find the token
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(request.token())
+                .orElseThrow(() -> new BadRequestException("Invalid or expired reset token"));
+        
+        // Check if token is expired
+        if (resetToken.isExpired()) {
+            throw new BadRequestException("Reset token has expired");
+        }
+        
+        // Check if token is already used
+        if (resetToken.isUsed()) {
+            throw new BadRequestException("Reset token has already been used");
+        }
+        
+        // Get the user
+        User user = resetToken.getUser();
+        
+        // Update password
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+        
+        // Mark token as used
+        resetToken.setUsedAt(Instant.now());
+        passwordResetTokenRepository.save(resetToken);
+        
+        // Invalidate all refresh tokens for this user (force re-login)
+        refreshTokenRepository.deleteByUser_Id(user.getId());
+    }
 }

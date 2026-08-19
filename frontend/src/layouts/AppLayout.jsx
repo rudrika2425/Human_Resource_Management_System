@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';  // ✅ Removed Outlet
 import {
   Bell,
   LogOut,
@@ -33,7 +33,7 @@ const navItems = [
   { to: '/profile', label: 'Profile', icon: User },
 ];
 
-export default function AppLayout() {
+export default function AppLayout({ children }) {  // ✅ Added children prop
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -140,7 +140,7 @@ export default function AppLayout() {
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  end={item.to === '/'}
+                  exact={item.to === '/'}  // ✅ v5 uses 'exact' instead of 'end'
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
                     `
@@ -326,7 +326,7 @@ export default function AppLayout() {
               PAGE CONTENT
           ====================================================== */}
           <main className="flex-1 p-4 md:p-8">
-            <Outlet />
+            {children}  {/* ✅ v5 uses children instead of Outlet */}
           </main>
 
         </div>

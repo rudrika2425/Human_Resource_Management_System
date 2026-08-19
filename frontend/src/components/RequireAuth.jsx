@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';  // ✅ Changed
 import Spinner from './Spinner';
 import { useAuth } from '../hooks/useAuth';
 
@@ -16,10 +16,9 @@ export default function RequireAuth({ children }) {
 
   if (!isAuthenticated) {
     return (
-      <Navigate
+      <Redirect  // ✅ Changed from Navigate
         to="/login"
-        replace
-        state={{ from: location }}
+        state={{ from: location }}  // ✅ v5 uses 'state' instead of separate 'replace'
       />
     );
   }
