@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { storage } from '../utils/storage';
 
-// ✅ BaseURL without /api/v1 - we'll add it to each call
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://humanresourcemanagementsystem-production.up.railway.app';
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 export const api = axios.create({
   baseURL,
@@ -14,28 +13,14 @@ export const api = axios.create({
 const refreshClient = axios.create({ baseURL });
 let refreshPromise = null;
 
-// List of public endpoints (with /api/v1)
-const publicEndpoints = [
-  '/api/v1/auth/login',
-  '/api/v1/auth/refresh',
-  '/api/v1/auth/register',
-  '/api/v1/auth/forgot-password',
-  '/api/v1/auth/reset-password',
-];
+api.interceptors.request.use((config) => {
+  const token = storage.getAccessToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-// Request interceptor - adds token to requests
-api.interceptors.request.use(
-  (config) => {
-    const token = storage.getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Response interceptor - handles token refresh
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -43,14 +28,7 @@ api.interceptors.response.use(
     const status = error?.response?.status;
     const url = originalRequest?.url || '';
 
-    // Check if the endpoint is public
-    const isPublicEndpoint = publicEndpoints.some(endpoint => url.includes(endpoint));
-
-    // Don't retry if:
-    // - Status is not 401
-    // - Already retried
-    // - Is a public endpoint
-    if (status !== 401 || originalRequest?._retry || isPublicEndpoint) {
+    if (status !== 401 || originalRequest?._retry || url.includes('/api/v1/auth/login') || url.includes('/api/v1/auth/refresh') || url.includes('/api/v1/auth/logout')) {
       return Promise.reject(error);
     }
 
@@ -69,7 +47,6 @@ api.interceptors.response.use(
       const response = await refreshPromise;
       refreshPromise = null;
       const { accessToken, refreshToken: nextRefreshToken, user } = response.data.data;
-      
       storage.setAuth({
         accessToken,
         refreshToken: nextRefreshToken,
@@ -101,9 +78,7 @@ export const auth = {
   me: () => api.get('/api/v1/auth/me'),
   changePassword: (data) => api.post('/api/v1/auth/change-password', data),
   
-  forgotPassword: (email) => api.post('/api/v1/auth/forgot-password', { email }),
-  resetPassword: (data) => api.post('/api/v1/auth/reset-password', data),
-  
+  // User management (Admin only)
   activateUser: (userId) => api.post(`/api/v1/auth/users/${userId}/activate`),
   deactivateUser: (userId) => api.post(`/api/v1/auth/users/${userId}/deactivate`),
 };
@@ -123,7 +98,6 @@ export const employee = {
   deactivate: (id) => api.post(`/api/v1/employees/${id}/deactivate`),
   getManager: (employeeId) => api.get(`/api/v1/employees/${employeeId}/manager`),
   myTeam: () => api.get('/api/v1/employees/my-team'),
-  search: (params) => api.get('/api/v1/employees/search', { params }),
 };
 
 // ========================================
@@ -139,7 +113,6 @@ export const leave = {
   balance: (employeeId, leaveType) => api.get(`/api/v1/leaves/balance/${employeeId}`, { params: { leaveType } }),
   pending: () => api.get('/api/v1/leaves/pending'),
   team: (managerId) => api.get('/api/v1/leaves/team', { params: { managerId } }),
-  getAll: (params) => api.get('/api/v1/leaves', { params }),
 };
 
 // ========================================
@@ -171,127 +144,35 @@ export const designation = {
 // ========================================
 
 export const attendance = {
-  clockIn: () => api.post('/api/v1/attendance/my/check-in'),
-  clockOut: () => api.post('/api/v1/attendance/my/check-out'),
-  getToday: () => api.get('/api/v1/attendance/my/today'),
-  getHistory: (params) => api.get('/api/v1/attendance/my/history', { params }),
-  getSummary: (params) => api.get('/api/v1/attendance/my/summary', { params }),
-  getAll: (params) => api.get('/api/v1/attendance', { params }),
-  getByEmployee: (employeeId, params) => api.get(`/api/v1/attendance/employee/${employeeId}`, { params }),
-};
-
-// ========================================
-// DASHBOARD API METHODS
-// ========================================
-
-export const dashboard = {
-  getHR: () => api.get('/api/v1/dashboard/hr'),
-  getManager: (managerEmployeeId) => api.get(`/api/v1/dashboard/manager/${managerEmployeeId}`),
-  getEmployee: (employeeId) => api.get(`/api/v1/dashboard/employee/${employeeId}`),
-};
-
-// ========================================
-// PERFORMANCE API METHODS
-// ========================================
-
-export const performance = {
-  getAll: (params) => api.get('/api/v1/performance', { params }),
-  getById: (id) => api.get(`/api/v1/performance/${id}`),
-  create: (data) => api.post('/api/v1/performance', data),
-  update: (id, data) => api.put(`/api/v1/performance/${id}`, data),
-  delete: (id) => api.delete(`/api/v1/performance/${id}`),
-  getReviews: (params) => api.get('/api/v1/performance/reviews', { params }),
-  getGoals: (params) => api.get('/api/v1/performance/goals', { params }),
-};
-
-// ========================================
-// PAYROLL API METHODS
-// ========================================
-
-export const payroll = {
-  getAll: (params) => api.get('/api/v1/payroll', { params }),
-  getById: (id) => api.get(`/api/v1/payroll/${id}`),
-  create: (data) => api.post('/api/v1/payroll', data),
-  update: (id, data) => api.put(`/api/v1/payroll/${id}`, data),
-  delete: (id) => api.delete(`/api/v1/payroll/${id}`),
-  getEmployeePayroll: (employeeId) => api.get(`/api/v1/payroll/employee/${employeeId}`),
-};
-
-// ========================================
-// DOCUMENTS API METHODS
-// ========================================
-
-export const documents = {
-  getAll: (params) => api.get('/api/v1/documents', { params }),
-  getById: (id) => api.get(`/api/v1/documents/${id}`),
-  upload: (data) => api.post('/api/v1/documents/upload', data),
-  delete: (id) => api.delete(`/api/v1/documents/${id}`),
-  download: (id) => api.get(`/api/v1/documents/${id}/download`, { responseType: 'blob' }),
-};
-
-// ========================================
-// NOTIFICATIONS API METHODS
-// ========================================
-
-export const notifications = {
-  getAll: () => api.get('/api/v1/notifications'),
-  getUnread: () => api.get('/api/v1/notifications/unread'),
-  markAsRead: (id) => api.put(`/api/v1/notifications/${id}/read`),
-  markAllAsRead: () => api.put('/api/v1/notifications/read-all'),
-  delete: (id) => api.delete(`/api/v1/notifications/${id}`),
-};
-
-// ========================================
-// PROFILE API METHODS
-// ========================================
-
-export const profile = {
-  get: () => api.get('/api/v1/profile'),
-  update: (data) => api.put('/api/v1/profile', data),
-  updateAvatar: (data) => api.post('/api/v1/profile/avatar', data),
-  changePassword: (data) => api.post('/api/v1/profile/change-password', data),
+  clockIn: () => api.post('/api/v1/attendance/clock-in'),
+  clockOut: () => api.post('/api/v1/attendance/clock-out'),
+  getToday: () => api.get('/api/v1/attendance/today'),
+  getHistory: (params) => api.get('/api/v1/attendance/history', { params }),
+  getSummary: (params) => api.get('/api/v1/attendance/summary', { params }),
 };
 
 // ========================================
 // UTILITY FUNCTIONS
 // ========================================
 
-// Check if user is authenticated
 export const isAuthenticated = () => {
   return !!storage.getAccessToken();
 };
 
-// Get current user from storage
 export const getCurrentUser = () => {
   return storage.getUser();
 };
 
-// Check if user has specific role
 export const hasRole = (role) => {
   const user = storage.getUser();
   if (!user || !user.roles) return false;
   return user.roles.includes(role);
 };
 
-// Check if user has any of the given roles
 export const hasAnyRole = (roles) => {
   const user = storage.getUser();
   if (!user || !user.roles) return false;
   return roles.some(role => user.roles.includes(role));
-};
-
-// Check if user has all of the given roles
-export const hasAllRoles = (roles) => {
-  const user = storage.getUser();
-  if (!user || !user.roles) return false;
-  return roles.every(role => user.roles.includes(role));
-};
-
-// Get user's primary role
-export const getPrimaryRole = () => {
-  const user = storage.getUser();
-  if (!user || !user.roles) return null;
-  return user.roles[0] || null;
 };
 
 export default api;
