@@ -70,4 +70,5 @@ public class LeaveController {
     public ApiResponse<List<LeaveResponse>> teamLeaves(@RequestParam Long managerId) {
         return ApiResponse.success("Team leaves", leaveService.teamLeaves(managerId));
     }
+    
 }
