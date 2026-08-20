@@ -26,7 +26,7 @@ const emptyStructure = {
 };
 
 const cardClass =
-  'rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50';
+  'rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30';
 
 /*
  * ---------------------------------------------------------
@@ -102,37 +102,37 @@ function StatCard({
   tone = 'default',
 }) {
   const toneStyles = {
-    default: 'text-gray-900',
-    positive: 'text-emerald-600',
-    negative: 'text-rose-600',
+    default: 'text-gray-900 dark:text-gray-100',
+    positive: 'text-emerald-600 dark:text-emerald-400',
+    negative: 'text-rose-600 dark:text-rose-400',
   };
 
   return (
     <div
-      className={`${cardClass} group relative overflow-hidden p-5 transition duration-200 hover:border-purple-200`}
+      className={`${cardClass} group relative overflow-hidden p-4 transition duration-200 hover:border-purple-200 dark:hover:border-purple-700 sm:p-5`}
     >
       <div className="flex items-start justify-between">
-        <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
+        <p className="text-xs uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
           {label}
         </p>
 
         {Icon ? (
           <Icon
             size={16}
-            className="text-purple-300 transition group-hover:text-purple-500"
+            className="text-purple-300 transition group-hover:text-purple-500 dark:text-purple-500 dark:group-hover:text-purple-400"
             strokeWidth={1.75}
           />
         ) : null}
       </div>
 
       <p
-        className={`mt-3 text-2xl font-semibold tabular-nums ${toneStyles[tone]}`}
+        className={`mt-3 text-xl font-semibold tabular-nums sm:text-2xl ${toneStyles[tone]}`}
       >
         {value}
       </p>
 
       {description ? (
-        <p className="mt-1 text-sm text-gray-400">
+        <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
           {description}
         </p>
       ) : null}
@@ -143,12 +143,12 @@ function StatCard({
 function Field({ label, name, value, onChange }) {
   return (
     <div>
-      <label className="mb-2 block text-sm text-gray-600">
+      <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
         {label}
       </label>
 
       <div className="relative">
-        <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+        <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-gray-500">
           ₹
         </span>
 
@@ -159,7 +159,7 @@ function Field({ label, name, value, onChange }) {
           name={name}
           value={value}
           onChange={onChange}
-          className="w-full rounded-xl border border-purple-100 bg-white py-2.5 pl-7 pr-3 text-sm text-gray-900 tabular-nums shadow-sm transition placeholder:text-gray-300 focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100"
+          className="w-full rounded-xl border border-purple-100 bg-white py-2.5 pl-7 pr-3 text-sm text-gray-900 tabular-nums shadow-sm transition placeholder:text-gray-300 focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-600 dark:focus:border-purple-500 dark:focus:ring-purple-500/20"
           placeholder="0.00"
         />
       </div>
@@ -628,33 +628,33 @@ export default function PayrollPage() {
   }
 
   return (
-    <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-6">
+    <div className="min-h-screen space-y-5 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-3 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 sm:space-y-6 sm:p-4 md:p-6 lg:p-8">
 
       {/* ==================================================
           HEADER
           ================================================== */}
 
       <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30 sm:h-11 sm:w-11">
           <Landmark
             size={20}
-            className="text-purple-500"
+            className="text-purple-500 dark:text-purple-400"
             strokeWidth={1.75}
           />
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-purple-500">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-purple-500 dark:text-purple-400 sm:text-xs sm:tracking-[0.3em]">
             Finance
           </p>
 
-          <h1 className="mt-1 text-3xl font-bold text-gray-900">
+          <h1 className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100 sm:text-3xl">
             Payroll
           </h1>
         </div>
       </div>
 
-      <p className="-mt-4 max-w-2xl text-sm text-gray-500">
+      <p className="-mt-2 max-w-2xl text-sm text-gray-500 dark:text-gray-400 sm:-mt-4">
         {isHr
           ? 'Manage salary structures, generate monthly payroll, and view employee payroll history.'
           : 'View your salary structure and payroll slip history.'}
@@ -665,14 +665,14 @@ export default function PayrollPage() {
           ================================================== */}
 
       {isHr ? (
-        <div className={`${cardClass} p-6`}>
+        <div className={`${cardClass} p-4 sm:p-6`}>
           <div className="grid gap-4 md:grid-cols-2">
 
             <div>
-              <label className="mb-2 flex items-center gap-1.5 text-sm text-gray-600">
+              <label className="mb-2 flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
                 <User
                   size={14}
-                  className="text-purple-400"
+                  className="text-purple-400 dark:text-purple-500"
                 />
                 Employee
               </label>
@@ -687,7 +687,7 @@ export default function PayrollPage() {
                   setMessage('');
                   setErrorMessage('');
                 }}
-                className="w-full rounded-xl border border-purple-100 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100"
+                className="w-full rounded-xl border border-purple-100 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:ring-purple-500/20"
               >
                 <option value="">
                   Select employee
@@ -707,10 +707,10 @@ export default function PayrollPage() {
             </div>
 
             <div>
-              <label className="mb-2 flex items-center gap-1.5 text-sm text-gray-600">
+              <label className="mb-2 flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
                 <Calendar
                   size={14}
-                  className="text-purple-400"
+                  className="text-purple-400 dark:text-purple-500"
                 />
                 Payroll month
               </label>
@@ -723,16 +723,16 @@ export default function PayrollPage() {
                     event.target.value
                   )
                 }
-                className="w-full rounded-xl border border-purple-100 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100"
+                className="w-full rounded-xl border border-purple-100 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:[color-scheme:dark] dark:focus:border-purple-500 dark:focus:ring-purple-500/20"
               />
             </div>
 
           </div>
 
           {selectedEmployee ? (
-            <div className="mt-5 flex items-center gap-4 rounded-xl border border-purple-100 bg-purple-50/60 p-4">
+            <div className="mt-5 flex flex-col gap-4 rounded-xl border border-purple-100 bg-purple-50/60 p-4 dark:border-gray-700 dark:bg-purple-500/10 sm:flex-row sm:items-center">
 
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700 dark:bg-purple-500/20 dark:text-purple-300">
                 {initials(
                   selectedEmployee.firstName,
                   selectedEmployee.lastName
@@ -742,12 +742,12 @@ export default function PayrollPage() {
               <div className="flex flex-1 flex-wrap items-center justify-between gap-4">
 
                 <div>
-                  <p className="font-medium text-gray-900">
+                  <p className="font-medium text-gray-900 dark:text-gray-100">
                     {selectedEmployee.firstName}{' '}
                     {selectedEmployee.lastName}
                   </p>
 
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {selectedEmployee.employeeId}
 
                     {selectedEmployee.email
@@ -756,8 +756,8 @@ export default function PayrollPage() {
                   </p>
                 </div>
 
-                <div className="text-sm text-gray-600">
-                  <span className="text-gray-400">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-400 dark:text-gray-500">
                     Employment:
                   </span>{' '}
                   {selectedEmployee.employmentType ||
@@ -777,13 +777,13 @@ export default function PayrollPage() {
          * =================================================
          */
 
-        <div className={`${cardClass} p-5`}>
+        <div className={`${cardClass} p-4 sm:p-5`}>
           <div className="flex items-center gap-4">
 
             
 
             <div className="flex-1">
-              <p className="font-semibold text-gray-900">
+              <p className="font-semibold text-gray-900 dark:text-gray-100">
                 {selectedEmployee?.firstName ||
                   meUser?.firstName ||
                   ''}{' '}
@@ -795,7 +795,7 @@ export default function PayrollPage() {
               
             </div>
 
-            <span className="rounded-full border border-purple-100 bg-purple-50 px-3 py-1 text-xs font-medium text-purple-600">
+            <span className="shrink-0 rounded-full border border-purple-100 bg-purple-50 px-3 py-1 text-xs font-medium text-purple-600 dark:border-purple-800 dark:bg-purple-500/10 dark:text-purple-300">
               {role}
             </span>
 
@@ -808,20 +808,20 @@ export default function PayrollPage() {
           ================================================== */}
 
       {isHr && !selectedEmployeeId ? (
-        <div className={`${cardClass} p-10 text-center`}>
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
+        <div className={`${cardClass} p-6 text-center sm:p-10`}>
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-purple-100 bg-purple-50 dark:border-gray-700 dark:bg-purple-500/10">
             <Wallet
               size={20}
-              className="text-purple-400"
+              className="text-purple-400 dark:text-purple-400"
               strokeWidth={1.75}
             />
           </div>
 
-          <p className="mt-4 text-lg font-medium text-gray-900">
+          <p className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
             Select an employee
           </p>
 
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Choose an employee above to manage their
             salary structure and payroll history.
           </p>
@@ -839,7 +839,7 @@ export default function PayrollPage() {
               ================================================= */}
 
           {message ? (
-            <div className="flex items-center gap-2.5 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            <div className="flex items-center gap-2.5 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
               <CheckCircle2
                 size={16}
                 className="shrink-0"
@@ -849,7 +849,7 @@ export default function PayrollPage() {
           ) : null}
 
           {errorMessage ? (
-            <div className="flex items-center gap-2.5 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            <div className="flex items-center gap-2.5 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
               <AlertCircle
                 size={16}
                 className="shrink-0"
@@ -863,7 +863,7 @@ export default function PayrollPage() {
               ================================================= */}
 
           <div>
-            <p className="mb-3 text-xs uppercase tracking-[0.25em] text-gray-400">
+            <p className="mb-3 text-xs uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500">
               {isHr
                 ? 'Salary overview'
                 : 'My salary overview'}
@@ -873,7 +873,7 @@ export default function PayrollPage() {
               <Spinner label="Loading salary structure..." />
             ) : structureError ? (
               <div className={`${cardClass} p-5`}>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   No salary structure has been configured
                   for this employee yet.
                 </p>
@@ -882,14 +882,14 @@ export default function PayrollPage() {
                   <button
                     type="button"
                     onClick={refetchStructure}
-                    className="mt-4 rounded-xl border border-purple-100 bg-white px-4 py-2 text-sm font-medium text-purple-700 shadow-sm transition hover:bg-purple-50"
+                    className="mt-4 rounded-xl border border-purple-100 bg-white px-4 py-2 text-sm font-medium text-purple-700 shadow-sm transition hover:bg-purple-50 dark:border-gray-700 dark:bg-gray-800/60 dark:text-purple-300 dark:hover:bg-gray-800"
                   >
                     Retry
                   </button>
                 ) : null}
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
 
                 <StatCard
                   label="Basic salary"
@@ -932,22 +932,22 @@ export default function PayrollPage() {
               SALARY STRUCTURE
               ================================================= */}
 
-          <div className={`${cardClass} p-6`}>
+          <div className={`${cardClass} p-4 sm:p-6`}>
 
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
 
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-purple-500">
+                <p className="text-xs uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
                   Compensation
                 </p>
 
-                <h2 className="mt-1 text-xl font-semibold text-gray-900">
+                <h2 className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100 sm:text-xl">
                   {isHr
                     ? 'Salary structure'
                     : 'My salary structure'}
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-400">
+                <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
                   {isHr
                     ? "Configure the employee's monthly salary components."
                     : 'View your current monthly salary components.'}
@@ -956,10 +956,10 @@ export default function PayrollPage() {
 
               {selectedEmployee?.employmentType ? (
                 <span
-                  className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                  className={`w-fit rounded-full border px-3 py-1 text-xs font-medium ${
                     preview.isContract
-                      ? 'border-indigo-100 bg-indigo-50 text-indigo-600'
-                      : 'border-purple-100 bg-purple-50 text-purple-600'
+                      ? 'border-indigo-100 bg-indigo-50 text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-400'
+                      : 'border-purple-100 bg-purple-50 text-purple-600 dark:border-purple-800 dark:bg-purple-500/10 dark:text-purple-300'
                   }`}
                 >
                   {selectedEmployee.employmentType}
@@ -968,7 +968,7 @@ export default function PayrollPage() {
 
             </div>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
               <Field
                 label="Basic salary"
@@ -1002,36 +1002,36 @@ export default function PayrollPage() {
 
             {}
 
-            <div className="mt-6 rounded-xl border border-purple-100 bg-purple-50/50 p-5">
+            <div className="mt-6 rounded-xl border border-purple-100 bg-purple-50/50 p-5 dark:border-gray-700 dark:bg-purple-500/10">
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   Gross salary
                 </span>
 
-                <span className="font-medium tabular-nums text-gray-900">
+                <span className="font-medium tabular-nums text-gray-900 dark:text-gray-100">
                   {money(preview.gross)}
                 </span>
               </div>
 
               <div className="mt-3 flex items-center justify-between">
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   Deductions
                 </span>
 
-                <span className="font-medium tabular-nums text-rose-600">
+                <span className="font-medium tabular-nums text-rose-600 dark:text-rose-400">
                   - {money(preview.deductions)}
                 </span>
               </div>
 
-              <div className="my-4 border-t border-dashed border-purple-100" />
+              <div className="my-4 border-t border-dashed border-purple-100 dark:border-gray-700" />
 
               <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-900">
+                <span className="font-medium text-gray-900 dark:text-gray-100">
                   Net salary
                 </span>
 
-                <span className="text-xl font-semibold tabular-nums text-purple-700">
+                <span className="text-lg font-semibold tabular-nums text-purple-700 dark:text-purple-300 sm:text-xl">
                   {money(preview.net)}
                 </span>
               </div>
@@ -1047,7 +1047,7 @@ export default function PayrollPage() {
 
                 <button
                   type="button"
-                  className="rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:shadow-black/30 dark:hover:bg-purple-500 sm:w-auto"
                   disabled={
                     saveStructureMutation.isPending
                   }
@@ -1062,8 +1062,8 @@ export default function PayrollPage() {
 
               </div>
             ) : (
-              <div className="mt-6 rounded-xl border border-purple-100 bg-purple-50/50 px-4 py-3">
-                <p className="text-center text-xs text-purple-600">
+              <div className="mt-6 rounded-xl border border-purple-100 bg-purple-50/50 px-4 py-3 dark:border-gray-700 dark:bg-purple-500/10">
+                <p className="text-center text-xs text-purple-600 dark:text-purple-300">
                   Your salary structure is managed by HR.
                 </p>
               </div>
@@ -1076,55 +1076,55 @@ export default function PayrollPage() {
               ================================================= */}
 
           {isHr ? (
-            <div className={`${cardClass} p-6`}>
+            <div className={`${cardClass} p-4 sm:p-6`}>
 
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-purple-500">
+                <p className="text-xs uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
                   Monthly payroll
                 </p>
 
-                <h2 className="mt-1 text-xl font-semibold text-gray-900">
+                <h2 className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100 sm:text-xl">
                   Generate payroll
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-400">
+                <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
                   Generate the payroll record for the selected
                   month using the saved salary structure.
                 </p>
               </div>
 
-              <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+              <div className="mt-6 grid gap-4 sm:gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
 
-                <div className="rounded-xl border border-purple-100 bg-purple-50/60 p-5">
+                <div className="rounded-xl border border-purple-100 bg-purple-50/60 p-4 dark:border-gray-700 dark:bg-purple-500/10 sm:p-5">
 
                   <div className="grid gap-4 sm:grid-cols-3">
 
                     <div>
-                      <p className="text-xs uppercase tracking-wider text-gray-400">
+                      <p className="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500">
                         Month
                       </p>
 
-                      <p className="mt-1 font-medium text-gray-900">
+                      <p className="mt-1 font-medium text-gray-900 dark:text-gray-100">
                         {payrollMonth}
                       </p>
                     </div>
 
                     <div>
-                      <p className="text-xs uppercase tracking-wider text-gray-400">
+                      <p className="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500">
                         Gross
                       </p>
 
-                      <p className="mt-1 font-medium tabular-nums text-gray-900">
+                      <p className="mt-1 font-medium tabular-nums text-gray-900 dark:text-gray-100">
                         {money(preview.gross)}
                       </p>
                     </div>
 
                     <div>
-                      <p className="text-xs uppercase tracking-wider text-gray-400">
+                      <p className="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500">
                         Net
                       </p>
 
-                      <p className="mt-1 font-medium tabular-nums text-gray-900">
+                      <p className="mt-1 font-medium tabular-nums text-gray-900 dark:text-gray-100">
                         {money(preview.net)}
                       </p>
                     </div>
@@ -1135,7 +1135,7 @@ export default function PayrollPage() {
 
                 <button
                   type="button"
-                  className="rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:shadow-black/30 dark:hover:bg-purple-500 lg:w-auto"
                   disabled={
                     generatePayrollMutation.isPending ||
                     !structure
@@ -1160,21 +1160,21 @@ export default function PayrollPage() {
 
           <div className={`${cardClass} overflow-hidden`}>
 
-            <div className="flex items-center justify-between gap-3 border-b border-purple-100 p-6">
+            <div className="flex flex-col gap-3 border-b border-purple-100 p-4 dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between sm:p-6">
 
               <div className="flex items-center gap-2.5">
 
                 <FileText
                   size={16}
-                  className="text-purple-500"
+                  className="text-purple-500 dark:text-purple-400"
                 />
 
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-purple-500">
+                  <p className="text-xs uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
                     Records
                   </p>
 
-                  <h2 className="mt-1 text-xl font-semibold text-gray-900">
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100 sm:text-xl">
                     {isHr
                       ? 'Payroll history'
                       : 'My payslip history'}
@@ -1184,7 +1184,7 @@ export default function PayrollPage() {
               </div>
 
               {!historyLoading && !historyError ? (
-                <span className="rounded-full border border-purple-100 bg-purple-50 px-3 py-1 text-xs font-medium text-purple-600">
+                <span className="w-fit rounded-full border border-purple-100 bg-purple-50 px-3 py-1 text-xs font-medium text-purple-600 dark:border-purple-800 dark:bg-purple-500/10 dark:text-purple-300">
                   {history.length}{' '}
                   {history.length === 1
                     ? 'record'
@@ -1201,13 +1201,13 @@ export default function PayrollPage() {
             ) : historyError ? (
               <div className="p-6">
 
-                <p className="text-sm text-rose-600">
+                <p className="text-sm text-rose-600 dark:text-rose-400">
                   Unable to load payroll history.
                 </p>
 
                 <button
                   type="button"
-                  className="mt-4 rounded-xl border border-purple-100 bg-white px-4 py-2 text-sm font-medium text-purple-700 shadow-sm transition hover:bg-purple-50"
+                  className="mt-4 rounded-xl border border-purple-100 bg-white px-4 py-2 text-sm font-medium text-purple-700 shadow-sm transition hover:bg-purple-50 dark:border-gray-700 dark:bg-gray-800/60 dark:text-purple-300 dark:hover:bg-gray-800"
                   onClick={refetchHistory}
                 >
                   Retry
@@ -1215,21 +1215,21 @@ export default function PayrollPage() {
 
               </div>
             ) : !history.length ? (
-              <div className="p-10 text-center">
+              <div className="p-6 text-center sm:p-10">
 
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-purple-100 bg-purple-50 dark:border-gray-700 dark:bg-purple-500/10">
                   <FileText
                     size={20}
-                    className="text-purple-400"
+                    className="text-purple-400 dark:text-purple-400"
                     strokeWidth={1.75}
                   />
                 </div>
 
-                <p className="mt-4 font-medium text-gray-900">
+                <p className="mt-4 font-medium text-gray-900 dark:text-gray-100">
                   No payroll records yet
                 </p>
 
-                <p className="mt-2 text-sm text-gray-400">
+                <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
                   {isHr
                     ? 'Generate payroll for a month to see the record here.'
                     : 'Your generated payslips will appear here.'}
@@ -1239,36 +1239,36 @@ export default function PayrollPage() {
             ) : (
               <div className="overflow-x-auto">
 
-                <table className="min-w-full divide-y divide-purple-100 text-sm">
+                <table className="min-w-[720px] w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
 
-                  <thead className="bg-purple-50/60 text-left text-gray-500">
+                  <thead className="bg-purple-50/60 text-left text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
 
                     <tr>
-                      <th className="px-5 py-4 font-medium">
+                      <th className="whitespace-nowrap px-5 py-4 font-medium">
                         Month
                       </th>
 
-                      <th className="px-5 py-4 font-medium">
+                      <th className="whitespace-nowrap px-5 py-4 font-medium">
                         Basic
                       </th>
 
-                      <th className="px-5 py-4 font-medium">
+                      <th className="whitespace-nowrap px-5 py-4 font-medium">
                         Allowances
                       </th>
 
-                      <th className="px-5 py-4 font-medium">
+                      <th className="whitespace-nowrap px-5 py-4 font-medium">
                         Bonuses
                       </th>
 
-                      <th className="px-5 py-4 font-medium">
+                      <th className="whitespace-nowrap px-5 py-4 font-medium">
                         Deductions
                       </th>
 
-                      <th className="px-5 py-4 font-medium">
+                      <th className="whitespace-nowrap px-5 py-4 font-medium">
                         Gross
                       </th>
 
-                      <th className="px-5 py-4 font-medium">
+                      <th className="whitespace-nowrap px-5 py-4 font-medium">
                         Net
                       </th>
 
@@ -1277,39 +1277,39 @@ export default function PayrollPage() {
 
                   </thead>
 
-                  <tbody className="divide-y divide-purple-100">
+                  <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
 
                     {history.map((payroll) => (
                       <tr
                         key={payroll.id}
-                        className="transition-colors duration-150 hover:bg-purple-50/50"
+                        className="transition-colors duration-150 hover:bg-purple-50/50 dark:hover:bg-gray-800/50"
                       >
 
-                        <td className="px-5 py-4 font-medium text-gray-900">
+                        <td className="whitespace-nowrap px-5 py-4 font-medium text-gray-900 dark:text-gray-100">
                           {payroll.payrollMonth}
                         </td>
 
-                        <td className="px-5 py-4 tabular-nums text-gray-600">
+                        <td className="whitespace-nowrap px-5 py-4 tabular-nums text-gray-600 dark:text-gray-400">
                           {money(payroll.basicSalary)}
                         </td>
 
-                        <td className="px-5 py-4 tabular-nums text-gray-600">
+                        <td className="whitespace-nowrap px-5 py-4 tabular-nums text-gray-600 dark:text-gray-400">
                           {money(payroll.allowances)}
                         </td>
 
-                        <td className="px-5 py-4 tabular-nums text-gray-600">
+                        <td className="whitespace-nowrap px-5 py-4 tabular-nums text-gray-600 dark:text-gray-400">
                           {money(payroll.bonuses)}
                         </td>
 
-                        <td className="px-5 py-4 tabular-nums text-rose-600">
+                        <td className="whitespace-nowrap px-5 py-4 tabular-nums text-rose-600 dark:text-rose-400">
                           {money(payroll.deductions)}
                         </td>
 
-                        <td className="px-5 py-4 tabular-nums text-gray-700">
+                        <td className="whitespace-nowrap px-5 py-4 tabular-nums text-gray-700 dark:text-gray-300">
                           {money(payroll.grossSalary)}
                         </td>
 
-                        <td className="px-5 py-4 font-semibold tabular-nums text-gray-900">
+                        <td className="whitespace-nowrap px-5 py-4 font-semibold tabular-nums text-gray-900 dark:text-gray-100">
                           {money(payroll.netSalary)}
                         </td>
 
