@@ -1,14 +1,14 @@
 package com.hrms.common.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.SendEmailRequest;
+import com.resend.services.emails.model.SendEmailResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import org.thymeleaf.TemplateEngine;
@@ -20,8 +20,8 @@ public class EmailService {
     private static final Logger logger =
             LoggerFactory.getLogger(EmailService.class);
 
-    private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    private final Resend resend;
 
     @Value("${app.email.from}")
     private String fromEmail;
@@ -32,15 +32,12 @@ public class EmailService {
     @Value("${app.reset-password.frontend-url}")
     private String resetPasswordUrl;
 
-    @Value("${app.reset-password.token-expiry-minutes:15}")
-    private int tokenExpiryMinutes;
-
     public EmailService(
-            JavaMailSender mailSender,
-            TemplateEngine templateEngine
+            TemplateEngine templateEngine,
+            @Value("${RESEND_API_KEY}") String resendApiKey
     ) {
-        this.mailSender = mailSender;
         this.templateEngine = templateEngine;
+        this.resend = new Resend(resendApiKey);
     }
 
     public void sendPasswordResetEmail(
@@ -51,7 +48,6 @@ public class EmailService {
 
         try {
 
-            // Reset link goes to the actual deployed frontend
             String resetLink =
                     resetPasswordUrl + "?token=" + token;
 
@@ -59,7 +55,7 @@ public class EmailService {
 
             context.setVariable("name", name);
             context.setVariable("resetLink", resetLink);
-            context.setVariable("expiryMinutes", tokenExpiryMinutes);
+            context.setVariable("expiryMinutes", 15);
 
             String htmlContent =
                     templateEngine.process(
@@ -67,36 +63,27 @@ public class EmailService {
                             context
                     );
 
-            MimeMessage message =
-                    mailSender.createMimeMessage();
+            SendEmailRequest request =
+                    SendEmailRequest.builder()
+                            .from(fromEmail)
+                            .to(to)
+                            .subject(
+                                    subjectPrefix +
+                                    " - Password Reset Request"
+                            )
+                            .html(htmlContent)
+                            .build();
 
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(
-                            message,
-                            true,
-                            "UTF-8"
-                    );
-
-            helper.setFrom(fromEmail);
-            helper.setTo(to);
-
-            helper.setSubject(
-                    subjectPrefix + " - Password Reset Request"
-            );
-
-            helper.setText(
-                    htmlContent,
-                    true
-            );
-
-            mailSender.send(message);
+            SendEmailResponse response =
+                    resend.emails().send(request);
 
             logger.info(
-                    "Password reset email sent successfully to {}",
-                    to
+                    "Password reset email sent successfully to {}. Email ID: {}",
+                    to,
+                    response.getId()
             );
 
-        } catch (MessagingException e) {
+        } catch (ResendException e) {
 
             logger.error(
                     "Failed to send password reset email to {}",

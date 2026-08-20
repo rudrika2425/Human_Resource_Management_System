@@ -321,11 +321,7 @@ public UserResponse me(UserPrincipal principal) {
         }
         
         // SEND EMAIL (REAL)
-        try {
-            emailService.sendPasswordResetEmail(email, token, name);
-        } catch (Exception e) {
-            System.err.println("Failed to send password reset email: " + e.getMessage());
-        }
+        emailService.sendPasswordResetEmail(email, token, name);
     }
 
     public void resetPassword(ResetPasswordRequest request) {
