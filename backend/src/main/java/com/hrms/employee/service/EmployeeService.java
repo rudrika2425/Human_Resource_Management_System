@@ -68,20 +68,22 @@ public class EmployeeService {
     }
 
     public EmployeeResponse update(Long id, EmployeeRequest request) {
-        Employee employee = findEmployee(id);
+    Employee employee = findEmployee(id);
 
-        validateDuplicates(
-                request.employeeId(),
-                request.email(),
-                id  
-        );
+    validateDuplicates(
+            request.employeeId(),
+            request.email(),
+            id
+    );
 
-        apply(employee, request);
+    apply(employee, request);
 
-        syncUserRole(employee);
+    Employee savedEmployee = employeeRepository.save(employee);
 
-        return toResponse(employeeRepository.save(employee));
-    }
+    syncUserRole(savedEmployee);
+
+    return toResponse(savedEmployee);
+}
 
     public EmployeeResponse patch(Long id, EmployeePatchRequest request) {
         Employee employee = findEmployee(id);
@@ -174,20 +176,20 @@ public class EmployeeService {
     }
 
     private void syncUserRole(Employee employee) {
-        if (employee.getAssignedRole() == null) {
-            return;
-        }
-
-        if (employee.getUser() == null) {
-            return;
-        }
-
-        employee.getUser().setRoles(
-                Set.of(employee.getAssignedRole())
-        );
-
-        userRepository.save(employee.getUser());
+    if (employee.getAssignedRole() == null) {
+        return;
     }
+
+    if (employee.getUser() == null) {
+        return;
+    }
+
+    employee.getUser().setRoles(
+            Set.of(employee.getAssignedRole())
+    );
+
+    userRepository.save(employee.getUser());
+}
 
     @Transactional(readOnly = true)
     public EmployeeResponse get(Long id) {
