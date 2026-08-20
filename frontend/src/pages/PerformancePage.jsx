@@ -27,7 +27,7 @@ import Goals from './Goals';
 import Review from './Review';
 
 const cardClass =
-  'rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50';
+  'rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30';
 
 /* =========================================================
    HELPERS
@@ -107,28 +107,28 @@ function StatCard({
 }) {
   return (
     <div
-      className={`${cardClass} group p-5 transition duration-200 hover:border-purple-200`}
+      className={`${cardClass} group p-5 transition duration-200 hover:border-purple-200 dark:hover:border-purple-500/40`}
     >
       <div className="flex items-start justify-between">
-        <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
+        <p className="text-xs uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
           {label}
         </p>
 
         {Icon ? (
           <Icon
             size={16}
-            className="text-purple-300 transition group-hover:text-purple-500"
+            className="text-purple-300 transition group-hover:text-purple-500 dark:text-purple-400/60 dark:group-hover:text-purple-400"
             strokeWidth={1.75}
           />
         ) : null}
       </div>
 
-      <p className="mt-3 text-2xl font-semibold tabular-nums text-gray-900">
+      <p className="mt-3 text-2xl font-semibold tabular-nums text-gray-900 dark:text-gray-100">
         {value}
       </p>
 
       {description ? (
-        <p className="mt-1 text-sm text-gray-400">
+        <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
           {description}
         </p>
       ) : null}
@@ -892,7 +892,7 @@ export default function PerformancePage() {
   ======================================================= */
 
   return (
-    <div className="min-h-full space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-4 md:p-6">
+    <div className="min-h-full space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-4 md:p-6 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
 
       {}
 
@@ -900,25 +900,25 @@ export default function PerformancePage() {
 
         <div className="flex items-center gap-3">
 
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
             <Sparkles
               size={20}
-              className="text-purple-500"
+              className="text-purple-500 dark:text-purple-400"
               strokeWidth={1.75}
             />
           </div>
 
           <div>
 
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-purple-500">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
               Workforce
             </p>
 
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900">
+            <h1 className="mt-1 text-xl font-bold tracking-tight text-gray-900 sm:text-2xl dark:text-gray-100">
               Performance Management
             </h1>
 
-            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+            <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
               {isHr
                 ? 'Manage employee goals and performance reviews across the organization.'
                 : isManager
@@ -935,16 +935,16 @@ export default function PerformancePage() {
         >
           <ShieldCheck
             size={16}
-            className="text-purple-500"
+            className="text-purple-500 dark:text-purple-400"
             strokeWidth={1.75}
           />
 
           <div>
-            <p className="text-xs uppercase tracking-[0.15em] text-gray-400">
+            <p className="text-xs uppercase tracking-[0.15em] text-gray-400 dark:text-gray-500">
               Role
             </p>
 
-            <p className="mt-0.5 text-lg font-semibold leading-none text-gray-900">
+            <p className="mt-0.5 text-lg font-semibold leading-none text-gray-900 dark:text-gray-100">
               {role}
             </p>
           </div>
@@ -955,7 +955,7 @@ export default function PerformancePage() {
       {}
 
       {message ? (
-        <div className="flex items-center gap-2.5 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        <div className="flex items-center gap-2.5 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
           <CheckCircle2
             size={16}
             className="shrink-0"
@@ -966,14 +966,14 @@ export default function PerformancePage() {
       ) : null}
 
       {errorMessage ? (
-        <div className="flex items-center gap-2.5 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="flex items-center gap-2.5 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
           {errorMessage}
         </div>
       ) : null}
 
       {}
 
-      <div className="flex gap-2 overflow-x-auto rounded-2xl border border-purple-100 bg-white p-2 shadow-sm shadow-purple-100/50">
+      <div className="flex gap-2 overflow-x-auto rounded-2xl border border-purple-100 bg-white p-2 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
 
         {TABS.filter(
           (tab) =>
@@ -996,7 +996,7 @@ export default function PerformancePage() {
               className={`flex items-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
                 isActive
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-500 hover:bg-purple-50 hover:text-purple-700'
+                  : 'text-gray-500 hover:bg-purple-50 hover:text-purple-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-purple-300'
               }`}
             >
               <Icon
@@ -1089,31 +1089,31 @@ export default function PerformancePage() {
           </div>
 
           {isEmployee && (
-            <div className={`${cardClass} p-6`}>
+            <div className={`${cardClass} p-4 sm:p-6`}>
 
               <div className="flex items-center justify-between gap-4">
 
                 <div>
 
-                  <p className="text-xs uppercase tracking-[0.2em] text-purple-500">
+                  <p className="text-xs uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
                     My Goals
                   </p>
 
-                  <h2 className="mt-2 text-xl font-semibold text-gray-900">
+                  <h2 className="mt-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
                     Your assigned performance goals
                   </h2>
 
-                  <p className="mt-2 text-sm text-gray-400">
+                  <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
                     Goals assigned to you by your manager or HR
                     are reflected here automatically.
                   </p>
 
                 </div>
 
-                <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-50 sm:flex">
+                <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-50 sm:flex dark:bg-purple-500/10">
                   <Target
                     size={22}
-                    className="text-purple-500"
+                    className="text-purple-500 dark:text-purple-400"
                   />
                 </div>
 
@@ -1125,22 +1125,22 @@ export default function PerformancePage() {
                   {goals.slice(0, 5).map((goal) => (
                     <div
                       key={goal.id}
-                      className="flex flex-col justify-between gap-3 rounded-xl border border-purple-100 bg-purple-50/40 p-4 sm:flex-row sm:items-center"
+                      className="flex flex-col justify-between gap-3 rounded-xl border border-purple-100 bg-purple-50/40 p-4 sm:flex-row sm:items-center dark:border-gray-700 dark:bg-gray-800/60"
                     >
 
                       <div className="min-w-0">
 
-                        <p className="truncate font-medium text-gray-900">
+                        <p className="truncate font-medium text-gray-900 dark:text-gray-100">
                           {goal.title || 'Untitled Goal'}
                         </p>
 
                         {goal.target ? (
-                          <p className="mt-1 truncate text-sm text-gray-500">
+                          <p className="mt-1 truncate text-sm text-gray-500 dark:text-gray-400">
                             {goal.target}
                           </p>
                         ) : null}
 
-                        <p className="mt-1 text-xs text-gray-400">
+                        <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                           Due: {goal.dueDate || '—'}
                         </p>
 
@@ -1148,11 +1148,11 @@ export default function PerformancePage() {
 
                       <div className="flex shrink-0 items-center gap-2">
 
-                        <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-xs text-gray-500">
+                        <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
                           {goal.priority || '—'}
                         </span>
 
-                        <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-xs text-gray-500">
+                        <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
                           {String(
                             goal.status || '—'
                           ).replaceAll('_', ' ')}
@@ -1169,7 +1169,7 @@ export default function PerformancePage() {
                       onClick={() =>
                         setActiveTab('goals')
                       }
-                      className="mt-2 text-sm font-medium text-purple-600 hover:text-purple-700"
+                      className="mt-2 text-sm font-medium text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
                     >
                       View all {goals.length} goals →
                     </button>
@@ -1177,18 +1177,18 @@ export default function PerformancePage() {
 
                 </div>
               ) : (
-                <div className="mt-5 rounded-xl border border-dashed border-purple-200 bg-purple-50/30 p-6 text-center">
+                <div className="mt-5 rounded-xl border border-dashed border-purple-200 bg-purple-50/30 p-6 text-center dark:border-gray-700 dark:bg-gray-800/40">
 
                   <Target
                     size={22}
-                    className="mx-auto text-purple-300"
+                    className="mx-auto text-purple-300 dark:text-purple-500/60"
                   />
 
-                  <p className="mt-3 text-sm font-medium text-gray-700">
+                  <p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-300">
                     No goals assigned yet
                   </p>
 
-                  <p className="mt-1 text-xs text-gray-400">
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                     Your assigned goals will appear here.
                   </p>
 
@@ -1198,13 +1198,13 @@ export default function PerformancePage() {
             </div>
           )}
 
-          <div className={`${cardClass} p-6`}>
+          <div className={`${cardClass} p-4 sm:p-6`}>
 
-            <p className="text-xs uppercase tracking-[0.2em] text-purple-500">
+            <p className="text-xs uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
               Performance
             </p>
 
-            <h2 className="mt-2 text-xl font-semibold text-gray-900">
+            <h2 className="mt-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
               {isEmployee
                 ? 'Your performance'
                 : isManager
@@ -1212,7 +1212,7 @@ export default function PerformancePage() {
                   : 'Organization performance'}
             </h2>
 
-            <p className="mt-2 text-sm text-gray-400">
+            <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
               {isEmployee
                 ? 'Review goals assigned to you and performance reviews completed for you.'
                 : isManager

@@ -17,6 +17,8 @@ export default function RegisterPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
     password: ''
   });
@@ -138,12 +140,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-[#F8F6FC] to-purple-100 text-gray-900">
-      <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-12">
-        <div className="grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-purple-100 bg-white shadow-2xl shadow-purple-200/40 lg:grid-cols-[1.1fr_0.9fr]">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-[#F8F6FC] to-purple-100 text-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 dark:text-gray-100">
+      <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-3 py-8 sm:px-4 sm:py-12">
+        <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-2xl shadow-purple-200/40 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/40 sm:rounded-[2rem] lg:grid-cols-[1.1fr_0.9fr]">
 
-          {}
-          <div className="relative hidden overflow-hidden border-r border-purple-100 bg-gradient-to-br from-purple-600 via-purple-500 to-violet-600 p-10 text-white lg:block">
+          {/* Left panel — hidden below lg, unchanged above */}
+          <div className="relative hidden overflow-hidden border-r border-purple-100 bg-gradient-to-br from-purple-600 via-purple-500 to-violet-600 p-8 text-white dark:border-gray-800 lg:block lg:p-10">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.18),_transparent_45%)]" />
 
             <div className="relative z-10 flex h-full flex-col justify-between">
@@ -165,7 +167,7 @@ export default function RegisterPage() {
               </div>
 
               <div className="max-w-xl space-y-4">
-                <p className="text-4xl font-semibold leading-tight">
+                <p className="text-3xl font-semibold leading-tight xl:text-4xl">
                   Join the platform built for real HR teams.
                 </p>
 
@@ -188,42 +190,42 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {}
-          <div className="p-8 lg:p-12">
+          {/* Right panel — form */}
+          <div className="p-5 sm:p-8 lg:p-12">
 
-            <div className="mb-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-purple-500">
+            <div className="mb-6 sm:mb-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-purple-500 dark:text-purple-400">
                 Create account
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold text-gray-900">
+              <h2 className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 sm:text-3xl">
                 Sign up for HRMS
               </h2>
 
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 Use the email assigned to you by HR.
               </p>
             </div>
 
             <form onSubmit={submit} className="space-y-5">
 
-              {}
-              <div className="grid grid-cols-2 gap-4">
+              {/* First / last name */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-600">
+                  <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">
                     First name
                   </label>
 
                   <div className="relative">
                     <User
                       size={16}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-300"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-300 dark:text-purple-500"
                     />
 
                     <input
                       name="firstName"
-                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 py-3 pl-9 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 py-3 pl-9 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                       value={form.firstName}
                       onChange={onChange}
                       placeholder="First Name"
@@ -233,19 +235,19 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-600">
+                  <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">
                     Last name
                   </label>
 
                   <div className="relative">
                     <User
                       size={16}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-300"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-300 dark:text-purple-500"
                     />
 
                     <input
                       name="lastName"
-                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 py-3 pl-9 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 py-3 pl-9 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                       value={form.lastName}
                       onChange={onChange}
                       placeholder="Last Name"
@@ -256,22 +258,22 @@ export default function RegisterPage() {
 
               </div>
 
-              {}
+              {/* Email */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-600">
+                <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">
                   Email
                 </label>
 
                 <div className="relative">
                   <Mail
                     size={16}
-                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-300"
+                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-300 dark:text-purple-500"
                   />
 
                   <input
                     name="email"
                     type="email"
-                    className="w-full rounded-xl border border-purple-100 bg-purple-50/40 py-3 pl-9 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                    className="w-full rounded-xl border border-purple-100 bg-purple-50/40 py-3 pl-9 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                     value={form.email}
                     onChange={onChange}
                     placeholder="exmaple@company.com"
@@ -280,28 +282,28 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <p className="mt-2 text-xs text-gray-400">
+                <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
                   Your email must already be registered in the HRMS
                   employee database.
                 </p>
               </div>
 
-              {}
+              {/* Password */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-600">
+                <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">
                   Password
                 </label>
 
                 <div className="relative">
                   <Lock
                     size={16}
-                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-300"
+                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-300 dark:text-purple-500"
                   />
 
                   <input
                     name="password"
                     type="password"
-                    className="w-full rounded-xl border border-purple-100 bg-purple-50/40 py-3 pl-9 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                    className="w-full rounded-xl border border-purple-100 bg-purple-50/40 py-3 pl-9 pr-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                     value={form.password}
                     onChange={onChange}
                     placeholder="At least 8 characters"
@@ -313,18 +315,18 @@ export default function RegisterPage() {
 
               
 
-              {}
+              {/* Error */}
               {error ? (
-                <div className="flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                <div className="flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
                   <AlertCircle size={16} className="shrink-0" />
                   {error}
                 </div>
               ) : null}
 
-              {}
+              {/* Submit */}
               <button
                 type="submit"
-                className="w-full rounded-xl bg-purple-600 py-3 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-xl bg-purple-600 py-3 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 dark:shadow-black/30 dark:hover:bg-purple-500"
                 disabled={loading}
               >
                 {loading
@@ -332,12 +334,12 @@ export default function RegisterPage() {
                   : 'Sign up'}
               </button>
 
-              <p className="text-center text-sm text-gray-500">
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400">
                 Already have an account?{' '}
 
                 <Link
                   to="/login"
-                  className="font-medium text-purple-600 hover:text-purple-700"
+                  className="font-medium text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
                 >
                   Sign in
                 </Link>

@@ -15,13 +15,13 @@ import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
 
 const cardClass =
-  'rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50';
+  'rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30';
 
 const inputClass =
-  'relative z-[9999] w-full rounded-xl border border-purple-100 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition placeholder:text-gray-300 focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100 cursor-pointer';
+  'relative z-[9999] w-full rounded-xl border border-purple-100 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition placeholder:text-gray-300 focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100 cursor-pointer dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:ring-purple-500/20';
 
 const primaryButtonClass =
-  'rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50';
+  'rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:shadow-black/30 dark:hover:bg-purple-500';
 
 /* =========================================================
    HELPERS
@@ -235,17 +235,17 @@ function RatingPill({ value }) {
 
   const tone =
     num >= 8
-      ? 'text-emerald-600'
+      ? 'text-emerald-600 dark:text-emerald-400'
       : num >= 5
-        ? 'text-amber-600'
-        : 'text-rose-600';
+        ? 'text-amber-600 dark:text-amber-400'
+        : 'text-rose-600 dark:text-rose-400';
 
   return (
     <span
       className={`tabular-nums font-medium ${tone}`}
     >
       {value || 0}
-      <span className="text-gray-300">
+      <span className="text-gray-300 dark:text-gray-600">
         /10
       </span>
     </span>
@@ -555,24 +555,24 @@ export default function Review({
     return (
       <section className={cardClass}>
 
-        <div className="flex items-center gap-2.5 border-b border-purple-100 px-5 py-5">
+        <div className="flex items-center gap-2.5 border-b border-purple-100 px-5 py-5 dark:border-gray-800">
 
           <PlusCircle
             size={16}
-            className="text-purple-500"
+            className="text-purple-500 dark:text-purple-400"
           />
 
           <div>
 
-            <p className="text-xs font-medium uppercase tracking-[0.16em] text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
               Evaluation
             </p>
 
-            <h2 className="mt-1 text-lg font-semibold text-gray-900">
+            <h2 className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
               Add Performance Review
             </h2>
 
-            <p className="mt-1 text-sm text-gray-400">
+            <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
               {isManager
                 ? 'Review an employee who reports to you.'
                 : 'Record employee performance ratings and feedback.'}
@@ -584,7 +584,7 @@ export default function Review({
 
         <form
           onSubmit={handleReviewSubmit}
-          className="space-y-6 p-5"
+          className="space-y-6 p-4 sm:p-5"
         >
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -593,7 +593,7 @@ export default function Review({
 
             <div>
 
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 {isManager
                   ? 'Team Employee'
                   : 'Employee'}
@@ -722,7 +722,7 @@ export default function Review({
 
               {employeeOptions.length ===
                 0 && (
-                <p className="mt-1.5 text-xs text-rose-500">
+                <p className="mt-1.5 text-xs text-rose-500 dark:text-rose-400">
                   {isManager
                     ? 'No employees are currently assigned to your team.'
                     : 'No employees with EMPLOYEE role found.'}
@@ -732,7 +732,7 @@ export default function Review({
               {isManager &&
                 employeeOptions.length >
                   0 && (
-                  <p className="mt-1.5 text-xs text-purple-500">
+                  <p className="mt-1.5 text-xs text-purple-500 dark:text-purple-400">
                     Only your team members are available.
                   </p>
                 )}
@@ -743,7 +743,7 @@ export default function Review({
 
             <div>
 
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Manager
               </label>
 
@@ -752,7 +752,7 @@ export default function Review({
                 <input
                   type="text"
                   value="Current Manager"
-                  className={`${inputClass} bg-gray-50`}
+                  className={`${inputClass} bg-gray-50 dark:bg-gray-800`}
                   readOnly
                 />
 
@@ -787,7 +787,7 @@ export default function Review({
                       : ''
                   }
                   placeholder="Manager will be selected automatically"
-                  className={`${inputClass} bg-gray-50 cursor-default`}
+                  className={`${inputClass} bg-gray-50 cursor-default dark:bg-gray-800`}
                   readOnly
                 />
 
@@ -855,7 +855,7 @@ export default function Review({
 
               {isHr &&
                 reviewForm.employeeId && (
-                  <p className="mt-1.5 text-xs text-purple-500">
+                  <p className="mt-1.5 text-xs text-purple-500 dark:text-purple-400">
                     Manager is automatically assigned from the selected employee.
                   </p>
                 )}
@@ -893,13 +893,13 @@ export default function Review({
               ([name, label]) => (
                 <div key={name}>
 
-                  <label className="mb-2 flex items-center justify-between text-sm text-gray-600">
+                  <label className="mb-2 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
 
                     <span>
                       {label}
                     </span>
 
-                    <span className="text-xs text-gray-300">
+                    <span className="text-xs text-gray-300 dark:text-gray-600">
                       1–10
                     </span>
 
@@ -935,7 +935,7 @@ export default function Review({
 
             <div>
 
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Review Date
               </label>
 
@@ -953,7 +953,7 @@ export default function Review({
                     })
                   )
                 }
-                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white focus:ring-2 focus:ring-purple-100"
+                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white focus:ring-2 focus:ring-purple-100 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800 dark:focus:ring-purple-500/20"
                 required
               />
 
@@ -963,7 +963,7 @@ export default function Review({
 
             <div className="md:col-span-2">
 
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Feedback
               </label>
 
@@ -993,9 +993,7 @@ export default function Review({
 
             <button
               type="submit"
-              className={
-                primaryButtonClass
-              }
+              className={`w-full sm:w-auto ${primaryButtonClass}`}
               disabled={
                 createReviewMutation.isPending ||
                 employeeOptions.length === 0 ||
@@ -1026,20 +1024,20 @@ export default function Review({
       className={`${cardClass} overflow-hidden`}
     >
 
-      <div className="flex items-center gap-2.5 border-b border-purple-100 p-6">
+      <div className="flex items-center gap-2.5 border-b border-purple-100 p-4 sm:p-6 dark:border-gray-800">
 
         <ClipboardList
           size={16}
-          className="text-purple-500"
+          className="text-purple-500 dark:text-purple-400"
         />
 
         <div>
 
-          <p className="text-xs uppercase tracking-[0.2em] text-purple-500">
+          <p className="text-xs uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
             Evaluations
           </p>
 
-          <h2 className="mt-1 text-xl font-semibold text-gray-900">
+          <h2 className="mt-1 text-xl font-semibold text-gray-900 dark:text-gray-100">
 
             {isEmployee
               ? 'My Performance Reviews'
@@ -1067,21 +1065,21 @@ export default function Review({
       ) : !reviews.length ? (
         <div className="p-10 text-center">
 
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-purple-100 bg-purple-50 dark:border-gray-700 dark:bg-gray-800">
 
             <ClipboardList
               size={20}
-              className="text-purple-400"
+              className="text-purple-400 dark:text-purple-400"
               strokeWidth={1.75}
             />
 
           </div>
 
-          <p className="mt-4 font-medium text-gray-900">
+          <p className="mt-4 font-medium text-gray-900 dark:text-gray-100">
             No performance reviews yet
           </p>
 
-          <p className="mt-2 text-sm text-gray-400">
+          <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
 
             {isEmployee
               ? 'No performance reviews have been assigned to you yet.'
@@ -1095,9 +1093,9 @@ export default function Review({
       ) : (
         <div className="overflow-x-auto">
 
-          <table className="min-w-[1200px] divide-y divide-purple-100 text-sm">
+          <table className="min-w-[1200px] divide-y divide-purple-100 text-sm dark:divide-gray-800">
 
-            <thead className="bg-purple-50/60 text-left text-gray-500">
+            <thead className="bg-purple-50/60 text-left text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
 
               <tr>
 
@@ -1141,16 +1139,16 @@ export default function Review({
 
             </thead>
 
-            <tbody className="divide-y divide-purple-100">
+            <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
 
               {reviews.map(
                 (review) => (
                   <tr
                     key={review.id}
-                    className="transition-colors duration-150 hover:bg-purple-50/50"
+                    className="transition-colors duration-150 hover:bg-purple-50/50 dark:hover:bg-gray-800/50"
                   >
 
-                    <td className="px-5 py-4 font-medium text-gray-900">
+                    <td className="px-5 py-4 font-medium text-gray-900 dark:text-gray-100">
                       {review.employeeName ||
                         review.employee?.name ||
                         `${review.employee?.firstName || ''} ${
@@ -1159,7 +1157,7 @@ export default function Review({
                         '—'}
                     </td>
 
-                    <td className="px-5 py-4 text-gray-600">
+                    <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                       {review.managerName ||
                         review.manager?.name ||
                         `${review.manager?.firstName || ''} ${
@@ -1229,7 +1227,7 @@ export default function Review({
 
                     </td>
 
-                    <td className="px-5 py-4 text-gray-500">
+                    <td className="px-5 py-4 text-gray-500 dark:text-gray-400">
                       {formatDate(
                         review.reviewDate
                       )}
