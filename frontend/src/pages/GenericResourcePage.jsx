@@ -6,7 +6,6 @@ import ErrorState from '../components/ErrorState';
 import EmptyState from '../components/EmptyState';
 import StatusBadge from '../components/StatusBadge';
 
-// Inline SVG Icons (no dependency needed)
 const PencilIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +41,9 @@ const PlusIcon = () => (
 );
 
 function prettyValue(value) {
-  if (value === null || value === undefined || value === '') return '—';
+  if (value === null || value === undefined || value === '') {
+    return '—';
+  }
 
   if (typeof value === 'object') {
     return JSON.stringify(value);
@@ -51,16 +52,6 @@ function prettyValue(value) {
   return String(value);
 }
 
-/**
- * @param {string} title
- * @param {string} endpoint
- * @param {string} [createPath]
- * @param {string} [createLabel]
- * @param {(row) => string} [editPath]
- * @param {string[]} [roles]
- * @param {string} [requiredRole]
- * @param {boolean} [showCreateButton]
- */
 export default function GenericResourcePage({
   title,
   endpoint,
@@ -80,56 +71,21 @@ export default function GenericResourcePage({
 
   const rows = Array.isArray(data) ? data : data?.data || [];
 
-  // ============================================================
-  // ROLE CHECK
-  // ============================================================
-
-  const hasRequiredRole = roles.some((role) => {
-    const cleanRole = String(role)
-      .replace(/^ROLE_/, '')
-      .toUpperCase();
-
-    const required = requiredRole.toUpperCase();
-
-    return (
-      cleanRole === required ||
-      cleanRole.includes(required) ||
-      String(role).toUpperCase() === `ROLE_${required}`
-    );
-  });
-
-  // ============================================================
-  // MANAGER CHECK
-  //
-  // IMPORTANT:
-  // HR behavior is NOT changed.
-  // Managers simply do not get edit actions.
-  // ============================================================
-
-  const isManager = roles.some(
-    (role) =>
-      String(role)
-        .replace(/^ROLE_/, '')
-        .toUpperCase() === 'MANAGER'
+  const normalizedRoles = roles.map((role) =>
+    String(role).replace(/^ROLE_/, '').trim().toUpperCase()
   );
 
-  // ============================================================
-  // CREATE BUTTON
-  // ============================================================
+  const isHR = normalizedRoles.includes('HR');
+
+  const hasRequiredRole = normalizedRoles.includes(
+    String(requiredRole).replace(/^ROLE_/, '').trim().toUpperCase()
+  );
 
   const shouldShowCreateButton =
     showCreateButton || (createPath && hasRequiredRole);
 
-  console.log('👤 User Roles:', roles);
-  console.log('🔑 Required Role:', requiredRole);
-  console.log('✅ Has Required Role:', hasRequiredRole);
-  console.log('👔 Is Manager:', isManager);
-  console.log('📝 Show Create Button:', shouldShowCreateButton);
-
   if (isLoading) {
-    return (
-      <Spinner label={`Loading ${title.toLowerCase()}...`} />
-    );
+    return <Spinner label={`Loading ${title.toLowerCase()}...`} />;
   }
 
   if (error) {
@@ -155,14 +111,8 @@ export default function GenericResourcePage({
         </h1>
       </div>
 
-      {/* =========================
-          CREATE BUTTONS
-          ========================= */}
-
       {shouldShowCreateButton && (
         <div className="flex items-center gap-3">
-
-          {/* Departments */}
           {title.toLowerCase() === 'departments' && (
             <button
               type="button"
@@ -174,7 +124,6 @@ export default function GenericResourcePage({
             </button>
           )}
 
-          {/* Designations */}
           {title.toLowerCase() === 'designations' && (
             <button
               type="button"
@@ -186,7 +135,6 @@ export default function GenericResourcePage({
             </button>
           )}
 
-          {/* Other resources */}
           {!['departments', 'designations'].includes(
             title.toLowerCase()
           ) && (
@@ -227,7 +175,6 @@ export default function GenericResourcePage({
         <table className="min-w-full divide-y divide-purple-100 text-sm">
           <thead className="bg-purple-50 text-left text-gray-900">
             <tr>
-
               {columns.map((column) => (
                 <th
                   key={column}
@@ -239,17 +186,7 @@ export default function GenericResourcePage({
                 </th>
               ))}
 
-              {/* =====================================================
-                  ACTIONS COLUMN
-
-                  HR:
-                    Show exactly as before.
-
-                  MANAGER:
-                    Completely hide the Actions column.
-                 ===================================================== */}
-
-              {editPath && !isManager && (
+              {editPath && isHR && (
                 <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.15em]">
                   Actions
                 </th>
@@ -266,7 +203,6 @@ export default function GenericResourcePage({
                 {columns.map((column) => {
                   const value = row[column];
 
-                  // Active / Disabled status
                   if (column.toLowerCase() === 'active') {
                     return (
                       <td
@@ -301,19 +237,10 @@ export default function GenericResourcePage({
                   );
                 })}
 
-                {/* =====================================================
-                    PENCIL / EDIT BUTTON
-
-                    HR:
-                      Pencil remains.
-
-                    MANAGER:
-                      Pencil is completely removed.
-                   ===================================================== */}
-
-                {editPath && !isManager && (
+                {editPath && isHR && (
                   <td className="px-4 py-3 text-center">
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(editPath(row));
