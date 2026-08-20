@@ -68,38 +68,38 @@ function getEmployeeName(row) {
 function getStatusClass(status) {
   switch (status) {
     case 'PRESENT':
-      return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30';
 
     case 'LATE':
-      return 'bg-amber-50 text-amber-700 border-amber-200';
+      return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30';
 
     case 'HALF_DAY':
-      return 'bg-orange-50 text-orange-700 border-orange-200';
+      return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/30';
 
     case 'ABSENT':
-      return 'bg-rose-50 text-rose-700 border-rose-200';
+      return 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30';
 
     case 'ON_LEAVE':
-      return 'bg-purple-50 text-purple-700 border-purple-200';
+      return 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/30';
 
     default:
-      return 'bg-slate-50 text-slate-500 border-slate-200';
+      return 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/30';
   }
 }
 
 function StatCard({ label, value, description }) {
   return (
-    <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm shadow-purple-100/50">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-400">
+    <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-400 dark:text-purple-400">
         {label}
       </p>
 
-      <div className="mt-3 text-3xl font-semibold tracking-tight text-gray-900">
+      <div className="mt-3 text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
         {value}
       </div>
 
       {description ? (
-        <p className="mt-1 text-sm text-gray-500">{description}</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{description}</p>
       ) : null}
     </div>
   );
@@ -108,7 +108,7 @@ function StatCard({ label, value, description }) {
 function AttendanceStatus({ status }) {
   if (!status) {
     return (
-      <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-400">
+      <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500">
         —
       </span>
     );
@@ -129,19 +129,19 @@ function HistoryModal({ employee, history, loading, error, onClose }) {
   if (!employee) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-      <div className="max-h-[85vh] w-full max-w-5xl overflow-hidden rounded-3xl border border-purple-100 bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-black/10 px-6 py-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm dark:bg-black/60">
+      <div className="max-h-[85vh] w-full max-w-5xl overflow-hidden rounded-3xl border border-purple-100 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/50">
+        <div className="flex items-center justify-between border-b border-black/10 px-6 py-5 dark:border-white/10">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400">
               Attendance History
             </p>
 
-            <h2 className="mt-1 text-xl font-semibold text-gray-900">
+            <h2 className="mt-1 text-xl font-semibold text-gray-900 dark:text-gray-100">
               {getEmployeeName(employee)}
             </h2>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Employee ID: {employee.employeeId ?? employee.employeeId === 0
                 ? employee.employeeId
                 : employee.id ?? '—'}
@@ -151,7 +151,7 @@ function HistoryModal({ employee, history, loading, error, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 text-purple-500 transition hover:bg-purple-100 hover:text-purple-700"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 text-purple-500 transition hover:bg-purple-100 hover:text-purple-700 dark:border-gray-800 dark:bg-gray-800 dark:text-purple-400 dark:hover:bg-gray-700 dark:hover:text-purple-300"
           >
             ×
           </button>
@@ -163,15 +163,15 @@ function HistoryModal({ employee, history, loading, error, onClose }) {
           ) : error ? (
             <ErrorState description="Unable to load attendance history." />
           ) : !history.length ? (
-            <div className="rounded-2xl border border-dashed border-purple-200 bg-purple-50/40 p-10 text-center">
-              <p className="text-sm text-gray-500">
+            <div className="rounded-2xl border border-dashed border-purple-200 bg-purple-50/40 p-10 text-center dark:border-gray-700 dark:bg-gray-800/40">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 No attendance records found.
               </p>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white">
-              <table className="min-w-full divide-y divide-purple-100 text-sm">
-                <thead className="bg-purple-50 text-left text-gray-900">
+            <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white dark:border-gray-800 dark:bg-gray-900">
+              <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                   <tr>
                     <th className="px-4 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
                       Date
@@ -193,21 +193,21 @@ function HistoryModal({ employee, history, loading, error, onClose }) {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-purple-100">
+                <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
                   {history.map((record) => (
                     <tr
                       key={record.id ?? `${record.employeeId}-${record.workDate}`}
-                      className="transition hover:bg-purple-50/60"
+                      className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                     >
-                      <td className="px-4 py-3 text-gray-800">
+                      <td className="px-4 py-3 text-gray-800 dark:text-gray-200">
                         {formatDate(record.workDate)}
                       </td>
 
-                      <td className="px-4 py-3 text-gray-600">
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
                         {formatTime(record.checkInAt)}
                       </td>
 
-                      <td className="px-4 py-3 text-gray-600">
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
                         {formatTime(record.checkOutAt)}
                       </td>
 
@@ -427,19 +427,19 @@ export default function AttendancePage() {
 
   return (
     <>
-      <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-6">
+      <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-6 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         {}
-        <div className="flex flex-col justify-between gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end">
+        <div className="flex flex-col justify-between gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end dark:border-white/10">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-purple-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-purple-500 dark:text-purple-400">
               Workforce
             </p>
 
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900">
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
               Attendance
             </h1>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {isHr
                 ? "Monitor today's attendance across the organization."
                 : isManager
@@ -456,7 +456,7 @@ export default function AttendancePage() {
             
 
             {(isHr || isManager) && (
-              <div className="text-sm font-medium text-gray-600">
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {new Date().toLocaleDateString('en-IN', {
                   weekday: 'long',
                   day: '2-digit',
@@ -504,8 +504,8 @@ export default function AttendancePage() {
             {}
             <div>
               <div className="mb-3 flex items-center gap-2">
-                <User size={18} className="text-purple-500" />
-                <h2 className="text-lg font-semibold text-gray-900">
+                <User size={18} className="text-purple-500 dark:text-purple-400" />
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   My Attendance
                 </h2>
               </div>
@@ -541,11 +541,11 @@ export default function AttendancePage() {
             {}
             <div>
               <div className="mb-3 flex items-center gap-2">
-                <Users size={18} className="text-purple-500" />
-                <h2 className="text-lg font-semibold text-gray-900">
+                <Users size={18} className="text-purple-500 dark:text-purple-400" />
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Team Attendance
                 </h2>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   ({filteredAttendance.length} members)
                 </span>
               </div>
@@ -611,14 +611,14 @@ export default function AttendancePage() {
 
         {}
         {(isHr || isManager) && (
-          <div className="rounded-2xl border border-purple-100 bg-white p-4 shadow-sm shadow-purple-100/50">
+          <div className="rounded-2xl border border-purple-100 bg-white p-4 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
             <div className="relative max-w-md">
               <input
                 type="text"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search employee, ID or status..."
-                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
               />
             </div>
           </div>
@@ -626,29 +626,29 @@ export default function AttendancePage() {
 
         {}
         {isEmployee ? (
-          <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-            <div className="border-b border-black/10 px-5 py-4">
+          <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+            <div className="border-b border-black/10 px-5 py-4 dark:border-white/10">
               <div className="flex items-center gap-2">
-                <Calendar size={18} className="text-purple-500" />
-                <h2 className="font-semibold text-gray-900">
+                <Calendar size={18} className="text-purple-500 dark:text-purple-400" />
+                <h2 className="font-semibold text-gray-900 dark:text-gray-100">
                   My Attendance History
                 </h2>
               </div>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Your complete attendance history and working hours.
               </p>
             </div>
 
             {!attendance.length ? (
               <div className="p-10 text-center">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   No attendance records found.
                 </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-purple-100 text-sm">
-                  <thead className="bg-purple-50 text-left text-gray-900">
+                <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                  <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                     <tr>
                       <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
                         Date
@@ -666,19 +666,19 @@ export default function AttendancePage() {
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-purple-100">
+                  <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
                     {attendance.map((row) => (
                       <tr
                         key={row.id ?? `${row.employeeId}-${row.workDate}`}
-                        className="transition hover:bg-purple-50/60"
+                        className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                       >
-                        <td className="px-5 py-4 text-gray-800">
+                        <td className="px-5 py-4 text-gray-800 dark:text-gray-200">
                           {formatDate(row.workDate)}
                         </td>
-                        <td className="px-5 py-4 text-gray-600">
+                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                           {formatTime(row.checkInAt)}
                         </td>
-                        <td className="px-5 py-4 text-gray-600">
+                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                           {formatTime(row.checkOutAt)}
                         </td>
                         
@@ -696,29 +696,29 @@ export default function AttendancePage() {
           
           <>
             {}
-            <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-              <div className="border-b border-black/10 px-5 py-4">
+            <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+              <div className="border-b border-black/10 px-5 py-4 dark:border-white/10">
                 <div className="flex items-center gap-2">
-                  <User size={18} className="text-purple-500" />
-                  <h2 className="font-semibold text-gray-900">
+                  <User size={18} className="text-purple-500 dark:text-purple-400" />
+                  <h2 className="font-semibold text-gray-900 dark:text-gray-100">
                     My Attendance
                   </h2>
                 </div>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Your personal attendance records.
                 </p>
               </div>
 
               {!managerAttendance.length ? (
                 <div className="p-10 text-center">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     No attendance records found.
                   </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-purple-100 text-sm">
-                    <thead className="bg-purple-50 text-left text-gray-900">
+                  <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                    <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                       <tr>
                         <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
                           Date
@@ -736,19 +736,19 @@ export default function AttendancePage() {
                       </tr>
                     </thead>
 
-                    <tbody className="divide-y divide-purple-100">
+                    <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
                       {managerAttendance.map((row) => (
                         <tr
                           key={row.id ?? `${row.employeeId}-${row.workDate}`}
-                          className="transition hover:bg-purple-50/60"
+                          className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                         >
-                          <td className="px-5 py-4 text-gray-800">
+                          <td className="px-5 py-4 text-gray-800 dark:text-gray-200">
                             {formatDate(row.workDate)}
                           </td>
-                          <td className="px-5 py-4 text-gray-600">
+                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                             {formatTime(row.checkInAt)}
                           </td>
-                          <td className="px-5 py-4 text-gray-600">
+                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                             {formatTime(row.checkOutAt)}
                           </td>
                           
@@ -764,22 +764,22 @@ export default function AttendancePage() {
             </div>
 
             {}
-            <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-              <div className="border-b border-black/10 px-5 py-4">
+            <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+              <div className="border-b border-black/10 px-5 py-4 dark:border-white/10">
                 <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
                   <div>
                     <div className="flex items-center gap-2">
-                      <Users size={18} className="text-purple-500" />
-                      <h2 className="font-semibold text-gray-900">
+                      <Users size={18} className="text-purple-500 dark:text-purple-400" />
+                      <h2 className="font-semibold text-gray-900 dark:text-gray-100">
                         Team Attendance
                       </h2>
                     </div>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                       Today's attendance of employees reporting to you.
                     </p>
                   </div>
 
-                  <span className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     {filteredAttendance.length} record
                     {filteredAttendance.length !== 1 ? 's' : ''}
                   </span>
@@ -788,14 +788,14 @@ export default function AttendancePage() {
 
               {!filteredAttendance.length ? (
                 <div className="p-10 text-center">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     No attendance records found.
                   </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-purple-100 text-sm">
-                    <thead className="bg-purple-50 text-left text-gray-900">
+                  <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                    <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                       <tr>
                         <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
                           Employee
@@ -819,27 +819,27 @@ export default function AttendancePage() {
                       </tr>
                     </thead>
 
-                    <tbody className="divide-y divide-purple-100">
+                    <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
                       {filteredAttendance.map((row) => (
                         <tr
                           key={row.id ?? `${row.employeeId}-${row.workDate}`}
-                          className="transition hover:bg-purple-50/60"
+                          className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                         >
                           <td className="px-5 py-4">
-                            <div className="font-medium text-gray-900">
+                            <div className="font-medium text-gray-900 dark:text-gray-100">
                               {getEmployeeName(row)}
                             </div>
-                            <div className="mt-0.5 text-xs text-gray-400">
+                            <div className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
                               ID: {row.employeeId ?? '—'}
                             </div>
                           </td>
-                          <td className="px-5 py-4 text-gray-600">
+                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                             {formatDate(row.workDate)}
                           </td>
-                          <td className="px-5 py-4 text-gray-600">
+                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                             {formatTime(row.checkInAt)}
                           </td>
-                          <td className="px-5 py-4 text-gray-600">
+                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                             {formatTime(row.checkOutAt)}
                           </td>
                           
@@ -850,7 +850,7 @@ export default function AttendancePage() {
                             <button
                               type="button"
                               onClick={() => setSelectedEmployee(row)}
-                              className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs font-semibold text-purple-700 transition hover:bg-purple-600 hover:text-white"
+                              className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs font-semibold text-purple-700 transition hover:bg-purple-600 hover:text-white dark:border-purple-800 dark:bg-purple-500/10 dark:text-purple-300 dark:hover:bg-purple-600 dark:hover:text-white"
                             >
                               View History
                             </button>
@@ -865,22 +865,22 @@ export default function AttendancePage() {
           </>
         ) : (
           
-          <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-            <div className="border-b border-black/10 px-5 py-4">
+          <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+            <div className="border-b border-black/10 px-5 py-4 dark:border-white/10">
               <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Users size={18} className="text-purple-500" />
-                    <h2 className="font-semibold text-gray-900">
+                    <Users size={18} className="text-purple-500 dark:text-purple-400" />
+                    <h2 className="font-semibold text-gray-900 dark:text-gray-100">
                       Today's Attendance
                     </h2>
                   </div>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Attendance of all active employees across the organization.
                   </p>
                 </div>
 
-                <span className="text-sm font-medium text-gray-500">
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   {filteredAttendance.length} record
                   {filteredAttendance.length !== 1 ? 's' : ''}
                 </span>
@@ -889,14 +889,14 @@ export default function AttendancePage() {
 
             {!filteredAttendance.length ? (
               <div className="p-10 text-center">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   No attendance records found.
                 </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-purple-100 text-sm">
-                  <thead className="bg-purple-50 text-left text-gray-900">
+                <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                  <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                     <tr>
                       <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
                         Employee
@@ -920,27 +920,27 @@ export default function AttendancePage() {
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-purple-100">
+                  <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
                     {filteredAttendance.map((row) => (
                       <tr
                         key={row.id ?? `${row.employeeId}-${row.workDate}`}
-                        className="transition hover:bg-purple-50/60"
+                        className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                       >
                         <td className="px-5 py-4">
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-gray-900 dark:text-gray-100">
                             {getEmployeeName(row)}
                           </div>
-                          <div className="mt-0.5 text-xs text-gray-400">
+                          <div className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
                             ID: {row.employeeId ?? '—'}
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-gray-600">
+                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                           {formatDate(row.workDate)}
                         </td>
-                        <td className="px-5 py-4 text-gray-600">
+                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                           {formatTime(row.checkInAt)}
                         </td>
-                        <td className="px-5 py-4 text-gray-600">
+                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                           {formatTime(row.checkOutAt)}
                         </td>
                         
@@ -951,7 +951,7 @@ export default function AttendancePage() {
                           <button
                             type="button"
                             onClick={() => setSelectedEmployee(row)}
-                            className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs font-semibold text-purple-700 transition hover:bg-purple-600 hover:text-white"
+                            className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs font-semibold text-purple-700 transition hover:bg-purple-600 hover:text-white dark:border-purple-800 dark:bg-purple-500/10 dark:text-purple-300 dark:hover:bg-purple-600 dark:hover:text-white"
                           >
                             View History
                           </button>
