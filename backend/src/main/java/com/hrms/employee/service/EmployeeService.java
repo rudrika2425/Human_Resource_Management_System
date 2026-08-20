@@ -170,11 +170,6 @@ public class EmployeeService {
             employee.setActive(request.active());
         }
 
-        if (request.assignedRole() != null) {
-            employee.setAssignedRole(request.assignedRole());
-            syncUserRole(employee);
-        }
-
         return toResponse(employeeRepository.save(employee));
     }
 
