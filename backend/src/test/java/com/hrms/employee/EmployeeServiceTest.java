@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import com.hrms.auth.entity.UserRole;
-import com.hrms.auth.repository.UserRepository;
 import com.hrms.common.exception.ConflictException;
 import com.hrms.department.repository.DepartmentRepository;
 import com.hrms.designation.repository.DesignationRepository;
@@ -33,9 +32,7 @@ class EmployeeServiceTest {
     @Mock
     private DesignationRepository designationRepository;
 
-    @Mock
-    private UserRepository userRepository;
-
+   
     private EmployeeService employeeService;
 
     @BeforeEach
@@ -43,8 +40,7 @@ class EmployeeServiceTest {
         employeeService = new EmployeeService(
                 employeeRepository,
                 departmentRepository,
-                designationRepository,
-                userRepository
+                designationRepository
         );
     }
 

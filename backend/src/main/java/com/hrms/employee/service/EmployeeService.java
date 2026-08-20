@@ -1,7 +1,6 @@
 package com.hrms.employee.service;
 
 import com.hrms.auth.entity.UserRole;
-import com.hrms.auth.repository.UserRepository;
 import com.hrms.common.exception.ConflictException;
 import com.hrms.common.exception.NotFoundException;
 import com.hrms.common.response.PageResponse;
@@ -26,7 +25,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+
 
 @Service
 @Transactional
@@ -35,17 +34,15 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final DesignationRepository designationRepository;
-    private final UserRepository userRepository;
+    
 
     public EmployeeService(
             EmployeeRepository employeeRepository,
             DepartmentRepository departmentRepository,
-            DesignationRepository designationRepository,
-            UserRepository userRepository) {
+            DesignationRepository designationRepository) {
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
         this.designationRepository = designationRepository;
-        this.userRepository = userRepository;
     }
 
     public EmployeeResponse create(EmployeeRequest request) {
@@ -78,11 +75,7 @@ public class EmployeeService {
 
     apply(employee, request);
 
-    Employee savedEmployee = employeeRepository.save(employee);
-
-    syncUserRole(savedEmployee);
-
-    return toResponse(savedEmployee);
+    return toResponse(employeeRepository.save(employee));
 }
 
     public EmployeeResponse patch(Long id, EmployeePatchRequest request) {
@@ -175,21 +168,6 @@ public class EmployeeService {
         return toResponse(employeeRepository.save(employee));
     }
 
-    private void syncUserRole(Employee employee) {
-    if (employee.getAssignedRole() == null) {
-        return;
-    }
-
-    if (employee.getUser() == null) {
-        return;
-    }
-
-    employee.getUser().setRoles(
-            Set.of(employee.getAssignedRole())
-    );
-
-    userRepository.save(employee.getUser());
-}
 
     @Transactional(readOnly = true)
     public EmployeeResponse get(Long id) {
@@ -485,11 +463,6 @@ public class EmployeeService {
         employee.setEmergencyContact(request.emergencyContact());
         employee.setJoiningDate(request.joiningDate());
 
-        employee.setAssignedRole(
-                request.assignedRole() == null
-                        ? UserRole.EMPLOYEE
-                        : request.assignedRole()
-        );
 
         employee.setDepartment(
                 request.departmentId() == null
