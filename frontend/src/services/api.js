@@ -69,7 +69,10 @@ api.interceptors.response.use(
     const isAuthRequest =
       requestUrl.includes('/api/v1/auth/login') ||
       requestUrl.includes('/api/v1/auth/refresh') ||
-      requestUrl.includes('/api/v1/auth/logout');
+      requestUrl.includes('/api/v1/auth/logout')||
+  requestUrl.includes('/auth/forgot-password') ||
+  requestUrl.includes('/auth/reset-password') ||
+  requestUrl.includes('/auth/register');
 
     if (isAuthRequest) {
       return Promise.reject(error);
