@@ -99,22 +99,22 @@ const LEAVE_TYPE_DESCRIPTIONS = {
 };
 
 const STATUS_CLASSES = {
-  PENDING: 'border-amber-200 bg-amber-50 text-amber-700',
-  APPROVED: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-  REJECTED: 'border-rose-200 bg-rose-50 text-rose-700',
-  CANCELLED: 'border-slate-200 bg-slate-50 text-slate-500',
+  PENDING: 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400',
+  APPROVED: 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400',
+  REJECTED: 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400',
+  CANCELLED: 'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-500/30 dark:bg-slate-500/10 dark:text-slate-400',
 };
 
 function LeaveStatus({ status }) {
   if (!status) {
-    return <span className="text-gray-400">—</span>;
+    return <span className="text-gray-400 dark:text-gray-500">—</span>;
   }
 
   return (
     <span
       className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${
         STATUS_CLASSES[status] ||
-        'border-slate-200 bg-slate-50 text-slate-500'
+        'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-500/30 dark:bg-slate-500/10 dark:text-slate-400'
       }`}
     >
       {String(status).replaceAll('_', ' ')}
@@ -124,15 +124,15 @@ function LeaveStatus({ status }) {
 
 function StatCard({ label, value, description }) {
   return (
-    <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm shadow-purple-100/50">
-      <p className="text-sm text-gray-500">{label}</p>
+    <div className="rounded-2xl border border-purple-100 bg-white p-4 sm:p-5 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+      <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
 
-      <div className="mt-3 text-3xl font-semibold tracking-tight text-gray-900">
+      <div className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
         {value}
       </div>
 
       {description ? (
-        <p className="mt-1 text-sm text-gray-400">{description}</p>
+        <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">{description}</p>
       ) : null}
     </div>
   );
@@ -153,43 +153,43 @@ function BalanceCard({ balance, leaveType }) {
       : 0;
 
   return (
-    <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm shadow-purple-100/50 transition hover:shadow-md">
+    <div className="rounded-2xl border border-purple-100 bg-white p-4 sm:p-5 shadow-sm shadow-purple-100/50 transition hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30 dark:hover:shadow-black/40">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-medium text-gray-900">
+          <h3 className="font-medium text-gray-900 dark:text-gray-100">
             {LEAVE_TYPE_LABELS[leaveType]}
           </h3>
 
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
             {LEAVE_TYPE_DESCRIPTIONS[leaveType]}
           </p>
         </div>
 
-        <span className="rounded-lg border border-purple-100 bg-purple-50 px-2 py-1 text-[10px] font-medium tracking-wide text-purple-600">
+        <span className="shrink-0 rounded-lg border border-purple-100 bg-purple-50 px-2 py-1 text-[10px] font-medium tracking-wide text-purple-600 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-300">
           {leaveType}
         </span>
       </div>
 
       <div className="mt-6 flex items-end justify-between">
         <div>
-          <p className="text-3xl font-semibold text-gray-900">
+          <p className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-gray-100">
             {remaining}
           </p>
 
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
             days remaining
           </p>
         </div>
 
-        <div className="text-right text-xs text-gray-500">
+        <div className="text-right text-xs text-gray-500 dark:text-gray-400">
           <p>Used: {used}</p>
           <p>Total: {total}</p>
         </div>
       </div>
 
-      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-purple-100">
+      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-purple-100 dark:bg-gray-800">
         <div
-          className="h-full rounded-full bg-purple-500 transition-all"
+          className="h-full rounded-full bg-purple-500 transition-all dark:bg-purple-500"
           style={{ width: `${percentage}%` }}
         />
       </div>
@@ -211,14 +211,14 @@ function ApprovalModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-2xl border border-purple-100 bg-white shadow-2xl">
-        <div className="flex items-start justify-between border-b border-black/10 p-6">
+      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-purple-100 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900">
+        <div className="flex items-start justify-between border-b border-black/10 p-4 sm:p-6 dark:border-white/10">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-400 dark:text-purple-400">
               Leave Request
             </p>
 
-            <h2 className="mt-2 text-xl font-semibold text-gray-900">
+            <h2 className="mt-2 text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
               {isApprove ? 'Approve Leave' : 'Reject Leave'}
             </h2>
           </div>
@@ -226,21 +226,21 @@ function ApprovalModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 text-purple-500 transition hover:bg-purple-100 hover:text-purple-700"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 text-purple-500 transition hover:bg-purple-100 hover:text-purple-700 dark:border-gray-700 dark:bg-gray-800 dark:text-purple-400 dark:hover:bg-gray-700 dark:hover:text-purple-300"
           >
             ×
           </button>
         </div>
 
-        <div className="space-y-5 p-6">
-          <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4">
+        <div className="space-y-5 p-4 sm:p-6">
+          <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4 dark:border-gray-700 dark:bg-gray-800/60">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-gray-900 dark:text-gray-100">
                   {getEmployeeName(request)}
                 </p>
 
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                   Employee ID: {request.employeeId ?? '—'}
                 </p>
               </div>
@@ -250,18 +250,18 @@ function ApprovalModal({
 
             <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-xs text-gray-400">Leave Type</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Leave Type</p>
 
-                <p className="mt-1 text-gray-700">
+                <p className="mt-1 text-gray-700 dark:text-gray-300">
                   {LEAVE_TYPE_LABELS[request.leaveType] ||
                     request.leaveType}
                 </p>
               </div>
 
               <div>
-                <p className="text-xs text-gray-400">Duration</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Duration</p>
 
-                <p className="mt-1 text-gray-700">
+                <p className="mt-1 text-gray-700 dark:text-gray-300">
                   {calculateDays(
                     request.startDate,
                     request.endDate
@@ -271,27 +271,27 @@ function ApprovalModal({
               </div>
 
               <div>
-                <p className="text-xs text-gray-400">Start Date</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Start Date</p>
 
-                <p className="mt-1 text-gray-700">
+                <p className="mt-1 text-gray-700 dark:text-gray-300">
                   {formatDate(request.startDate)}
                 </p>
               </div>
 
               <div>
-                <p className="text-xs text-gray-400">End Date</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">End Date</p>
 
-                <p className="mt-1 text-gray-700">
+                <p className="mt-1 text-gray-700 dark:text-gray-300">
                   {formatDate(request.endDate)}
                 </p>
               </div>
             </div>
 
             {request.reason && (
-              <div className="mt-4 border-t border-black/10 pt-4">
-                <p className="text-xs text-gray-400">Reason</p>
+              <div className="mt-4 border-t border-black/10 pt-4 dark:border-white/10">
+                <p className="text-xs text-gray-400 dark:text-gray-500">Reason</p>
 
-                <p className="mt-1 text-sm leading-6 text-gray-600">
+                <p className="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-300">
                   {request.reason}
                 </p>
               </div>
@@ -299,7 +299,7 @@ function ApprovalModal({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Remarks
             </label>
 
@@ -312,15 +312,15 @@ function ApprovalModal({
                   ? 'Enter approval remarks...'
                   : 'Enter reason for rejection...'
               }
-              className="w-full resize-none rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+              className="w-full resize-none rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
             />
           </div>
 
-          <div className="flex justify-end gap-3">
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-purple-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50"
+              className="rounded-xl border border-purple-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
             >
               Cancel
             </button>
@@ -331,8 +331,8 @@ function ApprovalModal({
               disabled={loading || !remarks.trim()}
               className={`rounded-xl px-5 py-2.5 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-40 ${
                 isApprove
-                  ? 'bg-emerald-600 hover:bg-emerald-700'
-                  : 'bg-rose-600 hover:bg-rose-700'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 dark:hover:bg-emerald-500'
+                  : 'bg-rose-600 hover:bg-rose-700 dark:hover:bg-rose-500'
               }`}
             >
               {loading
@@ -803,20 +803,20 @@ export default function LeavePage() {
 
   return (
     <>
-      <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-4 md:p-6">
+      <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-4 md:p-6 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
 
         {/* Header */}
-        <div className="flex flex-col justify-between gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end">
+        <div className="flex flex-col justify-between gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end dark:border-white/10">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
               Workforce
             </p>
 
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900">
+            <h1 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
               Leave Management
             </h1>
 
-            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+            <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
               {isHr
                 ? 'Manage employee leave requests, balances and approvals across the organization.'
                 : isManager
@@ -826,12 +826,12 @@ export default function LeavePage() {
           </div>
 
           {canApprove && (
-            <div className="rounded-xl border border-purple-100 bg-white px-4 py-3 shadow-sm shadow-purple-100/50">
-              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-400">
+            <div className="rounded-xl border border-purple-100 bg-white px-4 py-3 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-400 dark:text-purple-400">
                 Pending Requests
               </p>
 
-              <p className="mt-1 text-2xl font-semibold text-gray-900">
+              <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-gray-100">
                 {pendingLeaves.length}
               </p>
             </div>
@@ -839,14 +839,14 @@ export default function LeavePage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 overflow-x-auto rounded-2xl border border-purple-100 bg-white p-2 shadow-sm shadow-purple-100/50">
+        <div className="flex gap-2 overflow-x-auto rounded-2xl border border-purple-100 bg-white p-2 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
           <button
             type="button"
             onClick={() => setActiveTab('overview')}
-            className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+            className={`shrink-0 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
               activeTab === 'overview'
                 ? 'bg-purple-600 text-white'
-                : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
+                : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
             }`}
           >
             Overview
@@ -856,10 +856,10 @@ export default function LeavePage() {
             <button
               type="button"
               onClick={() => setActiveTab('apply')}
-              className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+              className={`shrink-0 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
                 activeTab === 'apply'
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
+                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
               }`}
             >
               Apply Leave
@@ -870,10 +870,10 @@ export default function LeavePage() {
             <button
               type="button"
               onClick={() => setActiveTab('history')}
-              className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+              className={`shrink-0 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
                 activeTab === 'history'
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
+                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
               }`}
             >
               History
@@ -884,10 +884,10 @@ export default function LeavePage() {
             <button
               type="button"
               onClick={() => setActiveTab('team-history')}
-              className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+              className={`shrink-0 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
                 activeTab === 'team-history'
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
+                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
               }`}
             >
               Team History
@@ -898,10 +898,10 @@ export default function LeavePage() {
             <button
               type="button"
               onClick={() => setActiveTab('approvals')}
-              className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+              className={`shrink-0 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition ${
                 activeTab === 'approvals'
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
+                  : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
               }`}
             >
               Approvals
@@ -920,7 +920,7 @@ export default function LeavePage() {
           <div className="space-y-6">
 
             <div>
-              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+              <h3 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
                 My Leave Summary
               </h3>
 
@@ -953,7 +953,7 @@ export default function LeavePage() {
 
             {isManager && (
               <div>
-                <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Team Leave Summary
                 </h3>
 
@@ -987,11 +987,11 @@ export default function LeavePage() {
 
             <section>
               <div className="mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Leave Balance
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Your current leave entitlement by type.
                 </p>
               </div>
@@ -1020,44 +1020,44 @@ export default function LeavePage() {
 
         {/* Apply Leave */}
         {activeTab === 'apply' && canApply && (
-            <section className="rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-              <div className="border-b border-black/10 px-5 py-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
+            <section className="rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+              <div className="border-b border-black/10 px-4 py-5 sm:px-5 dark:border-white/10">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400 dark:text-purple-400">
                   New Request
                 </p>
 
-                <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                <h2 className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Apply for Leave
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Submit your leave request for manager or HR approval.
                 </p>
               </div>
 
-              <div className="px-5 pt-5">
+              <div className="px-4 pt-5 sm:px-5">
                 {managerInfoLoading ? (
-                  <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4 text-sm text-gray-500">
+                  <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-400">
                     Checking your reporting manager...
                   </div>
                 ) : hasManager ? (
-                  <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-400">
+                  <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4 dark:border-gray-700 dark:bg-gray-800/60">
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-400 dark:text-purple-400">
                       Reporting Manager
                     </p>
-                    <p className="mt-1 text-sm font-medium text-gray-900">
+                    <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
                       {managerInfo.managerName}
                     </p>
-                    <p className="mt-1 text-xs text-gray-400">
+                    <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                       Your request will be routed to this manager for approval.
                     </p>
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
-                    <p className="text-sm font-semibold text-rose-700">
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 dark:border-rose-500/30 dark:bg-rose-500/10">
+                    <p className="text-sm font-semibold text-rose-700 dark:text-rose-400">
                       No manager assigned
                     </p>
-                    <p className="mt-1 text-sm text-rose-600">
+                    <p className="mt-1 text-sm text-rose-600 dark:text-rose-400">
                       You don't have a manager assigned yet. Please contact HR to get a
                       manager assigned before applying for leave.
                     </p>
@@ -1067,11 +1067,11 @@ export default function LeavePage() {
 
               <form
                 onSubmit={handleApply}
-                className="space-y-6 p-5"
+                className="space-y-6 p-4 sm:p-5"
               >
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-600">
+                    <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
                       Leave Type
                     </label>
 
@@ -1083,7 +1083,7 @@ export default function LeavePage() {
                           leaveType: event.target.value,
                         }))
                       }
-                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white"
+                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                     >
                       {LEAVE_TYPES.map((type) => (
                         <option
@@ -1099,7 +1099,7 @@ export default function LeavePage() {
                   <div />
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-600">
+                    <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
                       Start Date
                     </label>
 
@@ -1113,12 +1113,12 @@ export default function LeavePage() {
                         }))
                       }
                       required
-                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white"
+                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800 dark:[color-scheme:dark]"
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-600">
+                    <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
                       End Date
                     </label>
 
@@ -1133,18 +1133,18 @@ export default function LeavePage() {
                         }))
                       }
                       required
-                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white"
+                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800 dark:[color-scheme:dark]"
                     />
                   </div>
                 </div>
 
                 {form.startDate && form.endDate && (
-                  <div className="rounded-xl border border-purple-100 bg-purple-50/60 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-400">
+                  <div className="rounded-xl border border-purple-100 bg-purple-50/60 p-4 dark:border-gray-700 dark:bg-gray-800/60">
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-400 dark:text-purple-400">
                       Requested Duration
                     </p>
 
-                    <p className="mt-1 text-2xl font-semibold text-gray-900">
+                    <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-gray-100">
                       {calculateDays(
                         form.startDate,
                         form.endDate
@@ -1155,7 +1155,7 @@ export default function LeavePage() {
                 )}
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-600">
+                  <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
                     Reason
                   </label>
 
@@ -1169,22 +1169,22 @@ export default function LeavePage() {
                     }
                     rows={5}
                     placeholder="Enter the reason for your leave..."
-                    className="w-full resize-none rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                    className="w-full resize-none rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                   />
                 </div>
 
                 {applyMutation.error && (
-                  <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
                     {applyMutation.error?.response?.data?.message ||
                       'Unable to submit leave request.'}
                   </div>
                 )}
 
-                <div className="flex justify-end border-t border-black/10 pt-5">
+                <div className="flex justify-end border-t border-black/10 pt-5 dark:border-white/10">
                   <button
                     type="submit"
                     disabled={applyMutation.isPending || managerInfoLoading || !hasManager}
-                    className="rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="w-full sm:w-auto rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-40 dark:shadow-black/30 dark:hover:bg-purple-500"
                   >
                     {applyMutation.isPending
                       ? 'Submitting...'
@@ -1199,23 +1199,23 @@ export default function LeavePage() {
 
         {/* Personal History */}
         {activeTab === 'history' && canApply && (
-            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-              <div className="flex flex-col justify-between gap-2 border-b border-black/10 px-5 py-5 md:flex-row md:items-center">
+            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+              <div className="flex flex-col justify-between gap-2 border-b border-black/10 px-4 py-5 sm:px-5 md:flex-row md:items-center dark:border-white/10">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400 dark:text-purple-400">
                     Leave Records
                   </p>
 
-                  <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
                     My Leave History
                   </h2>
 
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Review your previous and current leave requests.
                   </p>
                 </div>
 
-                <span className="text-sm font-medium text-gray-500">
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   {history.length} request
                   {history.length !== 1 ? 's' : ''}
                 </span>
@@ -1223,101 +1223,144 @@ export default function LeavePage() {
 
               {!history.length ? (
                 <div className="p-10 text-center">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     No leave records found.
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-purple-100 text-sm">
-                    <thead className="bg-purple-50 text-left text-gray-900">
-                      <tr>
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Leave
-                        </th>
+                <>
+                  {/* Desktop table */}
+                  <div className="hidden overflow-x-auto sm:block">
+                    <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                      <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
+                        <tr>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Leave
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Dates
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Dates
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Days
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Days
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Status
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Status
+                          </th>
 
-                        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-[0.15em]">
-                          Action
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y divide-purple-100">
-                      {history.map((leave) => (
-                        <tr
-                          key={leave.id}
-                          className="transition hover:bg-purple-50/60"
-                        >
-                          <td className="px-5 py-4">
-                            <p className="font-medium text-gray-900">
-                              {LEAVE_TYPE_LABELS[
-                                leave.leaveType
-                              ] || leave.leaveType}
-                            </p>
-
-                            <p className="mt-1 max-w-xs truncate text-xs text-gray-400">
-                              {leave.reason ||
-                                'No reason provided'}
-                            </p>
-                          </td>
-
-                          <td className="px-5 py-4 text-gray-600">
-                            {formatDate(leave.startDate)}
-                            {' — '}
-                            {formatDate(leave.endDate)}
-                          </td>
-
-                          <td className="px-5 py-4 text-gray-600">
-                            {calculateDays(
-                              leave.startDate,
-                              leave.endDate
-                            )}
-                          </td>
-
-                          <td className="px-5 py-4">
-                            <LeaveStatus
-                              status={leave.status}
-                            />
-                          </td>
-
-                          <td className="px-5 py-4 text-right">
-                            {(leave.status === 'PENDING' ||
-                              leave.status === 'APPROVED') && (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  cancelMutation.mutate(
-                                    leave.id
-                                  )
-                                }
-                                disabled={
-                                  cancelMutation.isPending
-                                }
-                                className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100 disabled:opacity-40"
-                              >
-                                {cancelMutation.isPending
-                                  ? 'Cancelling...'
-                                  : 'Cancel'}
-                              </button>
-                            )}
-                          </td>
+                          <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-[0.15em]">
+                            Action
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+
+                      <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
+                        {history.map((leave) => (
+                          <tr
+                            key={leave.id}
+                            className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
+                          >
+                            <td className="px-5 py-4">
+                              <p className="font-medium text-gray-900 dark:text-gray-100">
+                                {LEAVE_TYPE_LABELS[
+                                  leave.leaveType
+                                ] || leave.leaveType}
+                              </p>
+
+                              <p className="mt-1 max-w-xs truncate text-xs text-gray-400 dark:text-gray-500">
+                                {leave.reason ||
+                                  'No reason provided'}
+                              </p>
+                            </td>
+
+                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
+                              {formatDate(leave.startDate)}
+                              {' — '}
+                              {formatDate(leave.endDate)}
+                            </td>
+
+                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
+                              {calculateDays(
+                                leave.startDate,
+                                leave.endDate
+                              )}
+                            </td>
+
+                            <td className="px-5 py-4">
+                              <LeaveStatus
+                                status={leave.status}
+                              />
+                            </td>
+
+                            <td className="px-5 py-4 text-right">
+                              {(leave.status === 'PENDING' ||
+                                leave.status === 'APPROVED') && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    cancelMutation.mutate(
+                                      leave.id
+                                    )
+                                  }
+                                  disabled={
+                                    cancelMutation.isPending
+                                  }
+                                  className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100 disabled:opacity-40 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
+                                >
+                                  {cancelMutation.isPending
+                                    ? 'Cancelling...'
+                                    : 'Cancel'}
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile cards */}
+                  <div className="space-y-3 p-4 sm:hidden">
+                    {history.map((leave) => (
+                      <div
+                        key={leave.id}
+                        className="rounded-xl border border-purple-100 bg-purple-50/30 p-4 dark:border-gray-700 dark:bg-gray-800/40"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                              {LEAVE_TYPE_LABELS[leave.leaveType] || leave.leaveType}
+                            </p>
+                            <p className="mt-1 truncate text-xs text-gray-400 dark:text-gray-500">
+                              {leave.reason || 'No reason provided'}
+                            </p>
+                          </div>
+                          <LeaveStatus status={leave.status} />
+                        </div>
+
+                        <div className="mt-3 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                          <span>
+                            {formatDate(leave.startDate)} — {formatDate(leave.endDate)}
+                          </span>
+                          <span>{calculateDays(leave.startDate, leave.endDate)} days</span>
+                        </div>
+
+                        {(leave.status === 'PENDING' || leave.status === 'APPROVED') && (
+                          <button
+                            type="button"
+                            onClick={() => cancelMutation.mutate(leave.id)}
+                            disabled={cancelMutation.isPending}
+                            className="mt-3 w-full rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100 disabled:opacity-40 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
+                          >
+                            {cancelMutation.isPending ? 'Cancelling...' : 'Cancel'}
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </section>
           )}
@@ -1325,23 +1368,23 @@ export default function LeavePage() {
         {/* Team History */}
         {activeTab === 'team-history' &&
           isManager && (
-            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-              <div className="flex flex-col justify-between gap-2 border-b border-black/10 px-5 py-5 md:flex-row md:items-center">
+            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+              <div className="flex flex-col justify-between gap-3 border-b border-black/10 px-4 py-5 sm:px-5 md:flex-row md:items-center dark:border-white/10">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400 dark:text-purple-400">
                     Team Records
                   </p>
 
-                  <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
                     Team Leave History
                   </h2>
 
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Review all leave requests from your team members.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
                   <div className="relative w-full md:max-w-xs">
                     <input
                       type="text"
@@ -1350,11 +1393,11 @@ export default function LeavePage() {
                         setSearch(event.target.value)
                       }
                       placeholder="Search employee or leave..."
-                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                     />
                   </div>
 
-                  <span className="whitespace-nowrap text-sm font-medium text-gray-500">
+                  <span className="whitespace-nowrap text-sm font-medium text-gray-500 dark:text-gray-400">
                     {filteredTeamLeaves.length} request
                     {filteredTeamLeaves.length !== 1
                       ? 's'
@@ -1371,92 +1414,127 @@ export default function LeavePage() {
                 </div>
               ) : !filteredTeamLeaves.length ? (
                 <div className="p-10 text-center">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     No team leave records found.
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-purple-100 text-sm">
-                    <thead className="bg-purple-50 text-left text-gray-900">
-                      <tr>
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Employee
-                        </th>
+                <>
+                  {/* Desktop table */}
+                  <div className="hidden overflow-x-auto sm:block">
+                    <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                      <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
+                        <tr>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Employee
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Leave Type
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Leave Type
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Dates
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Dates
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Days
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Days
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Reason
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Reason
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
 
-                    <tbody className="divide-y divide-purple-100">
-                      {filteredTeamLeaves.map((leave) => (
-                        <tr
-                          key={leave.id}
-                          className="transition hover:bg-purple-50/60"
-                        >
-                          <td className="px-5 py-4">
-                            <p className="font-medium text-gray-900">
+                      <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
+                        {filteredTeamLeaves.map((leave) => (
+                          <tr
+                            key={leave.id}
+                            className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
+                          >
+                            <td className="px-5 py-4">
+                              <p className="font-medium text-gray-900 dark:text-gray-100">
+                                {getEmployeeName(leave)}
+                              </p>
+
+                              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                                ID: {leave.employeeId ?? '—'}
+                              </p>
+                            </td>
+
+                            <td className="px-5 py-4 text-gray-700 dark:text-gray-300">
+                              {LEAVE_TYPE_LABELS[
+                                leave.leaveType
+                              ] || leave.leaveType}
+                            </td>
+
+                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
+                              {formatDate(leave.startDate)}
+                              {' — '}
+                              {formatDate(leave.endDate)}
+                            </td>
+
+                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
+                              {calculateDays(
+                                leave.startDate,
+                                leave.endDate
+                              )}
+                            </td>
+
+                            <td className="max-w-xs px-5 py-4">
+                              <p className="truncate text-gray-500 dark:text-gray-400">
+                                {leave.reason || '—'}
+                              </p>
+                            </td>
+
+                            <td className="px-5 py-4">
+                              <LeaveStatus
+                                status={leave.status}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile cards */}
+                  <div className="space-y-3 p-4 sm:hidden">
+                    {filteredTeamLeaves.map((leave) => (
+                      <div
+                        key={leave.id}
+                        className="rounded-xl border border-purple-100 bg-purple-50/30 p-4 dark:border-gray-700 dark:bg-gray-800/40"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900 dark:text-gray-100">
                               {getEmployeeName(leave)}
                             </p>
-
-                            <p className="mt-1 text-xs text-gray-400">
-                              ID: {leave.employeeId ?? '—'}
+                            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                              ID: {leave.employeeId ?? '—'} • {LEAVE_TYPE_LABELS[leave.leaveType] || leave.leaveType}
                             </p>
-                          </td>
+                          </div>
+                          <LeaveStatus status={leave.status} />
+                        </div>
 
-                          <td className="px-5 py-4 text-gray-700">
-                            {LEAVE_TYPE_LABELS[
-                              leave.leaveType
-                            ] || leave.leaveType}
-                          </td>
+                        <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                          {formatDate(leave.startDate)} — {formatDate(leave.endDate)} · {calculateDays(leave.startDate, leave.endDate)} days
+                        </div>
 
-                          <td className="px-5 py-4 text-gray-600">
-                            {formatDate(leave.startDate)}
-                            {' — '}
-                            {formatDate(leave.endDate)}
-                          </td>
-
-                          <td className="px-5 py-4 text-gray-600">
-                            {calculateDays(
-                              leave.startDate,
-                              leave.endDate
-                            )}
-                          </td>
-
-                          <td className="max-w-xs px-5 py-4">
-                            <p className="truncate text-gray-500">
-                              {leave.reason || '—'}
-                            </p>
-                          </td>
-
-                          <td className="px-5 py-4">
-                            <LeaveStatus
-                              status={leave.status}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                        {leave.reason && (
+                          <p className="mt-2 truncate text-xs text-gray-500 dark:text-gray-400">
+                            {leave.reason}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </section>
           )}
@@ -1464,19 +1542,19 @@ export default function LeavePage() {
         {/* Approvals */}
         {activeTab === 'approvals' &&
           canApprove && (
-            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
-              <div className="border-b border-black/10 px-5 py-5">
+            <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+              <div className="border-b border-black/10 px-4 py-5 sm:px-5 dark:border-white/10">
                 <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400 dark:text-purple-400">
                       Management
                     </p>
 
-                    <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                    <h2 className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
                       Leave Approvals
                     </h2>
 
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                       Review pending leave requests from employees.
                     </p>
                   </div>
@@ -1489,7 +1567,7 @@ export default function LeavePage() {
                         setSearch(event.target.value)
                       }
                       placeholder="Search employee or leave..."
-                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white"
+                      className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                     />
                   </div>
                 </div>
@@ -1507,130 +1585,186 @@ export default function LeavePage() {
                 </div>
               ) : !filteredPendingLeaves.length ? (
                 <div className="p-10 text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
                     ✓
                   </div>
 
-                  <p className="mt-4 font-medium text-gray-900">
+                  <p className="mt-4 font-medium text-gray-900 dark:text-gray-100">
                     No pending requests
                   </p>
 
-                  <p className="mt-1 text-sm text-gray-400">
+                  <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
                     All leave requests have been processed.
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-[1050px] divide-y divide-purple-100 text-sm">
-                    <thead className="bg-purple-50 text-left text-gray-900">
-                      <tr>
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Employee
-                        </th>
+                <>
+                  {/* Desktop table */}
+                  <div className="hidden overflow-x-auto sm:block">
+                    <table className="min-w-[1050px] divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                      <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
+                        <tr>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Employee
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Leave Type
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Leave Type
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Dates
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Dates
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Days
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Days
+                          </th>
 
-                        <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
-                          Reason
-                        </th>
+                          <th className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                            Reason
+                          </th>
 
-                        <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-[0.15em]">
-                          Action
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y divide-purple-100">
-                      {filteredPendingLeaves.map((leave) => (
-                        <tr
-                          key={leave.id}
-                          className="transition hover:bg-purple-50/60"
-                        >
-                          <td className="px-5 py-4">
-                            <p className="font-medium text-gray-900">
-                              {getEmployeeName(leave)}
-                            </p>
-
-                            <p className="mt-1 text-xs text-gray-400">
-                              ID: {leave.employeeId ?? '—'}
-                            </p>
-                          </td>
-
-                          <td className="px-5 py-4">
-                            <p className="text-gray-700">
-                              {LEAVE_TYPE_LABELS[
-                                leave.leaveType
-                              ] || leave.leaveType}
-                            </p>
-                          </td>
-
-                          <td className="px-5 py-4 text-gray-600">
-                            {formatDate(leave.startDate)}
-                            {' — '}
-                            {formatDate(leave.endDate)}
-                          </td>
-
-                          <td className="px-5 py-4 text-gray-600">
-                            {calculateDays(
-                              leave.startDate,
-                              leave.endDate
-                            )}
-                          </td>
-
-                          <td className="max-w-xs px-5 py-4">
-                            <p className="truncate text-gray-500">
-                              {leave.reason || '—'}
-                            </p>
-                          </td>
-
-                          <td className="px-5 py-4 text-right">
-                            <div className="flex justify-end gap-2">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActionRequest({
-                                    ...leave,
-                                    action: 'approve',
-                                  });
-
-                                  setRemarks('');
-                                }}
-                                className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
-                              >
-                                Approve
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActionRequest({
-                                    ...leave,
-                                    action: 'reject',
-                                  });
-
-                                  setRemarks('');
-                                }}
-                                className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100"
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          </td>
+                          <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-[0.15em]">
+                            Action
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+
+                      <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
+                        {filteredPendingLeaves.map((leave) => (
+                          <tr
+                            key={leave.id}
+                            className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
+                          >
+                            <td className="px-5 py-4">
+                              <p className="font-medium text-gray-900 dark:text-gray-100">
+                                {getEmployeeName(leave)}
+                              </p>
+
+                              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                                ID: {leave.employeeId ?? '—'}
+                              </p>
+                            </td>
+
+                            <td className="px-5 py-4">
+                              <p className="text-gray-700 dark:text-gray-300">
+                                {LEAVE_TYPE_LABELS[
+                                  leave.leaveType
+                                ] || leave.leaveType}
+                              </p>
+                            </td>
+
+                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
+                              {formatDate(leave.startDate)}
+                              {' — '}
+                              {formatDate(leave.endDate)}
+                            </td>
+
+                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
+                              {calculateDays(
+                                leave.startDate,
+                                leave.endDate
+                              )}
+                            </td>
+
+                            <td className="max-w-xs px-5 py-4">
+                              <p className="truncate text-gray-500 dark:text-gray-400">
+                                {leave.reason || '—'}
+                              </p>
+                            </td>
+
+                            <td className="px-5 py-4 text-right">
+                              <div className="flex justify-end gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setActionRequest({
+                                      ...leave,
+                                      action: 'approve',
+                                    });
+
+                                    setRemarks('');
+                                  }}
+                                  className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20"
+                                >
+                                  Approve
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setActionRequest({
+                                      ...leave,
+                                      action: 'reject',
+                                    });
+
+                                    setRemarks('');
+                                  }}
+                                  className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile cards */}
+                  <div className="space-y-3 p-4 sm:hidden">
+                    {filteredPendingLeaves.map((leave) => (
+                      <div
+                        key={leave.id}
+                        className="rounded-xl border border-purple-100 bg-purple-50/30 p-4 dark:border-gray-700 dark:bg-gray-800/40"
+                      >
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 dark:text-gray-100">
+                            {getEmployeeName(leave)}
+                          </p>
+                          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                            ID: {leave.employeeId ?? '—'} • {LEAVE_TYPE_LABELS[leave.leaveType] || leave.leaveType}
+                          </p>
+                        </div>
+
+                        <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                          {formatDate(leave.startDate)} — {formatDate(leave.endDate)} · {calculateDays(leave.startDate, leave.endDate)} days
+                        </div>
+
+                        {leave.reason && (
+                          <p className="mt-2 truncate text-xs text-gray-500 dark:text-gray-400">
+                            {leave.reason}
+                          </p>
+                        )}
+
+                        <div className="mt-3 flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActionRequest({ ...leave, action: 'approve' });
+                              setRemarks('');
+                            }}
+                            className="flex-1 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20"
+                          >
+                            Approve
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActionRequest({ ...leave, action: 'reject' });
+                              setRemarks('');
+                            }}
+                            className="flex-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </section>
           )}
