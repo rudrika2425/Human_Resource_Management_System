@@ -15,13 +15,13 @@ import {
 import { api } from '../services/api';
 
 const cardClass =
-  'rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50';
+  'rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30';
 
 const inputClass =
-  'relative z-[9999] w-full rounded-xl border border-purple-100 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition placeholder:text-gray-300 focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100 cursor-pointer';
+  'relative z-[9999] w-full rounded-xl border border-purple-100 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition placeholder:text-gray-300 focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-100 cursor-pointer dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:ring-purple-500/20';
 
 const primaryButtonClass =
-  'rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50';
+  'rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:shadow-black/30 dark:hover:bg-purple-500';
 
 /* =========================================================
    HELPERS
@@ -91,20 +91,20 @@ function formatDate(date) {
 
 function StatusBadge({ status }) {
   const classes = {
-    OPEN: 'border-blue-100 bg-blue-50 text-blue-600',
+    OPEN: 'border-blue-100 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400',
     IN_PROGRESS:
-      'border-amber-100 bg-amber-50 text-amber-600',
+      'border-amber-100 bg-amber-50 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400',
     COMPLETED:
-      'border-emerald-100 bg-emerald-50 text-emerald-600',
+      'border-emerald-100 bg-emerald-50 text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400',
     CANCELLED:
-      'border-rose-100 bg-rose-50 text-rose-600',
+      'border-rose-100 bg-rose-50 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400',
   };
 
   return (
     <span
       className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${
         classes[status] ||
-        'border-purple-100 bg-purple-50 text-gray-500'
+        'border-purple-100 bg-purple-50 text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
       }`}
     >
       {String(status || '—').replaceAll(
@@ -117,20 +117,20 @@ function StatusBadge({ status }) {
 
 function PriorityBadge({ priority }) {
   const classes = {
-    LOW: 'border-purple-100 bg-purple-50 text-gray-500',
+    LOW: 'border-purple-100 bg-purple-50 text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
     MEDIUM:
-      'border-blue-100 bg-blue-50 text-blue-600',
+      'border-blue-100 bg-blue-50 text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400',
     HIGH:
-      'border-orange-100 bg-orange-50 text-orange-600',
+      'border-orange-100 bg-orange-50 text-orange-600 dark:border-orange-500/20 dark:bg-orange-500/10 dark:text-orange-400',
     URGENT:
-      'border-rose-100 bg-rose-50 text-rose-600',
+      'border-rose-100 bg-rose-50 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400',
   };
 
   return (
     <span
       className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${
         classes[priority] ||
-        'border-purple-100 bg-purple-50 text-gray-500'
+        'border-purple-100 bg-purple-50 text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
       }`}
     >
       {priority || '—'}
@@ -154,15 +154,15 @@ function UpdateGoalStatusModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-purple-100 bg-white shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-purple-100 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/50">
 
-        <div className="flex items-start justify-between border-b border-black/10 p-6">
+        <div className="flex items-start justify-between border-b border-black/10 p-6 dark:border-white/10">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-400 dark:text-purple-400">
               Update Status
             </p>
 
-            <h2 className="mt-2 text-xl font-semibold text-gray-900">
+            <h2 className="mt-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
               Update Goal Status
             </h2>
           </div>
@@ -171,7 +171,7 @@ function UpdateGoalStatusModal({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 text-purple-500 transition hover:bg-purple-100 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 text-purple-500 transition hover:bg-purple-100 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-purple-400 dark:hover:bg-gray-700 dark:hover:text-purple-300"
           >
             ×
           </button>
@@ -179,19 +179,19 @@ function UpdateGoalStatusModal({
 
         <div className="space-y-5 p-6">
 
-          <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4">
-            <p className="font-medium text-gray-900">
+          <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4 dark:border-gray-700 dark:bg-gray-800/60">
+            <p className="font-medium text-gray-900 dark:text-gray-100">
               {goal.title || 'Untitled Goal'}
             </p>
 
             {goal.target ? (
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Target: {goal.target}
               </p>
             ) : null}
 
             <div className="mt-3 flex items-center gap-3">
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-400 dark:text-gray-500">
                 Current:
               </span>
 
@@ -200,7 +200,7 @@ function UpdateGoalStatusModal({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               New Status
             </label>
 
@@ -232,12 +232,12 @@ function UpdateGoalStatusModal({
             </select>
           </div>
 
-          <div className="flex justify-end gap-3">
+          <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="rounded-xl border border-purple-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl border border-purple-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
             >
               Cancel
             </button>
@@ -250,7 +250,7 @@ function UpdateGoalStatusModal({
                 !newStatus ||
                 newStatus === goal.status
               }
-              className="rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-purple-500"
             >
               {loading
                 ? 'Updating...'
@@ -547,22 +547,22 @@ export default function Goals({
     return (
       <section className={cardClass}>
 
-        <div className="flex items-center gap-2.5 border-b border-purple-100 px-5 py-5">
+        <div className="flex items-center gap-2.5 border-b border-purple-100 px-5 py-5 dark:border-gray-800">
           <Plus
             size={16}
-            className="text-purple-500"
+            className="text-purple-500 dark:text-purple-400"
           />
 
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.16em] text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
               New Objective
             </p>
 
-            <h2 className="mt-1 text-lg font-semibold text-gray-900">
+            <h2 className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
               Create Performance Goal
             </h2>
 
-            <p className="mt-1 text-sm text-gray-400">
+            <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
               {isManager
                 ? 'Assign a measurable goal to an employee in your team.'
                 : 'Assign a measurable goal to an employee.'}
@@ -572,7 +572,7 @@ export default function Goals({
 
         <form
           onSubmit={handleGoalSubmit}
-          className="space-y-6 p-5"
+          className="space-y-6 p-4 sm:p-5"
         >
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -580,7 +580,7 @@ export default function Goals({
             {}
 
             <div>
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Goal Title
               </label>
 
@@ -605,7 +605,7 @@ export default function Goals({
             {}
 
             <div>
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Target
               </label>
 
@@ -630,7 +630,7 @@ export default function Goals({
             {}
 
             <div className="md:col-span-2">
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Description
               </label>
 
@@ -656,7 +656,7 @@ export default function Goals({
             {}
 
             <div>
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 {isManager
                   ? 'Team Employee'
                   : 'Employee'}
@@ -720,7 +720,7 @@ export default function Goals({
 
               {employeeOptions.length ===
                 0 && (
-                <p className="mt-1.5 text-xs text-rose-500">
+                <p className="mt-1.5 text-xs text-rose-500 dark:text-rose-400">
                   {isManager
                     ? 'No employees are currently assigned to your team.'
                     : 'No employees with EMPLOYEE role found.'}
@@ -731,7 +731,7 @@ export default function Goals({
             {}
 
             <div>
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Manager
               </label>
 
@@ -748,11 +748,11 @@ export default function Goals({
                           )}`
                         : 'Current Manager'
                     }
-                    className={`${inputClass} bg-gray-50`}
+                    className={`${inputClass} bg-gray-50 dark:bg-gray-800`}
                     readOnly
                   />
 
-                  <p className="mt-1.5 text-xs text-purple-500">
+                  <p className="mt-1.5 text-xs text-purple-500 dark:text-purple-400">
                     Goals created by you are automatically assigned to you as manager.
                   </p>
                 </>
@@ -818,7 +818,7 @@ export default function Goals({
             {}
 
             <div>
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Due Date
               </label>
 
@@ -844,7 +844,7 @@ export default function Goals({
             {}
 
             <div>
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Priority
               </label>
 
@@ -884,7 +884,7 @@ export default function Goals({
             {}
 
             <div>
-              <label className="mb-2 block text-sm text-gray-600">
+              <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">
                 Status
               </label>
 
@@ -925,9 +925,7 @@ export default function Goals({
           <div className="flex justify-end">
             <button
               type="submit"
-              className={
-                primaryButtonClass
-              }
+              className={`w-full sm:w-auto ${primaryButtonClass}`}
               disabled={
                 createGoalMutation.isPending ||
                 employeeOptions.length === 0 ||
@@ -959,18 +957,18 @@ export default function Goals({
         className={`${cardClass} overflow-hidden`}
       >
 
-        <div className="flex items-center gap-2.5 border-b border-purple-100 p-6">
+        <div className="flex items-center gap-2.5 border-b border-purple-100 p-4 sm:p-6 dark:border-gray-800">
           <Target
             size={16}
-            className="text-purple-500"
+            className="text-purple-500 dark:text-purple-400"
           />
 
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-purple-500">
+            <p className="text-xs uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
               Objectives
             </p>
 
-            <h2 className="mt-1 text-xl font-semibold text-gray-900">
+            <h2 className="mt-1 text-xl font-semibold text-gray-900 dark:text-gray-100">
               {isEmployee
                 ? 'My Goals'
                 : isManager
@@ -983,19 +981,19 @@ export default function Goals({
         {!goals.length ? (
           <div className="p-10 text-center">
 
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-purple-100 bg-purple-50">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-purple-100 bg-purple-50 dark:border-gray-700 dark:bg-gray-800">
               <Target
                 size={20}
-                className="text-purple-400"
+                className="text-purple-400 dark:text-purple-400"
                 strokeWidth={1.75}
               />
             </div>
 
-            <p className="mt-4 font-medium text-gray-900">
+            <p className="mt-4 font-medium text-gray-900 dark:text-gray-100">
               No goals found
             </p>
 
-            <p className="mt-2 text-sm text-gray-400">
+            <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
               {isEmployee
                 ? 'No performance goals have been assigned to you yet.'
                 : isManager
@@ -1006,9 +1004,9 @@ export default function Goals({
         ) : (
           <div className="overflow-x-auto">
 
-            <table className="min-w-[1200px] divide-y divide-purple-100 text-sm">
+            <table className="min-w-[1200px] divide-y divide-purple-100 text-sm dark:divide-gray-800">
 
-              <thead className="bg-purple-50/60 text-left text-gray-500">
+              <thead className="bg-purple-50/60 text-left text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
                 <tr>
 
                   <th className="px-5 py-4 font-medium">
@@ -1047,28 +1045,28 @@ export default function Goals({
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-purple-100">
+              <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
 
                 {goals.map((goal) => (
                   <tr
                     key={goal.id}
-                    className="transition-colors duration-150 hover:bg-purple-50/50"
+                    className="transition-colors duration-150 hover:bg-purple-50/50 dark:hover:bg-gray-800/50"
                   >
 
                     <td className="max-w-xs px-5 py-4">
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
                         {goal.title ||
                           'Untitled Goal'}
                       </p>
 
                       {goal.description ? (
-                        <p className="mt-1 truncate text-xs text-gray-400">
+                        <p className="mt-1 truncate text-xs text-gray-400 dark:text-gray-500">
                           {goal.description}
                         </p>
                       ) : null}
                     </td>
 
-                    <td className="px-5 py-4 text-gray-600">
+                    <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                       {goal.employeeName ||
                         goal.employee?.name ||
                         `${goal.employee?.firstName || ''} ${
@@ -1077,7 +1075,7 @@ export default function Goals({
                         '—'}
                     </td>
 
-                    <td className="px-5 py-4 text-gray-600">
+                    <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
                       {goal.managerName ||
                         goal.manager?.name ||
                         `${goal.manager?.firstName || ''} ${
@@ -1086,13 +1084,13 @@ export default function Goals({
                         '—'}
                     </td>
 
-                    <td className="max-w-xs px-5 py-4 text-gray-500">
+                    <td className="max-w-xs px-5 py-4 text-gray-500 dark:text-gray-400">
                       <p className="truncate">
                         {goal.target || '—'}
                       </p>
                     </td>
 
-                    <td className="px-5 py-4 text-gray-500">
+                    <td className="px-5 py-4 text-gray-500 dark:text-gray-400">
                       {formatDate(
                         goal.dueDate
                       )}
@@ -1124,7 +1122,7 @@ export default function Goals({
                               goal
                             )
                           }
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-600 transition hover:border-purple-300 hover:bg-purple-100 hover:text-purple-700"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-600 transition hover:border-purple-300 hover:bg-purple-100 hover:text-purple-700 dark:border-purple-500/30 dark:bg-purple-500/10 dark:text-purple-400 dark:hover:border-purple-400/50 dark:hover:bg-purple-500/20 dark:hover:text-purple-300"
                         >
                           <Edit3
                             size={12}
