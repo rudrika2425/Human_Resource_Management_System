@@ -32,6 +32,9 @@ public class EmailService {
     @Value("${app.reset-password.frontend-url}")
     private String resetPasswordUrl;
 
+    @Value("${app.reset-password.token-expiry-minutes:15}")
+    private int tokenExpiryMinutes;
+
     public EmailService(
             JavaMailSender mailSender,
             TemplateEngine templateEngine
@@ -48,6 +51,7 @@ public class EmailService {
 
         try {
 
+            // Reset link goes to the actual deployed frontend
             String resetLink =
                     resetPasswordUrl + "?token=" + token;
 
@@ -55,7 +59,7 @@ public class EmailService {
 
             context.setVariable("name", name);
             context.setVariable("resetLink", resetLink);
-            context.setVariable("expiryMinutes", 15);
+            context.setVariable("expiryMinutes", tokenExpiryMinutes);
 
             String htmlContent =
                     templateEngine.process(
@@ -77,8 +81,7 @@ public class EmailService {
             helper.setTo(to);
 
             helper.setSubject(
-                    subjectPrefix +
-                    " - Password Reset Request"
+                    subjectPrefix + " - Password Reset Request"
             );
 
             helper.setText(
