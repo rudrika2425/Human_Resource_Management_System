@@ -89,17 +89,17 @@ function getStatusClass(status) {
 
 function StatCard({ label, value, description }) {
   return (
-    <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-400 dark:text-purple-400">
+    <div className="rounded-2xl border border-purple-100 bg-white p-4 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30 sm:p-5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-purple-400 dark:text-purple-400 sm:text-xs sm:tracking-[0.18em]">
         {label}
       </p>
 
-      <div className="mt-3 text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+      <div className="mt-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 sm:mt-3 sm:text-3xl">
         {value}
       </div>
 
       {description ? (
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="mt-1 truncate text-xs text-gray-500 dark:text-gray-400 sm:text-sm">{description}</p>
       ) : null}
     </div>
   );
@@ -108,7 +108,7 @@ function StatCard({ label, value, description }) {
 function AttendanceStatus({ status }) {
   if (!status) {
     return (
-      <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500">
+      <span className="inline-flex whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500">
         —
       </span>
     );
@@ -116,7 +116,7 @@ function AttendanceStatus({ status }) {
 
   return (
     <span
-      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusClass(
+      className={`inline-flex whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusClass(
         status
       )}`}
     >
@@ -129,15 +129,15 @@ function HistoryModal({ employee, history, loading, error, onClose }) {
   if (!employee) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm dark:bg-black/60">
-      <div className="max-h-[85vh] w-full max-w-5xl overflow-hidden rounded-3xl border border-purple-100 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/50">
-        <div className="flex items-center justify-between border-b border-black/10 px-6 py-5 dark:border-white/10">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 backdrop-blur-sm dark:bg-black/60 sm:p-4">
+      <div className="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/50 sm:rounded-3xl sm:max-h-[85vh]">
+        <div className="flex flex-col gap-3 border-b border-black/10 px-4 py-4 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-purple-400 sm:text-xs sm:tracking-[0.2em]">
               Attendance History
             </p>
 
-            <h2 className="mt-1 text-xl font-semibold text-gray-900 dark:text-gray-100">
+            <h2 className="mt-1 truncate text-lg font-semibold text-gray-900 dark:text-gray-100 sm:text-xl">
               {getEmployeeName(employee)}
             </h2>
 
@@ -151,75 +151,77 @@ function HistoryModal({ employee, history, loading, error, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 text-purple-500 transition hover:bg-purple-100 hover:text-purple-700 dark:border-gray-800 dark:bg-gray-800 dark:text-purple-400 dark:hover:bg-gray-700 dark:hover:text-purple-300"
+            className="flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-xl border border-purple-100 bg-purple-50 text-purple-500 transition hover:bg-purple-100 hover:text-purple-700 dark:border-gray-800 dark:bg-gray-800 dark:text-purple-400 dark:hover:bg-gray-700 dark:hover:text-purple-300 sm:self-auto"
           >
             ×
           </button>
         </div>
 
-        <div className="max-h-[65vh] overflow-auto p-6">
+        <div className="max-h-[65vh] overflow-auto p-3 sm:p-6">
           {loading ? (
             <Spinner label="Loading attendance history..." />
           ) : error ? (
             <ErrorState description="Unable to load attendance history." />
           ) : !history.length ? (
-            <div className="rounded-2xl border border-dashed border-purple-200 bg-purple-50/40 p-10 text-center dark:border-gray-700 dark:bg-gray-800/40">
+            <div className="rounded-2xl border border-dashed border-purple-200 bg-purple-50/40 p-6 text-center dark:border-gray-700 dark:bg-gray-800/40 sm:p-10">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 No attendance records found.
               </p>
             </div>
           ) : (
             <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white dark:border-gray-800 dark:bg-gray-900">
-              <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
-                <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                      Date
-                    </th>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[480px] divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                  <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
+                    <tr>
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                        Date
+                      </th>
 
-                    <th className="px-4 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                      Check In
-                    </th>
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                        Check In
+                      </th>
 
-                    <th className="px-4 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                      Check Out
-                    </th>
-
-                    
-
-                    <th className="px-4 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
-                  {history.map((record) => (
-                    <tr
-                      key={record.id ?? `${record.employeeId}-${record.workDate}`}
-                      className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
-                    >
-                      <td className="px-4 py-3 text-gray-800 dark:text-gray-200">
-                        {formatDate(record.workDate)}
-                      </td>
-
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
-                        {formatTime(record.checkInAt)}
-                      </td>
-
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
-                        {formatTime(record.checkOutAt)}
-                      </td>
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                        Check Out
+                      </th>
 
                       
 
-                      <td className="px-4 py-3">
-                        <AttendanceStatus status={record.status} />
-                      </td>
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em]">
+                        Status
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+
+                  <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
+                    {history.map((record) => (
+                      <tr
+                        key={record.id ?? `${record.employeeId}-${record.workDate}`}
+                        className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
+                      >
+                        <td className="whitespace-nowrap px-4 py-3 text-gray-800 dark:text-gray-200">
+                          {formatDate(record.workDate)}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-3 text-gray-600 dark:text-gray-400">
+                          {formatTime(record.checkInAt)}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-3 text-gray-600 dark:text-gray-400">
+                          {formatTime(record.checkOutAt)}
+                        </td>
+
+                        
+
+                        <td className="whitespace-nowrap px-4 py-3">
+                          <AttendanceStatus status={record.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>
@@ -427,15 +429,15 @@ export default function AttendancePage() {
 
   return (
     <>
-      <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-6 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      <div className="min-h-screen space-y-5 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-3 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 sm:space-y-6 sm:p-4 md:p-6 lg:p-8">
         {}
-        <div className="flex flex-col justify-between gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end dark:border-white/10">
+        <div className="flex flex-col justify-between gap-3 border-b border-black/10 pb-4 dark:border-white/10 sm:gap-4 sm:pb-5 md:flex-row md:items-end">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-purple-500 dark:text-purple-400">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-purple-500 dark:text-purple-400 sm:text-xs sm:tracking-[0.22em]">
               Workforce
             </p>
 
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+            <h1 className="mt-1 text-xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-2xl">
               Attendance
             </h1>
 
@@ -456,7 +458,7 @@ export default function AttendancePage() {
             
 
             {(isHr || isManager) && (
-              <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <div className="text-xs font-medium text-gray-600 dark:text-gray-400 sm:text-sm">
                 {new Date().toLocaleDateString('en-IN', {
                   weekday: 'long',
                   day: '2-digit',
@@ -471,7 +473,7 @@ export default function AttendancePage() {
         {}
         {isEmployee ? (
           
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
             <StatCard
               label="Present"
               value={employeeStats.present}
@@ -505,11 +507,11 @@ export default function AttendancePage() {
             <div>
               <div className="mb-3 flex items-center gap-2">
                 <User size={18} className="text-purple-500 dark:text-purple-400" />
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 sm:text-lg">
                   My Attendance
                 </h2>
               </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
                 <StatCard
                   label="Present"
                   value={managerStats.present}
@@ -540,16 +542,16 @@ export default function AttendancePage() {
 
             {}
             <div>
-              <div className="mb-3 flex items-center gap-2">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
                 <Users size={18} className="text-purple-500 dark:text-purple-400" />
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 sm:text-lg">
                   Team Attendance
                 </h2>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
                   ({filteredAttendance.length} members)
                 </span>
               </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
                 <StatCard
                   label="Present"
                   value={statistics.present}
@@ -580,7 +582,7 @@ export default function AttendancePage() {
           </>
         ) : (
           
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
             <StatCard
               label="Present"
               value={statistics.present}
@@ -611,14 +613,14 @@ export default function AttendancePage() {
 
         {}
         {(isHr || isManager) && (
-          <div className="rounded-2xl border border-purple-100 bg-white p-4 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
-            <div className="relative max-w-md">
+          <div className="rounded-2xl border border-purple-100 bg-white p-3 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30 sm:p-4">
+            <div className="relative w-full sm:max-w-md">
               <input
                 type="text"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search employee, ID or status..."
-                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
+                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800 sm:py-3"
               />
             </div>
           </div>
@@ -627,7 +629,7 @@ export default function AttendancePage() {
         {}
         {isEmployee ? (
           <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
-            <div className="border-b border-black/10 px-5 py-4 dark:border-white/10">
+            <div className="border-b border-black/10 px-4 py-4 dark:border-white/10 sm:px-5">
               <div className="flex items-center gap-2">
                 <Calendar size={18} className="text-purple-500 dark:text-purple-400" />
                 <h2 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -640,27 +642,27 @@ export default function AttendancePage() {
             </div>
 
             {!attendance.length ? (
-              <div className="p-10 text-center">
+              <div className="p-6 text-center sm:p-10">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   No attendance records found.
                 </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                <table className="w-full min-w-[520px] divide-y divide-purple-100 text-sm dark:divide-gray-800">
                   <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                     <tr>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Date
                       </th>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Check In
                       </th>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Check Out
                       </th>
                       
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Status
                       </th>
                     </tr>
@@ -672,17 +674,17 @@ export default function AttendancePage() {
                         key={row.id ?? `${row.employeeId}-${row.workDate}`}
                         className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                       >
-                        <td className="px-5 py-4 text-gray-800 dark:text-gray-200">
+                        <td className="whitespace-nowrap px-4 py-4 text-gray-800 dark:text-gray-200 sm:px-5">
                           {formatDate(row.workDate)}
                         </td>
-                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                        <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                           {formatTime(row.checkInAt)}
                         </td>
-                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                        <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                           {formatTime(row.checkOutAt)}
                         </td>
                         
-                        <td className="px-5 py-4">
+                        <td className="whitespace-nowrap px-4 py-4 sm:px-5">
                           <AttendanceStatus status={row.status} />
                         </td>
                       </tr>
@@ -697,7 +699,7 @@ export default function AttendancePage() {
           <>
             {}
             <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
-              <div className="border-b border-black/10 px-5 py-4 dark:border-white/10">
+              <div className="border-b border-black/10 px-4 py-4 dark:border-white/10 sm:px-5">
                 <div className="flex items-center gap-2">
                   <User size={18} className="text-purple-500 dark:text-purple-400" />
                   <h2 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -710,27 +712,27 @@ export default function AttendancePage() {
               </div>
 
               {!managerAttendance.length ? (
-                <div className="p-10 text-center">
+                <div className="p-6 text-center sm:p-10">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     No attendance records found.
                   </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                  <table className="w-full min-w-[520px] divide-y divide-purple-100 text-sm dark:divide-gray-800">
                     <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                       <tr>
-                        <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Date
                         </th>
-                        <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Check In
                         </th>
-                        <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Check Out
                         </th>
                         
-                        <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Status
                         </th>
                       </tr>
@@ -742,17 +744,17 @@ export default function AttendancePage() {
                           key={row.id ?? `${row.employeeId}-${row.workDate}`}
                           className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                         >
-                          <td className="px-5 py-4 text-gray-800 dark:text-gray-200">
+                          <td className="whitespace-nowrap px-4 py-4 text-gray-800 dark:text-gray-200 sm:px-5">
                             {formatDate(row.workDate)}
                           </td>
-                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                          <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                             {formatTime(row.checkInAt)}
                           </td>
-                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                          <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                             {formatTime(row.checkOutAt)}
                           </td>
                           
-                          <td className="px-5 py-4">
+                          <td className="whitespace-nowrap px-4 py-4 sm:px-5">
                             <AttendanceStatus status={row.status} />
                           </td>
                         </tr>
@@ -765,7 +767,7 @@ export default function AttendancePage() {
 
             {}
             <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
-              <div className="border-b border-black/10 px-5 py-4 dark:border-white/10">
+              <div className="border-b border-black/10 px-4 py-4 dark:border-white/10 sm:px-5">
                 <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
                   <div>
                     <div className="flex items-center gap-2">
@@ -787,33 +789,33 @@ export default function AttendancePage() {
               </div>
 
               {!filteredAttendance.length ? (
-                <div className="p-10 text-center">
+                <div className="p-6 text-center sm:p-10">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     No attendance records found.
                   </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                  <table className="w-full min-w-[720px] divide-y divide-purple-100 text-sm dark:divide-gray-800">
                     <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                       <tr>
-                        <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Employee
                         </th>
-                        <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Date
                         </th>
-                        <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Check In
                         </th>
-                        <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Check Out
                         </th>
                         
-                        <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Status
                         </th>
-                        <th className="px-5 py-3 text-right font-semibold uppercase tracking-[0.15em] text-xs">
+                        <th className="whitespace-nowrap px-4 py-3 text-right text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                           Action
                         </th>
                       </tr>
@@ -825,7 +827,7 @@ export default function AttendancePage() {
                           key={row.id ?? `${row.employeeId}-${row.workDate}`}
                           className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                         >
-                          <td className="px-5 py-4">
+                          <td className="whitespace-nowrap px-4 py-4 sm:px-5">
                             <div className="font-medium text-gray-900 dark:text-gray-100">
                               {getEmployeeName(row)}
                             </div>
@@ -833,20 +835,20 @@ export default function AttendancePage() {
                               ID: {row.employeeId ?? '—'}
                             </div>
                           </td>
-                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                          <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                             {formatDate(row.workDate)}
                           </td>
-                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                          <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                             {formatTime(row.checkInAt)}
                           </td>
-                          <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                          <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                             {formatTime(row.checkOutAt)}
                           </td>
                           
-                          <td className="px-5 py-4">
+                          <td className="whitespace-nowrap px-4 py-4 sm:px-5">
                             <AttendanceStatus status={row.status} />
                           </td>
-                          <td className="px-5 py-4 text-right">
+                          <td className="whitespace-nowrap px-4 py-4 text-right sm:px-5">
                             <button
                               type="button"
                               onClick={() => setSelectedEmployee(row)}
@@ -866,7 +868,7 @@ export default function AttendancePage() {
         ) : (
           
           <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
-            <div className="border-b border-black/10 px-5 py-4 dark:border-white/10">
+            <div className="border-b border-black/10 px-4 py-4 dark:border-white/10 sm:px-5">
               <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
                 <div>
                   <div className="flex items-center gap-2">
@@ -888,33 +890,33 @@ export default function AttendancePage() {
             </div>
 
             {!filteredAttendance.length ? (
-              <div className="p-10 text-center">
+              <div className="p-6 text-center sm:p-10">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   No attendance records found.
                 </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-purple-100 text-sm dark:divide-gray-800">
+                <table className="w-full min-w-[720px] divide-y divide-purple-100 text-sm dark:divide-gray-800">
                   <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                     <tr>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Employee
                       </th>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Date
                       </th>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Check In
                       </th>
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Check Out
                       </th>
                       
-                      <th className="px-5 py-3 font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Status
                       </th>
-                      <th className="px-5 py-3 text-right font-semibold uppercase tracking-[0.15em] text-xs">
+                      <th className="whitespace-nowrap px-4 py-3 text-right text-xs font-semibold uppercase tracking-[0.15em] sm:px-5">
                         Action
                       </th>
                     </tr>
@@ -926,7 +928,7 @@ export default function AttendancePage() {
                         key={row.id ?? `${row.employeeId}-${row.workDate}`}
                         className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                       >
-                        <td className="px-5 py-4">
+                        <td className="whitespace-nowrap px-4 py-4 sm:px-5">
                           <div className="font-medium text-gray-900 dark:text-gray-100">
                             {getEmployeeName(row)}
                           </div>
@@ -934,20 +936,20 @@ export default function AttendancePage() {
                             ID: {row.employeeId ?? '—'}
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                        <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                           {formatDate(row.workDate)}
                         </td>
-                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                        <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                           {formatTime(row.checkInAt)}
                         </td>
-                        <td className="px-5 py-4 text-gray-600 dark:text-gray-400">
+                        <td className="whitespace-nowrap px-4 py-4 text-gray-600 dark:text-gray-400 sm:px-5">
                           {formatTime(row.checkOutAt)}
                         </td>
                         
-                        <td className="px-5 py-4">
+                        <td className="whitespace-nowrap px-4 py-4 sm:px-5">
                           <AttendanceStatus status={row.status} />
                         </td>
-                        <td className="px-5 py-4 text-right">
+                        <td className="whitespace-nowrap px-4 py-4 text-right sm:px-5">
                           <button
                             type="button"
                             onClick={() => setSelectedEmployee(row)}
