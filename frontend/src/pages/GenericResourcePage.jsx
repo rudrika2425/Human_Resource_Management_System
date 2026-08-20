@@ -259,4 +259,4 @@ export default function GenericResourcePage({
       </div>
     </div>
   );
-}
+}  

@@ -314,7 +314,7 @@ export default function AppLayout({ children }) {
 
           </header>
 
-          {/* PAGE CONTENT */}
+         
           <main className="flex-1 p-4 md:p-8">
             {children}
           </main>
