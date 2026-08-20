@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
     setSuccess(false);
 
     try {
-      await api.post('/auth/forgot-password', { email });
+      await api.post('/api/v1/auth/forgot-password', { email });
       setSuccess(true);
       toast.success('Password reset link sent to your email!');
     } catch (err) {
