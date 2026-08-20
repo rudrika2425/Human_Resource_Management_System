@@ -23,8 +23,8 @@ public class EmailService {
     private final TemplateEngine templateEngine;
     private final Resend resend;
 
-    @Value("${app.email.from}")
-    private String fromEmail;
+    @Value("${RESEND_FROM_EMAIL}")
+private String fromEmail;
 
     @Value("${app.email.subject-prefix}")
     private String subjectPrefix;
