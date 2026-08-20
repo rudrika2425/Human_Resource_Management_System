@@ -48,52 +48,126 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                // -------------------------------------------------
+                // CSRF
+                // -------------------------------------------------
                 .csrf(csrf -> csrf.disable())
 
+                // -------------------------------------------------
+                // CORS
+                // -------------------------------------------------
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
+                // -------------------------------------------------
+                // Stateless JWT authentication
+                // -------------------------------------------------
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
+                // -------------------------------------------------
+                // Authorization
+                // -------------------------------------------------
                 .authorizeHttpRequests(auth -> auth
 
                         // CORS preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Authentication
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        // -------------------------------------------------
+                        // PUBLIC AUTH ENDPOINTS
+                        // -------------------------------------------------
 
+                        // Login
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/login"
+                        ).permitAll()
+
+                        // Register
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/register"
+                        ).permitAll()
+
+                        // Refresh token
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/refresh"
+                        ).permitAll()
+
+                        // Logout
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/logout"
+                        ).permitAll()
+
+                        // Forgot password
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/forgot-password"
+                        ).permitAll()
+
+                        // Reset password
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/auth/reset-password"
+                        ).permitAll()
+
+                        // -------------------------------------------------
                         // Swagger
+                        // -------------------------------------------------
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        // -------------------------------------------------
                         // Health
-                        .requestMatchers("/actuator/health").permitAll()
+                        // -------------------------------------------------
+                        .requestMatchers(
+                                "/actuator/health"
+                        ).permitAll()
 
-                        // Everything else
+                        // -------------------------------------------------
+                        // EVERYTHING ELSE
+                        // -------------------------------------------------
                         .anyRequest().authenticated()
                 )
 
+                // -------------------------------------------------
+                // Authentication provider
+                // -------------------------------------------------
                 .authenticationProvider(authenticationProvider())
 
+                // -------------------------------------------------
+                // JWT filter
+                // -------------------------------------------------
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 )
 
+                // -------------------------------------------------
+                // HTTP Basic
+                // -------------------------------------------------
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
 
+    // =============================================================
+    // PASSWORD ENCODER
+    // =============================================================
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    // =============================================================
+    // AUTHENTICATION MANAGER
+    // =============================================================
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -101,6 +175,10 @@ public class SecurityConfig {
     ) throws Exception {
         return configuration.getAuthenticationManager();
     }
+
+    // =============================================================
+    // DAO AUTHENTICATION PROVIDER
+    // =============================================================
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -114,20 +192,28 @@ public class SecurityConfig {
         return provider;
     }
 
+    // =============================================================
+    // CORS
+    // =============================================================
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        /*
-         * IMPORTANT:
-         * Add the exact deployed frontend origin.
-         */
+        // ---------------------------------------------------------
+        // FRONTEND ORIGINS
+        // ---------------------------------------------------------
+
         configuration.setAllowedOrigins(List.of(
                 "https://meticulous-courage-production-58ee.up.railway.app",
                 "http://localhost:5173",
                 "http://localhost:3000"
         ));
+
+        // ---------------------------------------------------------
+        // METHODS
+        // ---------------------------------------------------------
 
         configuration.setAllowedMethods(List.of(
                 "GET",
@@ -138,20 +224,49 @@ public class SecurityConfig {
                 "OPTIONS"
         ));
 
-        configuration.setAllowedHeaders(List.of("*"));
+        // ---------------------------------------------------------
+        // HEADERS
+        // ---------------------------------------------------------
+
+        configuration.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With"
+        ));
+
+        // ---------------------------------------------------------
+        // EXPOSED HEADERS
+        // ---------------------------------------------------------
 
         configuration.setExposedHeaders(List.of(
                 "Authorization"
         ));
 
+        // ---------------------------------------------------------
+        // CREDENTIALS
+        // ---------------------------------------------------------
+
         configuration.setAllowCredentials(true);
 
+        // ---------------------------------------------------------
+        // PREFLIGHT CACHE
+        // ---------------------------------------------------------
+
         configuration.setMaxAge(3600L);
+
+        // ---------------------------------------------------------
+        // REGISTER CORS CONFIG
+        // ---------------------------------------------------------
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration(
+                "/**",
+                configuration
+        );
 
         return source;
     }
