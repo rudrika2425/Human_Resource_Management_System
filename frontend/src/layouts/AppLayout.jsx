@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom';  // ✅ v6
+import { NavLink } from 'react-router-dom';
 import {
   Bell,
   LogOut,
@@ -33,7 +33,7 @@ const navItems = [
   { to: '/profile', label: 'Profile', icon: User },
 ];
 
-export default function AppLayout() {  // ✅ No children prop for v6
+export default function AppLayout({ children }) {
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -297,7 +297,7 @@ export default function AppLayout() {  // ✅ No children prop for v6
 
           {/* PAGE CONTENT */}
           <main className="flex-1 p-4 md:p-8">
-            <Outlet />  {/* ✅ v6 uses Outlet */}
+            {children}
           </main>
 
         </div>
