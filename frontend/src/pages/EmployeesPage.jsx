@@ -1,225 +1,423 @@
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { Plus, Users } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../services/api';
+import { useQuery } from '@tanstack/react-query';
+import { Calendar } from 'lucide-react';
 import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
-import EmptyState from '../components/EmptyState';
-import StatusBadge from '../components/StatusBadge';
-import { useAuth } from '../hooks/useAuth';
 
-export default function EmployeesPage() {
-  const { user } = useAuth();
+const initialForm = {
+  employeeId: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  profileImageUrl: '',
+  dateOfBirth: '',
+  address: '',
+  emergencyContact: '',
+  joiningDate: '',
+  departmentId: '',
+  designationId: '',
+  managerId: '',
+  assignedRole: 'EMPLOYEE',
+  employmentType: 'FULL_TIME',
+  employmentStatus: 'ACTIVE',
+  workLocation: '',
+  skills: '',
+  education: '',
+  experience: '',
+  active: true,
+};
+
+const dateFields = ['dateOfBirth', 'joiningDate'];
+
+export default function EmployeeFormPage({ mode }) {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState(initialForm);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const dateInputRefs = useRef({});
+
+  const openDatePicker = (field) => {
+    const input = dateInputRefs.current[field];
+
+    if (input?.showPicker) {
+      input.showPicker();
+    } else {
+      input?.focus();
+    }
+  };
 
   const {
     data,
     isLoading,
-    error,
-    refetch,
+    error: loadError,
   } = useQuery({
-    queryKey: ['employees'],
+    queryKey: ['employee', id],
+    enabled: mode === 'edit' && Boolean(id),
     queryFn: async () =>
-      (await api.get('/api/v1/employees')).data.data,
+      (await api.get(`/api/v1/employees/${id}`)).data.data,
   });
 
-  const rows = data?.data || [];
+  useEffect(() => {
+    if (data) {
+      setForm({
+        ...initialForm,
+        ...data,
 
-  const roles = (user?.roles || []).map((role) =>
-    role.replace('ROLE_', '').toUpperCase()
-  );
+        departmentId: data.departmentId || '',
+        designationId: data.designationId || '',
+        managerId: data.managerId || '',
 
-  const isHR = roles.includes('HR');
-  const isManager = roles.includes('MANAGER');
-  const isEmployee = roles.includes('EMPLOYEE');
+        assignedRole: data.assignedRole || 'EMPLOYEE',
 
-  if (isLoading) {
-    return <Spinner label="Loading employees..." />;
+        dateOfBirth: data.dateOfBirth || '',
+        joiningDate: data.joiningDate || '',
+      });
+    }
+  }, [data]);
+
+  if (mode === 'edit' && isLoading) {
+    return <Spinner />;
   }
 
-  if (error) {
-    return (
-      <ErrorState
-        description="Unable to load employees."
-        onRetry={refetch}
-      />
-    );
+  if (loadError) {
+    return <ErrorState error={loadError} />;
   }
 
-  if (!rows.length) {
-    return (
-      <EmptyState
-        title="No employees yet"
-        description="No employee records are available."
-      />
-    );
-  }
+  const onChange = (event) => {
+    const {
+      name,
+      value,
+      type,
+      checked,
+    } = event.target;
+
+    setForm((current) => ({
+      ...current,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const submit = async (event) => {
+    event.preventDefault();
+
+    setSaving(true);
+    setError('');
+
+    const payload = {
+      ...form,
+
+      departmentId: form.departmentId
+        ? Number(form.departmentId)
+        : null,
+
+      designationId: form.designationId
+        ? Number(form.designationId)
+        : null,
+
+      managerId: form.managerId
+        ? Number(form.managerId)
+        : null,
+
+      assignedRole: form.assignedRole,
+
+      dateOfBirth: form.dateOfBirth || null,
+
+      joiningDate: form.joiningDate || null,
+    };
+
+    console.log('Employee payload:', payload);
+
+    try {
+      if (mode === 'create') {
+        await api.post(
+          '/api/v1/employees',
+          payload
+        );
+      } else {
+        await api.put(
+          `/api/v1/employees/${id}`,
+          payload
+        );
+      }
+
+      navigate('/employees');
+    } catch (err) {
+      console.error('Employee save error:', err);
+
+      setError(
+        err?.response?.data?.message ||
+          'Unable to save employee'
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-6">
+    <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-4 sm:p-6 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
 
       {}
-      <div className="flex flex-col justify-between gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end">
+      <div className="border-b border-black/10 pb-4 sm:pb-5 dark:border-white/10">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-purple-500 dark:text-purple-400">
+          People
+        </p>
 
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-purple-500">
-            People
-          </p>
-
-          <h1 className="mt-2 text-3xl font-bold text-gray-900">
-            Employees
-          </h1>
-
-          <p className="mt-2 text-sm text-gray-500">
-            Live directory powered by the backend API.
-          </p>
-        </div>
-
-        {/* =========================
-            HR FUNCTIONALITY
-            UNCHANGED
-        ========================== */}
-        {isHR && (
-          <Link
-            className="inline-flex items-center rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700"
-            to="/employees/new"
-          >
-            <Plus size={18} className="mr-2" />
-            Create employee
-          </Link>
-        )}
-
-        {/* =========================
-            MANAGER FUNCTIONALITY
-            UNCHANGED
-        ========================== */}
-        {isManager && (
-          <Link
-            className="inline-flex items-center rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700"
-            to="/employees/my-team"
-          >
-            <Users size={18} className="mr-2" />
-            My Team
-          </Link>
-        )}
+        <h1 className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
+          {mode === 'create'
+            ? 'Create employee'
+            : 'Edit employee'}
+        </h1>
       </div>
 
       {}
-      <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
+      <form
+        onSubmit={submit}
+        className="space-y-6 rounded-2xl border border-purple-100 bg-white p-4 sm:p-6 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30"
+      >
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-purple-100 text-sm">
+        {}
+        <div className="grid gap-4 sm:grid-cols-2">
 
-            <thead className="bg-purple-50 text-left text-gray-900">
-              <tr>
+          {[
+            'employeeId',
+            'firstName',
+            'lastName',
+            'email',
+            'phone',
+            'profileImageUrl',
+            'dateOfBirth',
+            'address',
+            'emergencyContact',
+            'joiningDate',
+            'departmentId',
+            'designationId',
+            'managerId',
+            'workLocation',
+          ].map((field) => {
+            const isDateField = dateFields.includes(field);
 
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.1em]">
-                  Employee ID
-                </th>
+            return (
+              <div key={field}>
 
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.1em]">
-                  Name
-                </th>
+                <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
+                  {field}
+                </label>
 
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.1em]">
-                  Email
-                </th>
+                <div className="relative">
 
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.1em]">
-                  Department
-                </th>
+                  <input
+                    ref={
+                      isDateField
+                        ? (el) => (dateInputRefs.current[field] = el)
+                        : undefined
+                    }
 
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.1em]">
-                  Designation
-                </th>
+                    name={field}
 
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.1em]">
-                  Role
-                </th>
+                    type={isDateField ? 'date' : 'text'}
 
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.1em]">
-                  Status
-                </th>
+                    className={`w-full rounded-xl border border-purple-100 bg-purple-50/40 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800 dark:[color-scheme:dark] ${
+                      isDateField
+                        ? 'pl-4 pr-10 [&::-webkit-calendar-picker-indicator]:opacity-0'
+                        : 'px-4'
+                    }`}
 
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.1em]">
-                  Actions
-                </th>
+                    value={form[field] || ''}
 
-              </tr>
-            </thead>
+                    onChange={onChange}
+                  />
 
-            <tbody className="divide-y divide-purple-100">
+                  {isDateField ? (
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => openDatePicker(field)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 transition hover:text-purple-600 dark:text-purple-400 dark:hover:text-purple-300"
+                    >
+                      <Calendar size={16} strokeWidth={1.75} />
+                    </button>
+                  ) : null}
 
-              {rows.map((employee) => (
-                <tr
-                  key={employee.id}
-                  className="transition hover:bg-purple-50/60"
-                >
+                </div>
 
-                  <td className="px-4 py-3 text-gray-800">
-                    {employee.employeeId}
-                  </td>
+              </div>
+            );
+          })}
 
-                  <td className="px-4 py-3 font-medium text-gray-900">
-                    {employee.firstName} {employee.lastName}
-                  </td>
+          {}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
+              Assigned role
+            </label>
 
-                  <td className="px-4 py-3 text-gray-600">
-                    {employee.email}
-                  </td>
+            <select
+              name="assignedRole"
+              className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800"
+              value={form.assignedRole}
+              onChange={onChange}
+            >
+              <option value="EMPLOYEE">
+                EMPLOYEE
+              </option>
 
-                  <td className="px-4 py-3 text-gray-600">
-                    {employee.departmentName || '—'}
-                  </td>
+              <option value="MANAGER">
+                MANAGER
+              </option>
 
-                  <td className="px-4 py-3 text-gray-600">
-                    {employee.designationName || '—'}
-                  </td>
+              <option value="HR">
+                HR
+              </option>
+            </select>
+          </div>
 
-                  <td className="px-4 py-3 text-gray-600">
-                    {employee.assignedRole}
-                  </td>
+          {}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
+              Employment type
+            </label>
 
-                  <td className="px-4 py-3">
-                    <StatusBadge
-                      value={employee.employmentStatus}
-                    />
-                  </td>
+            <select
+              name="employmentType"
+              className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800"
+              value={form.employmentType}
+              onChange={onChange}
+            >
+              <option value="FULL_TIME">
+                FULL_TIME
+              </option>
 
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
+              <option value="PART_TIME">
+                PART_TIME
+              </option>
 
-                      {/* 
-                       * ALL ROLES CAN VIEW EMPLOYEE 360.
-                       * HR / MANAGER behavior remains unchanged.
-                       */}
-                      <Link
-                        className="rounded-xl border border-purple-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition hover:bg-purple-50"
-                        to={`/employees/${employee.id}`}
-                      >
-                        360
-                      </Link>
+              <option value="CONTRACT">
+                CONTRACT
+              </option>
 
-                      {}
-                      {isHR && (
-                        <Link
-                          className="rounded-xl border border-purple-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition hover:bg-purple-50"
-                          to={`/employees/${employee.id}/edit`}
-                        >
-                          Edit
-                        </Link>
-                      )}
+              <option value="INTERN">
+                INTERN
+              </option>
+            </select>
+          </div>
 
-                    </div>
-                  </td>
+          {}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
+              Employment status
+            </label>
 
-                </tr>
-              ))}
+            <select
+              name="employmentStatus"
+              className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800"
+              value={form.employmentStatus}
+              onChange={onChange}
+            >
+              <option value="ACTIVE">
+                ACTIVE
+              </option>
 
-            </tbody>
+              <option value="INACTIVE">
+                INACTIVE
+              </option>
 
-          </table>
+              <option value="ON_LEAVE">
+                ON_LEAVE
+              </option>
+
+              <option value="PROBATION">
+                PROBATION
+              </option>
+
+              <option value="TERMINATED">
+                TERMINATED
+              </option>
+            </select>
+          </div>
+
         </div>
-      </div>
+
+        {}
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+
+          {[
+            'skills',
+            'education',
+            'experience',
+          ].map((field) => (
+            <div
+              key={field}
+              className="md:col-span-1"
+            >
+
+              <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
+                {field}
+              </label>
+
+              <textarea
+                name={field}
+                rows={5}
+                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800"
+                value={form[field] || ''}
+                onChange={onChange}
+              />
+
+            </div>
+          ))}
+
+        </div>
+
+        {}
+        <label className="flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-300">
+
+          <input
+            type="checkbox"
+            name="active"
+            checked={form.active}
+            onChange={onChange}
+            className="h-4 w-4 rounded border-purple-200 text-purple-600 focus:ring-purple-400 dark:border-gray-600 dark:bg-gray-800 dark:focus:ring-purple-500 dark:focus:ring-offset-gray-900"
+          />
+
+          Active
+
+        </label>
+
+        {}
+        {error ? (
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
+            {error}
+          </div>
+        ) : null}
+
+        {}
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 border-t border-black/10 pt-5 dark:border-white/10">
+
+          <button
+            type="button"
+            className="rounded-xl border border-purple-100 bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-purple-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+            onClick={() => navigate('/employees')}
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-60 dark:shadow-black/30 dark:hover:bg-purple-500"
+            disabled={saving}
+          >
+            {saving
+              ? 'Saving...'
+              : 'Save employee'}
+          </button>
+
+        </div>
+
+      </form>
     </div>
   );
 }

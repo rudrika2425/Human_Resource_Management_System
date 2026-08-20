@@ -149,7 +149,7 @@ function getFileExtension(filename) {
 
 function CategoryBadge({ category }) {
   return (
-    <span className="inline-flex rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700">
+    <span className="inline-flex rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-300">
       {getCategoryLabel(category)}
     </span>
   );
@@ -167,7 +167,7 @@ function DocumentIcon({ category }) {
   };
 
   return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 text-lg">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 text-lg dark:border-gray-700 dark:bg-gray-800">
       {icons[category] || '📄'}
     </div>
   );
@@ -175,17 +175,17 @@ function DocumentIcon({ category }) {
 
 function StatCard({ label, value, description }) {
   return (
-    <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm shadow-purple-100/50">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400">
+    <div className="rounded-2xl border border-purple-100 bg-white p-4 sm:p-5 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400 dark:text-purple-400">
         {label}
       </p>
 
-      <p className="mt-3 text-2xl font-semibold text-gray-900">
+      <p className="mt-3 text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">
         {value}
       </p>
 
       {description && (
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {description}
         </p>
       )}
@@ -688,21 +688,21 @@ export default function DocumentsPage() {
   }
 
   return (
-    <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-4 md:p-6">
+    <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-4 md:p-6 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
 
       {}
-      <div className="flex flex-col justify-between gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end">
+      <div className="flex flex-col justify-between gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end dark:border-white/10">
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-500 dark:text-purple-400">
             Employee Management
           </p>
 
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900">
+          <h1 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
             Documents
           </h1>
 
-          <p className="mt-1 max-w-2xl text-sm text-gray-500">
+          <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
             {isHr
               ? 'Manage employee documents across the organization.'
               : isManager
@@ -711,12 +711,12 @@ export default function DocumentsPage() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-purple-100 bg-white px-4 py-3 shadow-sm shadow-purple-100/50">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-400">
+        <div className="rounded-xl border border-purple-100 bg-white px-4 py-3 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-400 dark:text-purple-400">
             Role
           </p>
 
-          <p className="mt-1 text-lg font-semibold text-gray-900">
+          <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
             {role}
           </p>
         </div>
@@ -724,13 +724,13 @@ export default function DocumentsPage() {
 
       {}
       {message && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
           {message}
         </div>
       )}
 
       {errorMessage && (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
           {errorMessage}
         </div>
       )}
@@ -742,12 +742,12 @@ export default function DocumentsPage() {
         Employee and Manager DO NOT see this section.
       */}
       {isHr && (
-        <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm shadow-purple-100/50">
+        <div className="rounded-2xl border border-purple-100 bg-white p-4 sm:p-5 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
 
           <div className="flex flex-col gap-4 md:flex-row md:items-end">
 
             <div className="flex-1">
-              <label className="mb-2 block text-sm font-medium text-gray-600">
+              <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
                 Select Employee
               </label>
 
@@ -760,7 +760,7 @@ export default function DocumentsPage() {
 
                   setActiveTab('documents');
                 }}
-                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white"
+                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800"
               >
                 <option value="">
                   All employees
@@ -785,7 +785,7 @@ export default function DocumentsPage() {
                 onClick={() =>
                   setSelectedEmployeeId('')
                 }
-                className="rounded-xl border border-purple-100 bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-purple-50"
+                className="rounded-xl border border-purple-100 bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-purple-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
               >
                 View All
               </button>
@@ -823,17 +823,17 @@ export default function DocumentsPage() {
       </div>
 
       {}
-      <div className="flex gap-2 rounded-2xl border border-purple-100 bg-white p-2 shadow-sm shadow-purple-100/50">
+      <div className="flex gap-2 overflow-x-auto rounded-2xl border border-purple-100 bg-white p-2 shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
 
         <button
           type="button"
           onClick={() =>
             setActiveTab('documents')
           }
-          className={`rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+          className={`shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition ${
             activeTab === 'documents'
               ? 'bg-purple-600 text-white'
-              : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
+              : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
           }`}
         >
           Documents
@@ -844,10 +844,10 @@ export default function DocumentsPage() {
           onClick={() =>
             setActiveTab('upload')
           }
-          className={`rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+          className={`shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition ${
             activeTab === 'upload'
               ? 'bg-purple-600 text-white'
-              : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900'
+              : 'text-gray-500 hover:bg-purple-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
           }`}
         >
           Upload Document
@@ -856,14 +856,14 @@ export default function DocumentsPage() {
 
       {}
       {activeTab === 'documents' && (
-        <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
+        <section className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
 
-          <div className="border-b border-black/10 p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400">
+          <div className="border-b border-black/10 p-4 sm:p-6 dark:border-white/10">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400 dark:text-purple-400">
               Document Library
             </p>
 
-            <h2 className="mt-1 text-xl font-semibold text-gray-900">
+            <h2 className="mt-1 text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
               {isEmployee || isManager
                 ? 'My Documents'
                 : selectedEmployeeId
@@ -873,17 +873,17 @@ export default function DocumentsPage() {
           </div>
 
           {!documents.length ? (
-            <div className="p-12 text-center">
+            <div className="p-8 sm:p-12 text-center">
 
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-100 bg-purple-50 text-2xl">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-100 bg-purple-50 text-2xl dark:border-gray-700 dark:bg-gray-800">
                 📁
               </div>
 
-              <p className="mt-4 font-medium text-gray-900">
+              <p className="mt-4 font-medium text-gray-900 dark:text-gray-100">
                 No documents found
               </p>
 
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 Upload a document to add it to the employee's document library.
               </p>
 
@@ -892,7 +892,7 @@ export default function DocumentsPage() {
                 onClick={() =>
                   setActiveTab('upload')
                 }
-                className="mt-5 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700"
+                className="mt-5 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 dark:shadow-black/30 dark:hover:bg-purple-500"
               >
                 Upload Document
               </button>
@@ -900,9 +900,9 @@ export default function DocumentsPage() {
           ) : (
             <div className="overflow-x-auto">
 
-              <table className="min-w-[1000px] divide-y divide-purple-100 text-sm">
+              <table className="min-w-[1000px] divide-y divide-purple-100 text-sm dark:divide-gray-800">
 
-                <thead className="bg-purple-50 text-left text-gray-900">
+                <thead className="bg-purple-50 text-left text-gray-900 dark:bg-gray-800/60 dark:text-gray-100">
                   <tr>
 
                     <th className="px-5 py-4 font-semibold uppercase tracking-[0.1em] text-xs">
@@ -935,12 +935,12 @@ export default function DocumentsPage() {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-purple-100">
+                <tbody className="divide-y divide-purple-100 dark:divide-gray-800">
 
                   {documents.map((document) => (
                     <tr
                       key={document.id}
-                      className="transition hover:bg-purple-50/60"
+                      className="transition hover:bg-purple-50/60 dark:hover:bg-gray-800/50"
                     >
 
                       <td className="px-5 py-4">
@@ -955,13 +955,13 @@ export default function DocumentsPage() {
 
                           <div className="min-w-0">
 
-                            <p className="max-w-xs truncate font-medium text-gray-900">
+                            <p className="max-w-xs truncate font-medium text-gray-900 dark:text-gray-100">
                               {
                                 document.originalFilename
                               }
                             </p>
 
-                            <p className="mt-1 text-xs uppercase text-gray-400">
+                            <p className="mt-1 text-xs uppercase text-gray-400 dark:text-gray-500">
                               {
                                 document.resourceType ||
                                 'file'
@@ -974,7 +974,7 @@ export default function DocumentsPage() {
 
                       {}
                       {isHr && (
-                        <td className="px-5 py-4 text-gray-600">
+                        <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
 
                           {employees.find(
                             (employee) =>
@@ -1010,13 +1010,13 @@ export default function DocumentsPage() {
                         />
                       </td>
 
-                      <td className="px-5 py-4 text-gray-600">
+                      <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                         {formatFileSize(
                           document.fileSize
                         )}
                       </td>
 
-                      <td className="px-5 py-4 text-gray-600">
+                      <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                         {formatDate(
                           document.createdAt
                         )}
@@ -1032,7 +1032,7 @@ export default function DocumentsPage() {
                             }
                             target="_blank"
                             rel="noreferrer"
-                            className="rounded-lg border border-purple-100 bg-purple-50 px-3 py-2 text-xs font-medium text-purple-700 transition hover:bg-purple-100"
+                            className="rounded-lg border border-purple-100 bg-purple-50 px-3 py-2 text-xs font-medium text-purple-700 transition hover:bg-purple-100 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-300 dark:hover:bg-purple-500/20"
                           >
                             View
                           </a>
@@ -1049,7 +1049,7 @@ export default function DocumentsPage() {
                               disabled={
                                 deleteMutation.isPending
                               }
-                              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100"
+                              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
                             >
                               Delete
                             </button>
@@ -1070,19 +1070,19 @@ export default function DocumentsPage() {
 
       {}
       {activeTab === 'upload' && (
-        <section className="rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50">
+        <section className="rounded-2xl border border-purple-100 bg-white shadow-sm shadow-purple-100/50 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
 
-          <div className="border-b border-black/10 p-6">
+          <div className="border-b border-black/10 p-4 sm:p-6 dark:border-white/10">
 
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400 dark:text-purple-400">
               Document Upload
             </p>
 
-            <h2 className="mt-1 text-xl font-semibold text-gray-900">
+            <h2 className="mt-1 text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
               Upload Employee Document
             </h2>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Maximum file size is 10MB.
             </p>
 
@@ -1090,7 +1090,7 @@ export default function DocumentsPage() {
 
           <form
             onSubmit={handleUpload}
-            className="space-y-6 p-6"
+            className="space-y-6 p-4 sm:p-6"
           >
 
             {}
@@ -1102,7 +1102,7 @@ export default function DocumentsPage() {
                */
               <div>
 
-                <label className="mb-2 block text-sm font-medium text-gray-600">
+                <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
                   Employee
                 </label>
 
@@ -1113,7 +1113,7 @@ export default function DocumentsPage() {
                       event.target.value
                     )
                   }
-                  className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white"
+                  className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                   required
                 >
 
@@ -1147,17 +1147,17 @@ export default function DocumentsPage() {
                */
               <div>
 
-                <label className="mb-2 block text-sm font-medium text-gray-600">
+                <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
                   Employee
                 </label>
 
-                <div className="rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3">
+                <div className="rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 dark:border-gray-700 dark:bg-gray-800/60">
 
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {getEmployeeName(user)}
                   </p>
 
-                  <p className="mt-1 text-xs text-gray-400">
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                     Your documents
                   </p>
 
@@ -1170,7 +1170,7 @@ export default function DocumentsPage() {
 
             <div>
 
-              <label className="mb-2 block text-sm font-medium text-gray-600">
+              <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
                 Document Category
               </label>
 
@@ -1181,7 +1181,7 @@ export default function DocumentsPage() {
                     event.target.value
                   )
                 }
-                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white"
+                className="w-full rounded-xl border border-purple-100 bg-purple-50/40 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-purple-300 focus:bg-white dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:focus:border-purple-500 dark:focus:bg-gray-800"
                 required
               >
 
@@ -1198,7 +1198,7 @@ export default function DocumentsPage() {
 
               </select>
 
-              <p className="mt-2 text-xs text-gray-400">
+              <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
                 {
                   DOCUMENT_CATEGORIES.find(
                     (item) =>
@@ -1213,7 +1213,7 @@ export default function DocumentsPage() {
 
             <div>
 
-              <label className="mb-2 block text-sm font-medium text-gray-600">
+              <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
                 File
               </label>
 
@@ -1222,11 +1222,11 @@ export default function DocumentsPage() {
                 type="file"
                 accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
                 onChange={handleFileChange}
-                className="block w-full cursor-pointer rounded-xl border border-purple-100 bg-purple-50/40 p-3 text-sm text-gray-600 file:mr-4 file:rounded-lg file:border-0 file:bg-purple-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-purple-700"
+                className="block w-full cursor-pointer rounded-xl border border-purple-100 bg-purple-50/40 p-3 text-sm text-gray-600 file:mr-4 file:rounded-lg file:border-0 file:bg-purple-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-purple-700 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300 dark:hover:file:bg-purple-500"
                 required
               />
 
-              <p className="mt-2 text-xs text-gray-400">
+              <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
                 PDF, PNG, JPG, JPEG, DOC or DOCX • Maximum 10MB
               </p>
 
@@ -1235,17 +1235,17 @@ export default function DocumentsPage() {
             {}
 
             {selectedFile && (
-              <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4">
+              <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-4 dark:border-gray-700 dark:bg-gray-800/60">
 
                 <div className="flex items-center justify-between gap-4">
 
                   <div className="min-w-0">
 
-                    <p className="truncate text-sm font-medium text-gray-900">
+                    <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
                       {selectedFile.name}
                     </p>
 
-                    <p className="mt-1 text-xs text-gray-400">
+                    <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                       {formatFileSize(
                         selectedFile.size
                       )}
@@ -1267,7 +1267,7 @@ export default function DocumentsPage() {
                       }
 
                     }}
-                    className="text-xs font-medium text-rose-600 hover:text-rose-700"
+                    className="shrink-0 text-xs font-medium text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300"
                   >
                     Remove
                   </button>
@@ -1278,11 +1278,11 @@ export default function DocumentsPage() {
 
             {}
 
-            <div className="flex justify-end border-t border-black/10 pt-5">
+            <div className="flex justify-end border-t border-black/10 pt-5 dark:border-white/10">
 
               <button
                 type="submit"
-                className="rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full sm:w-auto rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-200 transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-60 dark:shadow-black/30 dark:hover:bg-purple-500"
                 disabled={
                   uploadMutation.isPending
                 }

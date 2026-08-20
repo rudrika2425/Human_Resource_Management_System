@@ -7,8 +7,8 @@ import StatusBadge from '../components/StatusBadge';
 
 function SectionCard({ title, children }) {
   return (
-    <div className="rounded-2xl border border-purple-100 bg-white p-6 shadow-sm shadow-purple-100/50">
-      <h3 className="text-lg font-semibold text-gray-900">
+    <div className="rounded-2xl border border-purple-100 bg-white p-4 shadow-sm shadow-purple-100/50 sm:p-6 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/30">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
         {title}
       </h3>
 
@@ -91,66 +91,66 @@ export default function Employee360Page() {
   } = data;
 
   return (
-    <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-6">
+    <div className="min-h-screen space-y-6 bg-gradient-to-b from-purple-50 via-[#F8F6FC] to-purple-50 p-4 sm:p-6 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
 
       {}
-      <div className="border-b border-black/10 pb-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-purple-500">
+      <div className="border-b border-black/10 pb-5 dark:border-white/10">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-purple-500 dark:text-purple-400">
           Employee 360
         </p>
 
-        <h1 className="mt-2 text-3xl font-bold text-gray-900">
+        <h1 className="mt-2 text-2xl font-bold text-gray-900 sm:text-3xl dark:text-gray-100">
           {employee.firstName} {employee.lastName}
         </h1>
 
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           Complete profile and operational history.
         </p>
       </div>
 
       {}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
 
         <SectionCard title="Overview">
-          <div className="space-y-2 text-sm text-gray-700">
+          <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
 
             <p>
-              <span className="text-gray-500">
+              <span className="text-gray-500 dark:text-gray-400">
                 Employee ID:
               </span>{' '}
               {employee.employeeId}
             </p>
 
             <p>
-              <span className="text-gray-500">
+              <span className="text-gray-500 dark:text-gray-400">
                 Department:
               </span>{' '}
               {employee.departmentName || '—'}
             </p>
 
             <p>
-              <span className="text-gray-500">
+              <span className="text-gray-500 dark:text-gray-400">
                 Designation:
               </span>{' '}
               {employee.designationName || '—'}
             </p>
 
             <p>
-              <span className="text-gray-500">
+              <span className="text-gray-500 dark:text-gray-400">
                 Role:
               </span>{' '}
               {employee.assignedRole || '—'}
             </p>
 
             <p>
-              <span className="text-gray-500">
+              <span className="text-gray-500 dark:text-gray-400">
                 Location:
               </span>{' '}
               {employee.workLocation || '—'}
             </p>
 
             <p>
-              <span className="text-gray-500">
+              <span className="text-gray-500 dark:text-gray-400">
                 Manager:
               </span>{' '}
               {employee.managerName || 'Not assigned'}
@@ -166,24 +166,28 @@ export default function Employee360Page() {
         </SectionCard>
 
         <SectionCard title="Attendance">
-          {attendance.length} records
+          <span className="text-gray-700 dark:text-gray-300">
+            {attendance.length} records
+          </span>
         </SectionCard>
 
         <SectionCard title="Payroll">
-          {payroll.length} payslips
+          <span className="text-gray-700 dark:text-gray-300">
+            {payroll.length} payslips
+          </span>
         </SectionCard>
 
       </div>
 
       {}
       <SectionCard title="Reporting Manager">
-        <div className="rounded-xl bg-purple-50 px-4 py-4">
+        <div className="rounded-xl bg-purple-50 px-4 py-4 dark:bg-purple-500/10">
 
-          <p className="text-xs uppercase tracking-[0.15em] text-purple-500">
+          <p className="text-xs uppercase tracking-[0.15em] text-purple-500 dark:text-purple-400">
             Assigned Manager
           </p>
 
-          <p className="mt-1 text-base font-semibold text-gray-900">
+          <p className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
             {employee.managerName || 'Not assigned'}
           </p>
 
@@ -195,13 +199,13 @@ export default function Employee360Page() {
 
         {}
         <SectionCard title="Attendance history">
-          <div className="space-y-2 text-sm text-gray-700">
+          <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
 
             {attendance.slice(0, 5).map(
               (item) => (
                 <div
                   key={item.id}
-                  className="flex justify-between rounded-xl bg-purple-50 px-4 py-3"
+                  className="flex flex-col gap-1 rounded-xl bg-purple-50 px-4 py-3 sm:flex-row sm:justify-between dark:bg-purple-500/10"
                 >
                   <span>
                     {item.workDate}
@@ -219,13 +223,13 @@ export default function Employee360Page() {
 
         {}
         <SectionCard title="Leave history">
-          <div className="space-y-2 text-sm text-gray-700">
+          <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
 
             {leaves.slice(0, 5).map(
               (item) => (
                 <div
                   key={item.id}
-                  className="flex justify-between rounded-xl bg-purple-50 px-4 py-3"
+                  className="flex flex-col gap-1 rounded-xl bg-purple-50 px-4 py-3 sm:flex-row sm:justify-between dark:bg-purple-500/10"
                 >
                   <span>
                     {item.leaveType}
@@ -243,13 +247,13 @@ export default function Employee360Page() {
 
         {}
         <SectionCard title="Payroll history">
-          <div className="space-y-2 text-sm text-gray-700">
+          <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
 
             {payroll.slice(0, 5).map(
               (item) => (
                 <div
                   key={item.id}
-                  className="flex justify-between rounded-xl bg-purple-50 px-4 py-3"
+                  className="flex flex-col gap-1 rounded-xl bg-purple-50 px-4 py-3 sm:flex-row sm:justify-between dark:bg-purple-500/10"
                 >
                   <span>
                     {item.payrollMonth}
@@ -267,15 +271,15 @@ export default function Employee360Page() {
 
         {}
         <SectionCard title="Documents">
-          <div className="space-y-2 text-sm text-gray-700">
+          <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
 
             {documents.slice(0, 5).map(
               (item) => (
                 <div
                   key={item.id}
-                  className="flex justify-between rounded-xl bg-purple-50 px-4 py-3"
+                  className="flex flex-col gap-1 rounded-xl bg-purple-50 px-4 py-3 sm:flex-row sm:justify-between dark:bg-purple-500/10"
                 >
-                  <span>
+                  <span className="break-all">
                     {item.originalFilename}
                   </span>
 
@@ -293,13 +297,13 @@ export default function Employee360Page() {
 
       {}
       <SectionCard title="Recent notifications">
-        <div className="space-y-2 text-sm text-gray-700">
+        <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
 
           {notifications.slice(0, 5).map(
             (item) => (
               <div
                 key={item.id}
-                className="flex justify-between rounded-xl bg-purple-50 px-4 py-3"
+                className="flex flex-col gap-1 rounded-xl bg-purple-50 px-4 py-3 sm:flex-row sm:justify-between dark:bg-purple-500/10"
               >
                 <span>
                   {item.title}

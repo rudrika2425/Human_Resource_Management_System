@@ -263,17 +263,7 @@ export default function AttendancePage() {
   console.log('User roles:', user?.roles);
   console.log('======================================');
 
-  /*
-   * HR:
-   *     /api/v1/attendance/all/today
-   *
-   * MANAGER:
-   *     /api/v1/attendance/team (for team attendance)
-   *     /api/v1/attendance/my-history (for manager's own attendance)
-   *
-   * EMPLOYEE:
-   *     /api/v1/attendance/my-history
-   */
+ 
   const endpoint =
     role === 'HR'
       ? '/api/v1/attendance/all/today'

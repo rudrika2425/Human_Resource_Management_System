@@ -30,11 +30,11 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-[#F8F6FC] to-purple-100">
-      <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md overflow-hidden rounded-[2rem] border border-purple-100 bg-white shadow-2xl shadow-purple-200/40">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-[#F8F6FC] to-purple-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-8 sm:py-12">
+        <div className="w-full max-w-md overflow-hidden rounded-[2rem] border border-purple-100 bg-white shadow-2xl shadow-purple-200/40 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/40">
           {/* Header with purple gradient */}
-          <div className="bg-gradient-to-r from-purple-600 via-purple-500 to-violet-600 px-8 py-6 text-center">
+          <div className="bg-gradient-to-r from-purple-600 via-purple-500 to-violet-600 px-6 py-6 text-center sm:px-8 dark:from-purple-700 dark:via-purple-600 dark:to-violet-700">
             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/20">
               <Mail className="h-8 w-8 text-white" />
             </div>
@@ -44,25 +44,25 @@ export default function ForgotPasswordPage() {
             </p>
           </div>
 
-          <div className="p-8">
+          <div className="p-6 sm:p-8">
             {success ? (
-              <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center">
-                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-                  <CheckCircle className="h-8 w-8 text-green-600" />
+              <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center dark:border-green-500/20 dark:bg-green-500/10">
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-green-100 dark:bg-green-500/20">
+                  <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-green-800">Check your email</h3>
-                <p className="mt-1 text-sm text-green-700">
+                <h3 className="text-lg font-semibold text-green-800 dark:text-green-300">Check your email</h3>
+                <p className="mt-1 text-sm text-green-700 dark:text-green-400">
                   We've sent a password reset link to <br />
                   <span className="font-medium">{email}</span>
                 </p>
-                <div className="mt-3 rounded-lg bg-green-100/50 px-4 py-2">
-                  <p className="text-xs text-green-600">
+                <div className="mt-3 rounded-lg bg-green-100/50 px-4 py-2 dark:bg-green-500/10">
+                  <p className="text-xs text-green-600 dark:text-green-400">
                     ⏰ The link will expire in 15 minutes
                   </p>
                 </div>
                 <Link
                   to="/login"
-                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-purple-700"
+                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-purple-700 dark:hover:bg-purple-500"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Back to login
@@ -71,29 +71,29 @@ export default function ForgotPasswordPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Email Address
                   </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <Mail className="h-5 w-5 text-gray-400" />
+                      <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                       type="email"
-                      className="w-full rounded-xl border border-purple-200 bg-purple-50/50 py-3 pl-10 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-purple-400 focus:bg-white focus:ring-2 focus:ring-purple-200"
+                      className="w-full rounded-xl border border-purple-200 bg-purple-50/50 py-3 pl-10 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-purple-400 focus:bg-white focus:ring-2 focus:ring-purple-200 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-purple-500 dark:focus:bg-gray-800 dark:focus:ring-purple-500/30"
                       placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
                   </div>
-                  <p className="mt-1 text-xs text-gray-400">
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                     Enter the email associated with your account
                   </p>
                 </div>
 
                 {error && (
-                  <div className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  <div className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
                     <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                     <span>{error}</span>
                   </div>
@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
 
                 <button
                   type="submit"
-                  className="relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 via-purple-500 to-violet-600 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200 transition duration-300 hover:scale-[1.02] hover:shadow-purple-300 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 via-purple-500 to-violet-600 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200 transition duration-300 hover:scale-[1.02] hover:shadow-purple-300 disabled:cursor-not-allowed disabled:opacity-60 dark:from-purple-700 dark:via-purple-600 dark:to-violet-700 dark:shadow-black/40 dark:hover:shadow-purple-900/40"
                   disabled={loading}
                 >
                   {loading ? (
@@ -135,16 +135,16 @@ export default function ForgotPasswordPage() {
 
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-purple-100" />
+                    <div className="w-full border-t border-purple-100 dark:border-gray-800" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-white px-2 text-gray-400">or</span>
+                    <span className="bg-white px-2 text-gray-400 dark:bg-gray-900 dark:text-gray-500">or</span>
                   </div>
                 </div>
 
                 <Link
                   to="/login"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-purple-200 bg-white py-2.5 text-sm font-medium text-purple-600 transition hover:bg-purple-50 hover:border-purple-300"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-purple-200 bg-white py-2.5 text-sm font-medium text-purple-600 transition hover:bg-purple-50 hover:border-purple-300 dark:border-gray-700 dark:bg-gray-900 dark:text-purple-400 dark:hover:bg-gray-800 dark:hover:border-gray-600"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Back to login
@@ -154,8 +154,8 @@ export default function ForgotPasswordPage() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-purple-100 bg-purple-50/30 px-8 py-4 text-center">
-            <p className="text-xs text-gray-400">
+          <div className="border-t border-purple-100 bg-purple-50/30 px-6 py-4 text-center sm:px-8 dark:border-gray-800 dark:bg-gray-800/30">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               Need help? Contact your HR department
             </p>
           </div>
