@@ -47,7 +47,7 @@ export default function ResetPasswordPage() {
     setError('');
 
     try {
-      await api.post('/auth/reset-password', {
+      await api.post('/api/v1/auth/reset-password', {
         token: token,
         newPassword: form.newPassword,
         confirmPassword: form.confirmPassword,
